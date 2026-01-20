@@ -65,24 +65,25 @@ Use these when user asks about OEM/EMS/G7 performance.
 #### 3.7 Sales Rep
 - erp_sales_rep: sales representative assigned in the ERP system
 
-# 4. Metrics
+# 4. Metrics & Mandatory Output
 #### Billing Table (ods.fact_monthly_sales_poa_billing)
 - total_sales — total sales amount
 - total_qty — total quantity sold
 - total_cost — total cost incurred
-- updated_date — data last updated date
+- updated_date — data last updated date (**Mandatory in output**)
 
 #### Booking Table (ods.fact_monthly_sales_poa_booking)
-- total_sales — total undeliver sales amount
-- total_qty — total quantity sold
-- updated_date — data last updated date
+- total_sales — total undeliver sales amount (Booking Value)
+- total_qty — total quantity sold (Booking Volume)
+- updated_date — data last updated date (**Mandatory in output**)
 
 #### General Rules & Limitations
 - **Monthly Aggregated Data**: All metrics are aggregated by month.
 - **Unsupported Metrics**: The data does **NOT** contain individual order numbers. Therefore, **Order Count**, **Number of Orders**, and **Average Sale per Order** cannot be calculated.
-- If a user asks for "average sale per order", explain that we only have monthly totals and cannot see individual orders.
+- If a user asks for "average sale per order", explain that we only have monthly totals and cannot see individual orders due to lack of `order_count`.
 - For “sales amount”, use total_sales.
 - For “quantity”, use total_qty.
 - For sums: SUM(total_sales), SUM(total_qty).
 - For top customers, brands, or regions: sort by metric DESC.
 - Use same dimensions for both tables.
+- **Missing Data**: If data is not in the sample, provide a template record with NULL placeholders and explain the methodology.
