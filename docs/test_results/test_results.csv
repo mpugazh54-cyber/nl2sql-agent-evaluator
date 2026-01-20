@@ -1,0 +1,315 @@
+﻿user_prompt,expected_answer,agent_answer,generated_sql,data_preview,similarity_score,evaluation_grade,evaluation_reason
+How did we perform in Great China in January 2025 in terms of revenue and order volume?,"In January 2025, the revenue (total sales) for Great China was 142,020,227.96 USD, and the order volume was 70,911,075,362 pcs. Compared to January 2024, revenue slightly decreased by 0.2% (from 142,255,560.76 USD), while order volume increased by 13.5% (from 62,464,871,124 pcs).
+
+Filter applied: order_type='SHIPMENT', ru='GREAT CHINA', year_month='2025-01' (with YoY comparison to 2024-01).","In January 2025, Great China achieved a total revenue of 142,020,227.96 USD and shipped 70,911,075,362 pieces.
+
+Year-over-year, sales revenue decreased slightly by -0.2% and order volume increased by 13.5% compared to January 2024.
+
+Filter applied: ru='GREAT CHINA', order_type='SHIPMENT', year_month='2025-01'.","[
+  ""```sql\nSELECT year_month, SUM(total_sales) AS total_sales, SUM(total_qty) AS total_qty\nFROM [ods].[fact_monthly_sales_poa_billing]\nWHERE year_month = '2024-01'\n  AND ru = 'GREAT CHINA'\n  AND order_type = 'SHIPMENT'\nGROUP BY year_month\n```"",
+  ""```sql\nSELECT year_month, SUM(total_sales) AS total_sales, SUM(total_qty) AS total_quantity\nFROM [ods].[fact_monthly_sales_poa_billing]\nWHERE year_month = '2025-01'\n  AND ru = 'GREAT CHINA'\n  AND order_type = 'SHIPMENT'\nGROUP BY year_month\n```""
+]","[
+  [
+    ""In January 2025, Great China achieved a total revenue of 142,020,227.96 USD and shipped 70,911,075,362 pieces."",
+    ""Filter applied: ru='GREAT CHINA', order_type='SHIPMENT', year_month='2025-01'.""
+  ]
+]",100,PASS,"All core data matches the expected answer: revenue 142,020,227.96 USD; order volume 70,911,075,362 pcs; YoY changes -0.2% revenue, +13.5% orders; same filter criteria; no missing data."
+Which region led our bookings in January 2025?,"In January 2025, Great China led our bookings with total sales of 154,339,982.18 USD. This represents an 10.7% decrease compared to January 2024, when bookings totaled 172,796,073.38 USD for Great China.
+
+Filter applied: fact_monthly_sales_poa_booking, year_month='2025-01', grouped by ru (region), with YoY comparison.","In January 2025, the region that led our bookings was GREAT CHINA with total bookings sales of 154,339,982.18 USD.
+
+Filter applied:
+year_month = 2025-01, bookings, grouped by ru (region)","[
+  ""```sql\nSELECT TOP 1\n    ru,\n    SUM(total_sales) AS total_sales\nFROM ods.fact_monthly_sales_poa_booking\nWHERE year_month = '2025-01' AND order_type = 'BOOKING'\nGROUP BY ru\nORDER BY SUM(total_sales) DESC;\n```""
+]","[
+  [
+    ""In January 2025, the region that led our bookings was GREAT CHINA with total bookings sales of 154,339,982.18 USD."",
+    ""year_month = 2025-01, bookings, grouped by ru (region)""
+  ]
+]",92,PASS,"Agent answer correctly identifies Great China as the leading region and provides the same total bookings (154,339,982.18 USD). It omits the YoY comparison percentage (10.7%) included in the expected answer, but the core data matches."
+Who was our biggest revenue driver in the billing data for January 2025 (by customer parent)?,"Our biggest revenue driver in the billing data for January 2025 (by customer_parent) was TELEMECANIQUE, contributing 25,004,772.83 USD in sales. This is a 15.3% decrease compared to January 2024, when revenue from TELEMECANIQUE was 29,519,634.19 USD.
+
+Filter applied: order_type='SHIPMENT', customer_parent='TELEMECANIQUE', year_month='2025-01', with YoY comparison.","The biggest revenue driver in the billing data for January 2025 (by customer_parent) was TELEMECANIQUE with USD 25,004,772.83 in sales.
+
+Filter applied: year_month = '2025-01', order_type = 'SHIPMENT' (Billing), grouped by customer_parent.","[
+  ""```sql\nSELECT TOP 1\n  customer_parent,\n  SUM(total_sales) AS total_sales\nFROM ods.fact_monthly_sales_poa_billing\nWHERE year_month = '2025-01' AND order_type = 'SHIPMENT'\nGROUP BY customer_parent\nORDER BY total_sales DESC\n```""
+]","[
+  [
+    ""The biggest revenue driver in the billing data for January 2025 (by customer_parent) was TELEMECANIQUE with USD 25,004,772.83 in sales."",
+    ""Filter applied: year_month = '2025-01', order_type = 'SHIPMENT' (Billing), grouped by customer_parent.""
+  ]
+]",95,PASS,"Agent Answer correctly identifies TELEMECANIQUE as the biggest revenue driver for January 2025 with 25,004,772.83 USD in sales, matching the core data in the Expected Answer. The Expected Answer also includes a YoY percentage change (15.3%), which the Agent did not state; however, there are no factual errors and the core data matches."
+"Among the final customers, who contributed the most revenue in January 2025?","Among the final customers, ""NOT ASSIGNED"" contributed the most revenue in January 2025, totaling 144,367,122.77 USD. This represents an 18.0% increase compared to January 2024, when revenue from ""NOT ASSIGNED"" was 122,354,218.98 USD.
+
+Filter applied: order_type='SHIPMENT', final_customer='NOT ASSIGNED', year_month='2025-01', with YoY comparison.","In January 2025, the final customer who contributed the most revenue was ""NOT ASSIGNED,"" with total sales of 144,367,122.77 USD.
+
+Filter applied: year_month = '2025-01', order_type = 'SHIPMENT', final_customer.","[
+  ""```sql\nSELECT TOP 1\n    final_customer,\n    SUM(total_sales) AS total_sales\nFROM ods.fact_monthly_sales_poa_billing\nWHERE year_month = '2025-01'\n  AND order_type = 'SHIPMENT'\nGROUP BY final_customer\nORDER BY SUM(total_sales) DESC;\n```""
+]","[
+  [
+    ""In January 2025, the final customer who contributed the most revenue was \""NOT ASSIGNED,\"" with total sales of 144,367,122.77 USD."",
+    ""Filter applied: year_month = '2025-01', order_type = 'SHIPMENT', final_customer.""
+  ]
+]",100,PASS,"The Agent Answer correctly states that NOT ASSIGNED contributed the most revenue in January 2025 with 144,367,122.77 USD. The core data matches the Expected Answer. The Agent did not provide the YoY percentage (18.0%) or the January 2024 comparison, which is an optional detail; however, the primary figure and entity are identical. Note: the filter line is incomplete (final_customer value not specified), but this does not alter the core data accuracy."
+Which brand delivered the strongest sales in January 2025 according to the billing data?,"The brand that delivered the strongest sales in January 2025 according to the billing data was KEMET, with total sales of 113,158,561.57 USD. This is a 12.9% increase compared to January 2024, when KEMET generated 100,245,782.47 USD in sales.
+
+Filter applied: order_type='SHIPMENT', brand='KEMET', year_month='2025-01', with YoY comparison.","In January 2025, the brand with the strongest sales according to the billing data was KEMET, achieving total sales of USD 113,158,561.57.
+
+Filter applied:
+order_type = 'SHIPMENT'; year_month = '2025-01'; group by brand","[
+  ""```sql\nWITH BrandSales AS (\n    SELECT\n        brand,\n        SUM(total_sales) AS total_sales\n    FROM ods.fact_monthly_sales_poa_billing\n    WHERE year_month = '2025-01'\n      AND order_type = 'SHIPMENT'\n    GROUP BY brand\n)\nSELECT\n    brand,\n    total_sales,\n    CASE \n        WHEN total_sales = (SELECT MAX(total_sales) FROM BrandSales) THEN 'Top Brand'\n        ELSE ''\n    END AS highlight\nFROM BrandSales\nORDER BY total_sales DESC;\n```""
+]","[
+  [
+    ""In January 2025, the brand with the strongest sales according to the billing data was KEMET, achieving total sales of USD 113,158,561.57.""
+  ]
+]",100,PASS,"Core data matches: brand KEMET with total sales 113,158,561.57 USD for January 2025. The agent's response aligns with the expected answer on the primary metric. The expected answer also includes a YoY comparison (Jan 2024), which the agent did not include, but this does not affect the correctness of the core data."
+How did shipments compare to past-due orders in January 2025 in revenue terms?,"In January 2025, shipment revenue was 312,858,745.64 USD, while past-due orders contributed 40,300.88 USD in revenue. Compared to January 2024:
+
+Shipments decreased by 2.5% (from 320,880,016.34 USD).
+Past-due order revenue decreased by 17.5% (from 48,865.64 USD).
+Filter applied: order_type='SHIPMENT' and order_type='PAST DUE', year_month='2025-01', with YoY comparison.","In January 2025, shipment orders generated USD 312,858,745.64 in total revenue, while past-due orders generated USD 40,300.88 in total revenue. This shows that shipments vastly outperformed past-due orders in revenue terms for that month.
+
+Time period: January 2025
+Filter applied: order_type='SHIPMENT' and order_type='PAST DUE'","[
+  ""```sql\nSELECT year_month, SUM(total_sales) AS total_sales_revenue\nFROM ods.fact_monthly_sales_poa_billing\nWHERE order_type = 'PAST DUE' AND year_month = '2025-01'\nGROUP BY year_month\n```"",
+  ""```sql\nSELECT SUM(total_sales) AS total_sales_revenue\nFROM ods.fact_monthly_sales_poa_billing\nWHERE order_type = 'SHIPMENT' AND year_month = '2025-01'\n```""
+]","[
+  [
+    ""In January 2025, shipment orders generated USD 312,858,745.64 in total revenue, while past-due orders generated USD 40,300.88 in total revenue. This shows that shipments vastly outperformed past-due orders in revenue terms for that month.""
+  ]
+]",95,PASS,"Core revenue figures for January 2025 match exactly: shipments 312,858,745.64 USD and past-due 40,300.88 USD. The agent did not provide the YoY changes vs January 2024 (320,880,016.34 USD and 48,865.64 USD) or the percentage decreases, which are present in the Expected Answer. The agent's statement that shipments outperformed past-due orders is consistent with the data."
+Which sub-unit generated the highest sales in January 2025?,"In January 2025, the sub-unit ""CHINA"" generated the highest sales, totaling 64,545,693.14 USD. This represents a 6.6% decrease compared to January 2024, when sales for ""CHINA"" were 69,114,789.32 USD.
+
+Filter applied: order_type='SHIPMENT', sub_unit='CHINA', year_month='2025-01', with YoY comparison.","In January 2025, the sub-unit with the highest sales was CHINA, with a total of 64,545,693.14 USD.
+
+Filter applied: year_month = '2025-01', order_type = 'SHIPMENT', grouped by sub_unit.","[
+  ""```sql\nSELECT TOP 1\n    sub_unit,\n    SUM(total_sales) AS total_sales\nFROM ods.fact_monthly_sales_poa_billing\nWHERE year_month = '2025-01'\n  AND order_type = 'SHIPMENT'\nGROUP BY sub_unit\nORDER BY SUM(total_sales) DESC;\n```""
+]","[
+  [
+    ""In January 2025, the sub-unit with the highest sales was CHINA, with a total of 64,545,693.14 USD."",
+    ""Filter applied: year_month = '2025-01', order_type = 'SHIPMENT', grouped by sub_unit.""
+  ]
+]",95,PASS,"Agent correctly identified CHINA as the top sub-unit for January 2025 with 64,545,693.14 USD. It omits the YoY comparison (6.6% decrease and 2024 value), but the core data matches the expected; no incorrect data reported."
+Which G7 partner accounted for the most bookings in January 2025?,"Among the G7, TTI accounted for the most bookings in January 2025, with total sales of 20,804,178.05 USD. This represents a 9.6% decrease compared to January 2024, when TTI bookings were 23,100,476.93 USD.
+
+Filter applied: fact_monthly_sales_poa_booking, g7='TTI', year_month='2025-01', with YoY comparison.","We were unable to find any results matching the following condition: bookings in January 2025 with g7='Y'. Could you please verify that the date or filters are correct? If you need information for a different month or broader G7 booking data, please specify.","[
+  ""```sql\nSELECT TOP 1\n  customer_parent,\n  SUM(total_sales) AS total_sales\nFROM ods.fact_monthly_sales_poa_booking\nWHERE year_month = '2025-01'\n  AND g7 = 'Y'\nGROUP BY customer_parent\nORDER BY SUM(total_sales) DESC\n```""
+]","[
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  []
+]",0,FAIL,"Agent answer claims no results and uses an incorrect filter (g7='Y') instead of g7='TTI' for January 2025, failing to provide the correct top G7 partner (TTI) and its January 2025 bookings and YoY data as in the expected answer."
+"In January 2025, which region and sub-unit combination produced the most revenue from bookings?","In January 2025, the region and sub-unit combination of GREAT CHINA and KOE produced the most revenue from bookings, with total sales of 67,133,084.32 USD. This represents a slight decrease of 0.7% compared to January 2024, when bookings revenue for the same combination was 67,594,448.12 USD.
+
+Filter applied: fact_monthly_sales_poa_booking, ru='GREAT CHINA', sub_unit='KOE', year_month='2025-01', with YoY comparison.","In January 2025, the region and sub-unit combination that produced the most revenue from bookings was GREAT CHINA - KOE, with total booking sales of 67,133,084.32 USD.
+Time period: January 2025, Booking data.
+Filter applied: ru = GREAT CHINA, sub_unit = KOE, year_month = 2025-01.","[
+  ""```sql\nSELECT TOP 1\n    ru,\n    sub_unit,\n    SUM(total_sales) AS total_sales\nFROM ods.fact_monthly_sales_poa_booking\nWHERE year_month = '2025-01'\nGROUP BY ru, sub_unit\nORDER BY SUM(total_sales) DESC;\n```""
+]","[
+  [
+    ""In January 2025, the region and sub-unit combination that produced the most revenue from bookings was GREAT CHINA - KOE, with total booking sales of 67,133,084.32 USD."",
+    ""Filter applied: ru = GREAT CHINA, sub_unit = KOE, year_month = 2025-01.""
+  ]
+]",100,PASS,"Core data matches: top region/sub-unit is GREAT CHINA - KOE with total bookings revenue of 67,133,084.32 USD for January 2025. The expected answer also includes a YoY comparison (0.7% vs January 2024), which is not present in the Agent Answer, but the essential facts align."
+"Which product category (Capacitor, SENSOR, Resistors, Magnetics) was the biggest contributor to bookings in January 2025?","The product category ""Capacitor"" was the biggest contributor to bookings in January 2025, with total sales of 154,130,317.97 USD. This is a 9.8% increase compared to January 2024, when bookings for Capacitor were 140,322,111.71 USD.
+
+Filter applied: fact_monthly_sales_poa_booking, pbg='Capacitor', year_month='2025-01', with YoY comparison.","In January 2025, the Capacitor product category was the biggest contributor to bookings, with total bookings sales of 154,130,317.97 USD.
+
+Filter applied:
+Booking data, January 2025, pbg in (Capacitor, SENSOR, Resistors, Magnetics).","[
+  ""```sql\nSELECT \n    pbg,\n    SUM(total_sales) AS total_booking_sales\nFROM \n    [ods].[fact_monthly_sales_poa_booking]\nWHERE \n    year_month = '2025-01'\n    AND pbg IN ('Capacitor', 'SENSOR', 'Resistors', 'Magnetics')\nGROUP BY \n    pbg\nORDER BY \n    total_booking_sales DESC\n```""
+]","[
+  [
+    ""In January 2025, the Capacitor product category was the biggest contributor to bookings, with total bookings sales of 154,130,317.97 USD."",
+    ""Booking data, January 2025, pbg in (Capacitor, SENSOR, Resistors, Magnetics).""
+  ]
+]",100,PASS,"Agent correctly identified Capacitor as the biggest contributor in January 2025 with total bookings of 154,130,317.97 USD, matching the expected answer. The omission of the YoY comparison does not change the core data alignment."
+What was the average sale per order for shipments in January 2025?,"The average sale per order metric does not exist in this data source. Available columns are: year_month, order_type, brand, ru, sub_unit, pbg, pbu, pbu_1, pbu_2, focus_flag, customer_parent, local_assembler, final_customer, g7, fu_us_oem_flag, fu_global_ems_flag, fu_g7_flag, fu_emea_oem_flag, erp_sales_rep, total_sales, total_qty, total_cost, updated_date.
+
+If you would like to know the total sales or total quantity for shipments in January 2025, please let me know!","The average sale per order for shipments in January 2025 was 0.003163 USD.
+
+Filter applied: order_type = 'SHIPMENT', year_month = '2025-01'","[
+  ""```sql\nSELECT \n    SUM(total_sales) / NULLIF(SUM(total_qty), 0) AS avg_sale_per_order\nFROM ods.fact_monthly_sales_poa_billing\nWHERE order_type = 'SHIPMENT'\n  AND year_month = '2025-01'\n```""
+]","[
+  [],
+  [],
+  [],
+  [],
+  [],
+  []
+]",0,FAIL,"Expected answer states that the 'average sale per order' metric does not exist in the data source and lists available columns. The Agent Answer claims a numeric value (0.003163 USD) for January 2025, contradicting the expected information. Therefore it's a factual error."
+How many shipments were recorded in January 2025 for the top two brands in the billing data?,"In January 2025, the top two brands by billing shipments were:
+
+KEMET: 3,419,870,606 pcs
+YAGEO: 92,686,824,457 pcs
+Compared to January 2024:
+
+KEMET shipments decreased by 4.0% (from 3,668,258,025 pcs).
+YAGEO shipments increased by 9.0% (from 85,030,129,847 pcs).
+Filter applied: order_type='SHIPMENT', brand='KEMET', brand='YAGEO', year_month='2025-01', with YoY comparison.","In January 2025, the quantity of shipments recorded for the top two brands in the billing data were:
+
+- KEMET: 3,419,870,606 pcs
+- YAGEO: 92,686,824,457 pcs
+
+These figures are based on order_type='SHIPMENT' and are for the brands KEMET and YAGEO, which had the highest total sales in January 2025.
+
+Filter applied: year_month='2025-01', order_type='SHIPMENT', brand in ('KEMET', 'YAGEO')","[
+  ""```sql\nWITH Top2Brands AS (\n    SELECT TOP 2\n        brand,\n        SUM(total_sales) AS total_sales\n    FROM ods.fact_monthly_sales_poa_billing\n    WHERE year_month = '2025-01'\n      AND order_type = 'SHIPMENT'\n    GROUP BY brand\n    ORDER BY SUM(total_sales) DESC\n)\nSELECT\n    t.brand,\n    t.total_sales,\n    b.total_qty\nFROM Top2Brands t\nJOIN (\n    SELECT\n        brand,\n        SUM(total_qty) AS total_qty\n    FROM ods.fact_monthly_sales_poa_billing\n    WHERE year_month = '2025-01'\n      AND order_type = 'SHIPMENT'\n    GROUP BY brand\n) b ON t.brand = b.brand\nORDER BY t.total_sales DESC\n```""
+]","[
+  [
+    ""- KEMET: 3,419,870,606 pcs"",
+    ""- YAGEO: 92,686,824,457 pcs"",
+    ""Filter applied: year_month='2025-01', order_type='SHIPMENT', brand in ('KEMET', 'YAGEO')""
+  ]
+]",100,PASS,"Agent Answer reports the exact shipment quantities for KEMET and YAGEO in January 2025 (3,419,870,606 pcs and 92,686,824,457 pcs), matching the Expected Answer. It omits the YoY comparison, but the core data aligns; thus PASS."
+"Were there any negative total sales in January 2025 bookings, and what might that indicate?","Yes, there were negative total sales recorded in January 2025 bookings across several records. Negative total sales typically indicate order cancellations, returns, credits, or data adjustments that result in a net reduction in booked revenue for those line items.
+
+Filter applied: fact_monthly_sales_poa_booking, total_sales < 0, year_month='2025-01'.","Yes, there were negative total sales recorded in January 2025 bookings. Specifically, there were 1,208 instances where the total sales were negative, with a combined value of -19,899,350.02 USD.
+
+Negative total sales in bookings typically indicate sales returns, cancellations, credit memos, or adjustments that reduce previously booked sales. This can result from customer order cancellations, warranty returns, or corrections to previously recorded bookings.
+
+Filter applied: year_month = '2025-01', order_type = booking, total_sales < 0.","[
+  ""```sql\nSELECT \n  COUNT(*) AS negative_sales_count,\n  SUM(total_sales) AS total_negative_sales\nFROM ods.fact_monthly_sales_poa_booking\nWHERE year_month = '2025-01'\n  AND total_sales < 0\n\n-- Negative total_sales in bookings could potentially indicate order cancellations, returns, corrections, or data entry errors that resulted in a net negative value for booked orders in the specified period.\n```""
+]","[
+  [
+    ""Yes, there were negative total sales recorded in January 2025 bookings. Specifically, there were 1,208 instances where the total sales were negative, with a combined value of -19,899,350.02 USD."",
+    ""Negative total sales in bookings typically indicate sales returns, cancellations, credit memos, or adjustments that reduce previously booked sales. This can result from customer order cancellations, warranty returns, or corrections to previously recorded bookings."",
+    ""Filter applied: year_month = '2025-01', order_type = booking, total_sales < 0.""
+  ]
+]",95,PASS,"Agent confirms there were negative total sales in January 2025 bookings and provides the same interpretation (cancellations, returns, credits, adjustments). The answer adds exact counts and totals, which are consistent with the expected description; no contradictions with the filter or conclusions."
+Which two final customers in bookings generated the most revenue in January 2025?,"The top two final customers in bookings who generated the most revenue in January 2025 were:
+
+NOT ASSIGNED: 141,124,596.44 USD (a decrease of 29.0% YoY from 198,664,805.66 USD)
+APPLE: 22,591,200.83 USD (a decrease of 37.5% YoY from 36,164,932.14 USD)
+Filter applied: fact_monthly_sales_poa_booking, final_customer='NOT ASSIGNED' and 'APPLE', year_month='2025-01', with YoY comparison.","The two final customers that generated the most revenue in bookings in January 2025 were:
+1. NOT ASSIGNED, with USD 141,124,596.44
+2. APPLE, with USD 22,591,200.83
+
+Filter applied: Booking orders, January 2025, grouped by final_customer.","[
+  ""```sql\nSELECT TOP 2\n  final_customer,\n  SUM(total_sales) AS total_sales\nFROM ods.fact_monthly_sales_poa_booking\nWHERE year_month = '2025-01'\nGROUP BY final_customer\nORDER BY total_sales DESC\n```""
+]","[
+  [
+    ""Row 1: NOT ASSIGNED, with USD 141,124,596.44"",
+    ""Row 2: APPLE, with USD 22,591,200.83""
+  ]
+]",100,PASS,"Top two final customers and their revenue amounts match: NOT ASSIGNED — 141,124,596.44 USD and APPLE — 22,591,200.83 USD for January 2025. The expected answer also includes YoY changes, which are not required for the core data; the agent correctly reported the same customers and revenues. Filter description is broadly aligned (Booking orders, January 2025, grouped by final_customer)."
+What was the total quantity sold in January 2025 for the top three brands in the billing data?,"The total quantity sold in January 2025 for the top three brands in the billing data was:
+
+KEMET: 3,419,870,606 pcs (down 4.0% YoY from 3,668,258,025 pcs)
+YAGEO: 92,686,824,457 pcs (up 9.0% YoY from 85,030,129,847 pcs)
+PULSE: 85,996,098 pcs (down 14.6% YoY from 100,656,146 pcs)
+Filter applied: order_type='SHIPMENT', brand='KEMET', 'YAGEO', 'PULSE', year_month='2025-01', with YoY comparison.","In January 2025, the total quantity sold by the top three brands in the billing data (order_type='SHIPMENT') is as follows:
+- YAGEO: 92,686,824,457 pcs
+- KEMET: 3,419,870,606 pcs
+- CHILISIN: 2,234,016,891 pcs
+
+Filter applied: year_month = '2025-01', order_type = 'SHIPMENT', grouped by brand.","[
+  ""```sql\nWITH BrandQty AS (\n    SELECT\n        brand,\n        SUM(total_qty) AS total_quantity\n    FROM ods.fact_monthly_sales_poa_billing\n    WHERE year_month = '2025-01'\n      AND order_type = 'SHIPMENT'\n    GROUP BY brand\n)\nSELECT TOP 3\n    brand,\n    total_quantity\nFROM BrandQty\nORDER BY total_quantity DESC\n```""
+]","[
+  [
+    ""- YAGEO: 92,686,824,457 pcs"",
+    ""- KEMET: 3,419,870,606 pcs"",
+    ""- CHILISIN: 2,234,016,891 pcs"",
+    ""Filter applied: year_month = '2025-01', order_type = 'SHIPMENT', grouped by brand.""
+  ]
+]",67,FAIL,"Agent Answer correctly lists YAGEO and KEMET with the same quantities as Expected, but the third brand is CHILISIN instead of PULSE, and the PULSE quantity (85,996,098) from the Expected Answer is missing. The order also differs. YoY comparison data is omitted."
+Which pbu_1 category drove the most bookings in January 2025?,"The pbu_1 category that drove the most bookings in January 2025 was POLYMER, with total sales of 66,488,881.80 USD. This is a 24.6% increase compared to January 2024, when POLYMER bookings were 53,350,297.37 USD.
+
+Filter applied: fact_monthly_sales_poa_booking, pbu_1='POLYMER', year_month='2025-01', with YoY comparison.","In January 2025, the pbu_1 category that drove the most bookings was POLYMER, with total booking sales of USD 66,488,881.8.
+
+Filter applied: year_month = '2025-01', grouped by pbu_1, using booking data.","[
+  ""```sql\nSELECT TOP 1\n    pbu_1,\n    SUM(total_sales) AS total_booking_sales\nFROM ods.fact_monthly_sales_poa_booking\nWHERE year_month = '2025-01'\nGROUP BY pbu_1\nORDER BY total_booking_sales DESC\n```""
+]","[
+  [
+    ""In January 2025, the pbu_1 category that drove the most bookings was POLYMER, with total booking sales of USD 66,488,881.8."",
+    ""Filter applied: year_month = '2025-01', grouped by pbu_1, using booking data.""
+  ]
+]",100,PASS,"Agent correctly identifies POLYMER as the top pbu_1 category for January 2025 and reports the same total sales (66,488,881.8 USD). The expected answer includes an additional YoY comparison; its omission does not change the core correct data."
+How did January 2025 revenue from the Japan & Korea region compare with the Americas?,"In January 2025, revenue from the Japan & Korea region was 23,294,004.57 USD, while the Americas region generated 39,198,801.24 USD. Compared to January 2024:
+
+Japan & Korea revenue increased by 7.1% (from 21,741,773.51 USD)
+Americas revenue increased by 5.8% (from 37,040,686.52 USD)
+Filter applied: order_type='SHIPMENT', ru='JAPAN & KOREA', ru='AMERICAS', year_month='2025-01', with YoY comparison.","In January 2025, revenue from the Japan & Korea region was USD 23,294,004.57, while the Americas generated USD 39,198,801.24 in revenue. This means the Americas outperformed Japan & Korea in total sales for January 2025.
+
+Year-over-year (YoY) comparison:
+- Japan & Korea: January 2025 revenue increased by 7.2% compared to January 2024 (USD 21,741,773.51).
+- Americas: January 2025 revenue increased by 5.8% compared to January 2024 (USD 37,040,686.52).
+
+Filter applied: year_month='2025-01', ru=['JAPAN & KOREA', 'AMERICAS'], order_type='SHIPMENT'","[
+  ""```sql\nSELECT ru, SUM(total_sales) AS total_sales\nFROM ods.fact_monthly_sales_poa_billing\nWHERE year_month = '2025-01'\n  AND order_type = 'SHIPMENT'\n  AND ru IN ('Japan & Korea', 'Americas')\nGROUP BY ru\n```"",
+  ""```sql\nSELECT year_month, ru, SUM(total_sales) AS total_sales\nFROM [ods].[fact_monthly_sales_poa_billing]\nWHERE year_month = '2024-01'\n  AND ru IN ('Japan & Korea', 'Americas')\n  AND order_type = 'SHIPMENT'\nGROUP BY year_month, ru\n```""
+]","[
+  [
+    ""In January 2025, revenue from the Japan & Korea region was USD 23,294,004.57, while the Americas generated USD 39,198,801.24 in revenue. This means the Americas outperformed Japan & Korea in total sales for January 2025."",
+    ""- Japan & Korea: January 2025 revenue increased by 7.2% compared to January 2024 (USD 21,741,773.51)."",
+    ""- Americas: January 2025 revenue increased by 5.8% compared to January 2024 (USD 37,040,686.52)."",
+    ""Filter applied: year_month='2025-01', ru=['JAPAN & KOREA', 'AMERICAS'], order_type='SHIPMENT'""
+  ]
+]",92,FAIL,"All core figures except one percentage are correct. Jan 2025 revenues match (Japan & Korea: 23,294,004.57; Americas: 39,198,801.24). YoY for Americas matches (5.8%). However, YoY growth for Japan & Korea is incorrect: expected 7.1% (based on 21,741,773.51 USD in Jan 2024) but the answer states 7.2%. The rest (filters and context) are correct."
+Which ERP sales representative handled the most revenue in January 2025 billing data?,"In January 2025, the ERP sales representative field with the most revenue in billing data was a blank or unspecified entry, totaling 120,443,689.95 USD. This is a decrease of 7.5% compared to January 2024, when the value for blank ERP sales representative was 130,257,291 USD.
+
+Filter applied: order_type='SHIPMENT', erp_sales_rep is blank, year_month='2025-01', with YoY comparison.","In January 2025, the ERP sales representative field for the highest revenue appears to be blank (not specified) in the billing data, with a total sales amount of 120,443,689.95 USD.
+
+Filter applied:
+year_month='2025-01', order_type='SHIPMENT' (billing data)","[
+  ""```sql\nSELECT TOP 1\n    erp_sales_rep,\n    SUM(total_sales) AS total_sales\nFROM ods.fact_monthly_sales_poa_billing\nWHERE year_month = '2025-01'\n  AND order_type = 'SHIPMENT'\nGROUP BY erp_sales_rep\nORDER BY SUM(total_sales) DESC;\n```""
+]","[
+  [
+    ""In January 2025, the ERP sales representative field for the highest revenue appears to be blank (not specified) in the billing data, with a total sales amount of 120,443,689.95 USD.""
+  ]
+]",95,PASS,"Agent Answer correctly identifies the highest-revenue ERP sales representative as blank/unspecified for January 2025 billing data with the same amount 120,443,689.95 USD. It omits the YoY percentage/decrease detail present in the Expected Answer, but the core data (blank field and amount) matches; no factual errors."
+"For the top billing brand in January 2025, how does unit volume relate to revenue?","For January 2025, the top billing brand was KEMET.
+
+Revenue: 113,158,561.57 USD
+Unit volume: 3,419,870,606 pcs
+This results in an average revenue per unit of approximately 0.0331 USD per piece (113,158,561.57 USD / 3,419,870,606 pcs).
+
+Filter applied: order_type='SHIPMENT', brand='KEMET', year_month='2025-01'.","In January 2025, the top billing brand by revenue was KEMET.
+
+- KEMET's total billing sales: 113,158,561.57 USD
+- KEMET's total unit volume: 3,419,870,606 pcs
+
+This means that for KEMET in January 2025, every 1 USD of billed revenue corresponded to approximately 30.2 pcs shipped (derived by dividing total quantity by total sales).
+
+Filter applied: order_type='SHIPMENT', brand='KEMET', year_month='2025-01'.","[
+  ""```sql\nSELECT SUM(total_sales) AS total_sales_usd, SUM(total_qty) AS total_quantity_pcs\nFROM ods.fact_monthly_sales_poa_billing\nWHERE brand = 'KEMET'\n  AND order_type = 'SHIPMENT'\n  AND year_month = '2025-01'\n```"",
+  ""```sql\nSELECT brand, SUM(total_sales) AS total_sales, SUM(total_qty) AS total_quantity\nFROM ods.fact_monthly_sales_poa_billing\nWHERE order_type = 'SHIPMENT' AND year_month = '2025-01'\nGROUP BY brand\nORDER BY total_sales DESC\n```""
+]","[
+  [
+    ""- KEMET's total billing sales: 113,158,561.57 USD"",
+    ""- KEMET's total unit volume: 3,419,870,606 pcs"",
+    ""Filter applied: order_type='SHIPMENT', brand='KEMET', year_month='2025-01'.""
+  ]
+]",97,PASS,"Agent Answer correctly identifies the top billing brand (KEMET), revenue (113,158,561.57 USD), and unit volume (3,419,870,606 pcs) for January 2025, and provides a derived metric. The ratio is presented as pieces per USD (approximately 30.2 pcs/USD), which is the reciprocal of the expected USD per piece (≈0.0331 USD per piece); both representations are mathematically equivalent."
+How did bookings from RUTRONIK compare to AVNET in January 2025?,"In January 2025 bookings:
+
+RUTRONIK: 7,495,796.38 USD (down 34.1% YoY from 11,376,833.17 USD)
+AVNET: 12,958,769.50 USD (up 32.4% YoY from 9,791,766.99 USD)
+AVNET outperformed RUTRONIK in bookings for January 2025.
+
+Filter applied: fact_monthly_sales_poa_booking, customer_parent='RUTRONIK' and 'AVNET', year_month='2025-01', with YoY comparison.","In January 2025, bookings from:
+- AVNET reached 12,958,769.5 USD
+- RUTRONIK reached 7,495,796.38 USD
+
+Comparing to January 2024:
+- AVNET bookings were 9,791,766.99 USD, representing a YoY increase of 32.4%
+- RUTRONIK bookings were 11,376,833.17 USD, representing a YoY decrease of -34.1%
+
+Filter applied:
+Booking sales, customer_parent = AVNET or RUTRONIK, year_month = 2025-01 (YoY uses 2024-01 for each customer)","[
+  ""```sql\nSELECT year_month, customer_parent, SUM(total_sales) AS total_booking_sales\nFROM ods.fact_monthly_sales_poa_booking\nWHERE year_month = '2025-01' AND customer_parent IN ('RUTRONIK', 'AVNET')\nGROUP BY year_month, customer_parent\n```"",
+  ""```sql\nSELECT year_month, customer_parent, SUM(total_sales) AS total_booking_sales\nFROM ods.fact_monthly_sales_poa_booking\nWHERE year_month = '2024-01' \n  AND customer_parent IN ('RUTRONIK', 'AVNET')\nGROUP BY year_month, customer_parent\n```""
+]","[
+  [
+    ""- AVNET reached 12,958,769.5 USD"",
+    ""- RUTRONIK reached 7,495,796.38 USD"",
+    ""- AVNET bookings were 9,791,766.99 USD, representing a YoY increase of 32.4%"",
+    ""- RUTRONIK bookings were 11,376,833.17 USD, representing a YoY decrease of -34.1%"",
+    ""Booking sales, customer_parent = AVNET or RUTRONIK, year_month = 2025-01 (YoY uses 2024-01 for each customer)""
+  ]
+]",100,PASS,"All core figures match the Expected Answer: AVNET 12,958,769.50 USD; RUTRONIK 7,495,796.38 USD for January 2025; YoY changes: AVNET +32.4% from 9,791,766.99; RUTRONIK -34.1% from 11,376,833.17. Filter and year_month alignment (2025-01) with YoY comparison is present. Although the explicit sentence 'AVNET outperformed RUTRONIK' is not stated, the higher AVNET bookings are reflected in the data."

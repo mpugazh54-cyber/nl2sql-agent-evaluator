@@ -1,0 +1,22 @@
+year_month: 2025-01
+order_type: BOOKING
+brand: YAGEO, PULSE, FERROXCUBE, CHILISIN, TOKIN, Nexensos
+ru: JAPAN & KOREA, SOUTHEAST ASIA, OTHERS, EMEA, AMERICAS, GREAT CHINA
+sub_unit: KOREA, RU HEAD OFFICE, SINGAPORE/OEMS, SE ASIA-G7, VIETNAM, TAIWAN, PHIL/INDO, MALAYSIA, CHINA, AMERICAS
+pbg: Capacitor, SENSOR, Resistors, Magnetics
+pbu: F&E, TANTALUM, R-Chip, MSA, Standard Power, Wireless, MLCC, Std Power-FXC, Specialized Power, Nexensos
+pbu_1: Wireless LTCC, WPC Chilisin, LTCC Chilisin, T LEADLESS, Wire Wound, L Mold, Ferrite, SENSORS & ACTUATORS, Leaded-R, COMMODITY
+pbu_2: RC1206, Power Supply, Network, Network -  Local Area Networking, RC01005, SMD STD POWER, RC0603, SP-NT SUPER CAPACIT, Power - Bead (BEAD), CARBON
+focus_flag: No, Yes
+customer_parent: BECKHOFF, GOERTEK, ARCADIAN, VVDN, VALEO, SHINKO, RYODENSYA, ENICS, RIVIAN, NVT
+local_assembler: GOOGLE, ACCTON, NT SALES, POLAR, SUZUKI FISH FINDER CO., LTD., OTHER - VANCOUVER, TOEI ELECTRIC, ACUITY, INNORIID, SONY
+final_customer: MOTOROLA, CORNING, FARNELL, LOOTCO, AVIAT NETWORKS, ELM, INFINERA, HITACHI, ICOM, OMRON
+g7: FUTURE, RUTRONIK, ARROW, Non-G7, AVNET, MOUSER, TTI, DIGIKEY
+fu_us_oem_flag: No, Yes
+fu_global_ems_flag: YES, NO
+fu_g7_flag: NO, YES
+fu_emea_oem_flag: Yes, No
+erp_sales_rep: [No data]
+total_sales: 1642.5, 1355.1, -511.66, 666.4, 2345.1, -24.0, 776.65, 25734.41, 1009.6, 10776.22
+total_qty: 182000.0, 110000.0, 2704000.0, 20400.0, 8375000.0, 725000.0, 49280.0, 576000.0, 8187196.0, 393000.0
+updated_date: 2025-12-05

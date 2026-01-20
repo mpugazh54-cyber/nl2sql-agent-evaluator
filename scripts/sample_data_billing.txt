@@ -1,0 +1,23 @@
+year_month: 2025-01
+order_type: SHIPMENT, PAST DUE, PAST DUE - GIT
+brand: PULSE, KEMET, TOKIN, Nexensos, CHILISIN, YAGEO, FERROXCUBE
+ru: AMERICAS, EMEA, OTHERS, GREAT CHINA, JAPAN & KOREA, SOUTHEAST ASIA
+sub_unit: AMERICAS, DIRECT FACTORY, INDIA, EMEA, MALAYSIA, EMEA GLOBAL OEMS, NORTH EUROPE, OTHERS, RU HEAD OFFICE, CHINA
+pbg: Capacitor, Resistors, SENSOR, Magnetics, OTHER
+pbu: MSA, Standard Power, Wired Comm, Wireless, MLCC, Ceramic, TANTALUM, F&E, Std Power-FXC, Specialized Power
+pbu_1: Antenna Chilisin, L Mold, Ferrite, M Mold, CPC, COMMODITY, WPC Chilisin, LTCC Chilisin, MCP, Network_Pulse
+pbu_2: Power - Transformer (XFMR), Comms. Magnetics - LAN - Pulse, Comms. Magnetics - WAN, EMI CORE DC LINE FILTER, C-OTHERS, SMD, AC HV >=500V, FILM RADIAL, Power - Common Mode Choke (CMC), Comms. Magnetics - Automotive
+focus_flag: Yes, No, Adjustment
+customer_parent: HON HAI, ARTESYN, B&R, H3C, ZTE, FDTD, IDEAL STANDARD, LEAR, FESTOOL, NORD
+local_assembler: KAMSTRUP, GARDNER, XFUSION, OLIGO, AUDIX, AUSA, OKAZAKI, HANSGROHE, JABIL, UBICQUIA
+final_customer: ENPHASE, STEYR, MELLANOX TECHNOLOGIES, CARL ZEISS, WD, GATESAIR, ATLAS, ASML, ASCOM, ZODIAC DATA SYSTEMS
+g7: AVNET, Non-G7, RUTRONIK, TTI, ARROW
+fu_us_oem_flag: Yes, No
+fu_global_ems_flag: YES, NO
+fu_g7_flag: NO, YES
+fu_emea_oem_flag: Yes, No
+erp_sales_rep: 王韻筑 Helen Wang, 葛梅芳 Sablina Ge, Kusch, Sclarlett, 陸英 Ying Lu, 燕禹良 David Yan, 白玉秀 Betty Bai, 王雨新 Yuxin Wang, Ekstrom, Sune, YOSHIKO, MATSUMOTO, SHMAON, FRANK
+total_sales: 78.0, 165.0, 33083.54, 680.1, 4896.0, 241080.0, 26352.58, 4905.0, 1682.8, 291560.9
+total_cost: 364.26, 35818.6, 28213.6, 1010.15, 119229.03, 70318.95, 4796.24, 323.85, 4378.43, 420.9
+total_qty: 3389.0, 3834000.0, 25000.0, 87.0, 12264.0, 990.0, 150360.0, 1258.0, 423000.0, 8050.0
+updated_date: 2025-12-05
