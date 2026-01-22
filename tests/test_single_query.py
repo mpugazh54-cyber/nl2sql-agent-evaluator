@@ -5,8 +5,8 @@ from datetime import datetime
 from dotenv import load_dotenv
 
 # Add project root to sys.path to allow importing from src
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from src.fabric_data_agent_client import FabricDataAgentClient, TerminalLogger
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
+from sales_agent.client import FabricDataAgentClient, TerminalLogger
 
 # Load environment variables
 load_dotenv()

@@ -1,57 +1,56 @@
-# Fabric Sales Agent Testing Framework
+# SOTA Sales Agent Framework
 
-Testing pipeline for the Microsoft Fabric Data Agent, featuring automated query execution, SQL extraction, and OpenAI-based result evaluation.
+This project has been restructured to follow **State-Of-The-Art (SOTA)** Python development standards. It features a modular package layout, standardized configuration, and clean data management.
 
-## 📁 Standardized Project Structure
+## 📂 Project Structure
 
-```
+```text
 sales_agent/
-├── main.py                     # Main Automated Pipeline (Execution Entry)
-├── src/                        # Core Client & Business Logic
-│   ├── fabric_data_agent_client.py  # Standard Data Agent Client
-│   ├── run_analysis.py              # Orchestration Entry Point
-│   └── multi_agent_analyst.py       # Multi-Agent Reasoning
-├── tests/                      # Testing Framework
-│   ├── test_connection.py           # Connectivity & Auth check
-│   ├── test_single_query.py         # Debugging single query
-│   └── test_results.csv             # Execution Results (Output)
-├── scripts/                    # Utilities & Data Preparation
-│   ├── generate_test_cases.py       # Test case generator (via OpenAI)
-│   ├── generate_sample_data.py      # Sample data builder (via Fabric)
-│   └── sample_data_*.txt            # Captured data samples
-├── docs/                       # Documentation & Archives
-│   ├── test_case/                 # Automated Test Cases (Input)
-│   ├── instructions/                # Prompt Engineering & Guardrails
-│   ├── process/                     # Execution Flows & Logs
-│   └── archive/                     # Legacy scripts and logs
-├── .env                        # Environment Variables
-└── .fabric_token_cache         # Cached Auth Tokens
+├── src/                        # Source code package
+│   └── sales_agent/            # Main Python package
+│       ├── __init__.py         # Package initialization
+│       ├── client.py           # Fabric Data Agent Client
+│       ├── analyst.py          # Multi-Agent Reasoning Logic
+│       └── orchestrator.py     # Execution Orchestrator
+├── tests/                      # Test suite
+│   ├── test_connection.py
+│   └── ...
+├── data/                       # Data management
+│   ├── raw/                    # Input samples & test cases
+│   ├── processed/              # Intermediate data
+│   └── results/                # Analysis outputs
+├── logs/                       # Execution logs
+├── docs/                       # Documentation
+├── main.py                     # Entry point
+├── pyproject.toml              # Project & Dependency Config
+├── .env.template               # Environment Variable Template
+└── README.md                   # Project Documentation
 ```
 
-## 🚀 Quick Start (Testing)
+## 🚀 Quick Start
 
-### 1. Verification
-Run a connection test to ensure authentication is working:
+### 1. Installation
+Install the package in editable mode to ensure imports work correctly:
 ```bash
-python tests/test_connection.py
+pip install -e .
 ```
 
-### 2. Single Query Debug
-Test a specific query with full SQL and Data Preview extraction:
+### 2. Configuration
+Copy the template and set your credentials:
 ```bash
-python tests/test_single_query.py
+cp .env.template .env
+# Edit .env with your keys
 ```
 
-### 3. Full Automated Pipeline
-Execute the complete test suite and generate an evaluation report:
+### 3. Running the Pipeline
+Execute the main automated testing pipeline:
 ```bash
 python main.py
 ```
 
-## 📖 Key Documentation
-- **Execution Flow**: [fabric_client_process.md](file:///docs/process/fabric_client_process.md)
-- **Agent Guardrails**: [da_agent_instruction.md](file:///docs/instructions/da_agent_instruction.md)
-- **Terminal Logs**: [fabric_terminal_log.md](file:///docs/process/fabric_terminal_log.md)
+## ✨ SOTA Features
 
----
-*Refer to [docs/archive/README_legacy.md](file:///docs/archive/README_legacy.md) for original project context.*
+- **Modern Packaging**: Uses `pyproject.toml` for configuration and dependencies.
+- **Src-Layout**: Prevents import errors and separates source code from tests/docs.
+- **Relocatable Logging**: All logs are centralized in `logs/` to keep the workspace clean.
+- **Modular Design**: Core logic is split into `client`, `analyst`, and `orchestrator` modules for better maintainability.

@@ -1,0 +1,608 @@
+﻿user_prompt,expected_answer,agent_answer,generated_sql,data_preview,similarity_score,evaluation_grade,evaluation_reason
+"For 2025-07 in AMERICAS, how did our billing for KEMET compare to the previous month?","I don’t have the actual 2025-07 AMERICAS data for KEMET in the provided samples, so I can’t give the numeric comparison right now. Here is exactly what should be returned and how to compute it, so you can generate the answer once you run the query against the billing table.
+
+What to fetch (Billing table: ods.fact_monthly_sales_poa_billing)
+- Filters:
+  - year_month = 2025-07
+  - ru = AMERICAS
+  - brand = KEMET
+  - order_type: any of SHIPMENT, BACKLOG, BACKLOG - GIT, CONSIGNMENT, CROSSDOCK, FATO, PAST DUE, PAST DUE - GIT (since we’re looking at billing, all relevant billing types should be included)
+- Metrics to compute for 2025-07 (current month)
+  - current_billing_sales = SUM(total_sales)
+  - current_billing_qty = SUM(total_qty)
+- Metrics to compute for 2025-06 (previous month, same filters)
+  - previous_billing_sales = SUM(total_sales)
+  - previous_billing_qty = SUM(total_qty)
+- Derived comparison
+  - sales_change_amount = current_billing_sales - previous_billing_sales
+  - sales_change_percent = 
+    if previous_billing_sales > 0 then (sales_change_amount / previous_billing_sales) * 100
+    else NULL/undefined (since there is no prior baseline)
+- Optional but useful (if you want more insight)
+  - month_over_month_qty_change = current_billing_qty - previous_billing_qty
+  - month_over_month_qty_change_pct = if previous_billing_qty > 0 then (month_over_month_qty_change / previous_billing_qty) * 100 else NULL
+
+Expected output structure
+- year_month: 2025-07
+- region (ru): AMERICAS
+- brand: KEMET
+- current_billing_sales: [numeric value]
+- previous_billing_sales: [numeric value]
+- sales_change_amount: [numeric value]
+- sales_change_percent: [numeric value with percent sign, e.g., 12.3%]
+- current_billing_qty: [numeric value]
+- previous_billing_qty: [numeric value]
+- month_over_month_qty_change: [numeric value]
+- month_over_month_qty_change_percent: [numeric value with percent sign]
+
+Notes
+- If previous_billing_sales is zero, the percent change is undefined; in that case you can return NULL or indicate not applicable.
+- All values are monthly aggregates; individual orders are not available, so metrics like average sale per order cannot be computed.
+
+If you want, I can provide a concrete placeholder template with fields filled in but without numbers, or help you draft the exact SQL/BI query to extract current and prior-month values from the billing table.","In the AMERICAS region, KEMET's billing sales for July 2025 were USD 26,816,006.59, which is an increase compared to June 2025, when billing sales were USD 23,385,491.80. This reflects a month-over-month growth of 14.7%.
+
+Time period: June 2025 to July 2025, order_type='SHIPMENT'.
+Filter applied: brand='KEMET', ru='AMERICAS'.","[
+  ""```sql\nSELECT year_month, SUM(total_sales) AS total_sales\nFROM ods.fact_monthly_sales_poa_billing\nWHERE brand = 'KEMET'\n  AND ru = 'AMERICAS'\n  AND order_type = 'SHIPMENT'\n  AND year_month IN ('2025-06', '2025-07')\nGROUP BY year_month\n```""
+]","[
+  [
+    ""In the AMERICAS region, KEMET's billing sales for July 2025 were USD 26,816,006.59, which is an increase compared to June 2025, when billing sales were USD 23,385,491.80. This reflects a month-over-month growth of 14.7%.""
+  ]
+]",15,FAIL,"Ground truth explicitly states there is no actual 2025-07 AMERICAS data for KEMET in the provided samples and outlines a specific template structure to fill in with values. The Agent Answer provides concrete numeric values for current and previous month and a calculated month-over-month change, which cannot be verified against the ground truth and diverges from the required structure. This makes the answer incorrect relative to the expected guidance."
+What were the top brands in 2025-04 in EMEA by bookings value and quantity?,"I can’t provide exact numbers for 2025-04 in EMEA because the provided Booking data sample only covers 2025-01. However, here is exactly what should be returned and how to interpret it, so you can run the query and get the real results.
+
+What to return (structure)
+- For year_month = 2025-04 and ru = EMEA, summarize by brand in the bookings fact table.
+- Two top-lists:
+  1) Top brands by bookings value (sum of total_sales)
+  2) Top brands by bookings quantity (sum of total_qty)
+
+Expected fields per row
+- year_month: 2025-04
+- ru: EMEA
+- brand: brand name
+- total_sales: SUM(total_sales) for the group (Bookings value)
+- total_qty: SUM(total_qty) for the group (Bookings quantity)
+
+Two ranked outputs (top 5 as a convention)
+- Top 5 brands by bookings value (highest total_sales desc)
+  - brand: Brand A, total_sales: X, total_qty: Y
+  - Brand B, total_sales: X, total_qty: Y
+  - Brand C, total_sales: X, total_qty: Y
+  - Brand D, total_sales: X, total_qty: Y
+  - Brand E, total_sales: X, total_qty: Y
+- Top 5 brands by bookings quantity (highest total_qty desc)
+  - brand: Brand F, total_qty: Y, total_sales: X
+  - Brand G, total_qty: Y, total_sales: X
+  - Brand H, total_qty: Y, total_sales: X
+  - Brand I, total_qty: Y, total_sales: X
+  - Brand J, total_qty: Y, total_sales: X
+
+Notes on interpretation
+- Data source: use ods.fact_monthly_sales_poa_booking.
+- Metrics:
+  - bookings value = total_sales (in the Booking table)
+  - bookings quantity = total_qty
+- Filters:
+  - year_month = 2025-04
+  - ru = EMEA
+- If you want a single combined ranking, you could also present a two-mimm variant (e.g., both metrics side-by-side per brand) or show top brands by value with a secondary sort by quantity for ties.
+
+If you want, I can draft the exact SQL (or BI query) to pull these two top-5 lists from the Booking table given access to the data.","We were unable to retrieve the requested data due to a technical issue with the query. Please try again later or contact the BI Team for assistance. If you have a specific requirement, such as a particular metric or a different region or time period, please let me know so I can refine the query.","[
+  ""SELECT TOP 5\\r\\n erp_sales_rep,\\r\\n SUM(total_sales) AS total_sales\\r\\n FROM ods.fact_monthly_sales_poa_billing\\r\\n WHERE\\r\\n year_month = '2025-01'\\r\\n AND erp_sales_rep IS NOT NULL\\r\\n AND erp_sales_rep <> ''\\r\\n GROUP BY erp_sales_rep\\r\\n ORDER BY SUM(total_sales"",
+  ""SELECT DISTINCT \\r\\n erp_sales_rep,\\r\\n brand\\r\\n FROM ods.fact_monthly_sales_poa_billing\\r\\n WHERE year_month = '2025-01'\\r\\n"",
+  ""SELECT year_month, brand, SUM(total_sales) AS total_booking_sales\\r\\nFROM ods.fact_monthly_sales_poa_booking\\r\\nWHERE year_month = '2025-01' AND brand = 'KEMET'\\r\\nGROUP BY year_month"",
+  ""SELECT year_month, SUM(total_sales) AS total_backlog\\r\\nFROM ods.fact_monthly_sales_poa_billing\\r\\nWHERE order_type <> 'Shipment' AND year_month = '2025-02'\\r\\nGROUP BY year_month\"""",
+  ""SELECT year_month, SUM(total_sales) AS total_sales\\r\\nFROM [ods].[fact_monthly_sales_poa_billing]\\r\\nWHERE year_month = '2024-12'\\r\\n AND (customer_parent = 'HUAWEI' OR local_assembler = 'HUAWEI' OR final_customer = 'HUAWEI'"",
+  ""SELECT year_month, SUM(total_sales) AS total_backlog\\r\\nFROM ods.fact_monthly_sales_poa_billing\\r\\nWHERE order_type <> 'Shipment' AND year_month = '2025-02'\\r\\nGROUP BY year_month\\n\\n###EXAMPLE 4\\n\\nYour current task is to write a T-SQL query to answer the following example question: Show the total sales to HUAWEI in 2024 December.\\n\\nSQL: SELECT year_month"",
+  ""SELECT year_month, brand, SUM(total_sales) AS total_booking_sales, SUM(total_qty) AS total_booking_qty\\nFROM ods.fact_monthly_sales_poa_booking\\nWHERE year_month = '2025-04' AND fu_emea_oem_flag = 'yes'\\nGROUP BY year_month"",
+  ""SELECT TOP 5\\\\r\\\\n erp_sales_rep,\\\\r\\\\n SUM(total_sales) AS total_sales\\\\r\\\\n FROM ods.fact_monthly_sales_poa_billing\\\\r\\\\n WHERE\\\\r\\\\n year_month = \\\\u00272025-01\\\\u0027\\\\r\\\\n AND erp_sales_rep IS NOT NULL\\\\r\\\\n AND erp_sales_rep \\\\u003C\\\\u003E \\\\u0027\\\\u0027\\\\r\\\\n GROUP BY erp_sales_rep\\\\r\\\\n ORDER BY SUM(total_sales"",
+  ""SELECT DISTINCT \\\\r\\\\n erp_sales_rep,\\\\r\\\\n brand\\\\r\\\\n FROM ods.fact_monthly_sales_poa_billing\\\\r\\\\n WHERE year_month = \\\\u00272025-01\\\\u0027\\\\r\\\\n"",
+  ""SELECT year_month, brand, SUM(total_sales) AS total_booking_sales\\\\r\\\\nFROM ods.fact_monthly_sales_poa_booking\\\\r\\\\nWHERE year_month = \\\\u00272025-01\\\\u0027 AND brand = \\\\u0027KEMET\\\\u0027\\\\r\\\\nGROUP BY year_month"",
+  ""SELECT year_month, SUM(total_sales) AS total_backlog\\\\r\\\\nFROM ods.fact_monthly_sales_poa_billing\\\\r\\\\nWHERE order_type \\\\u003C\\\\u003E \\\\u0027Shipment\\\\u0027 AND year_month = \\\\u00272025-02\\\\u0027\\\\r\\\\nGROUP BY year_month\"""",
+  ""SELECT year_month, SUM(total_sales) AS total_sales\\\\r\\\\nFROM [ods].[fact_monthly_sales_poa_billing]\\\\r\\\\nWHERE year_month = \\\\u00272024-12\\\\u0027\\\\r\\\\n AND (customer_parent = \\\\u0027HUAWEI\\\\u0027 OR local_assembler = \\\\u0027HUAWEI\\\\u0027 OR final_customer = \\\\u0027HUAWEI\\\\u0027""
+]","[
+  [
+    ""We were unable to retrieve the requested data due to a technical issue with the query. Please try again later or contact the BI Team for assistance. If you have a specific requirement, such as a particular metric or a different region or time period, please let me know so I can refine the query.""
+  ]
+]",0,FAIL,"The Agent Answer does not provide the required top-5 brand lists or any structured data/SQL guidance. Ground Truth expects two ranked lists (by bookings value and by bookings quantity) for year_month 2025-04 and ru EMEA, including total_sales and total_qty per brand, along with the interpretation notes. The Agent only returns a generic error message about a technical issue with no actionable output."
+"In 2025-02, how did YAGEO perform in JAPAN & KOREA region for billing?","I can’t provide exact numbers for 2025-02 from the supplied samples. The data you need would come from the billing table (ods.fact_monthly_sales_poa_billing) and should be aggregated to a single row (or a small set of rows that you would sum) for the brand YAGEO in the JAPAN & KOREA region.
+
+What the returned data would look like (type of data and metrics):
+- year_month: 2025-02
+- brand: YAGEO
+- ru (region): JAPAN & KOREA
+- sub_unit: KOREA (if the dataset uses this granular level; include if available)
+- total_sales: numeric value representing the billing revenue for that month/region/brand
+- total_qty: numeric value representing the quantity sold for that month/region/brand
+- total_cost: numeric value representing the cost associated with that month/region/brand
+- updated_date: date indicating when the data was last updated (e.g., 2025-02-XX)
+
+Notes to keep in mind:
+- If multiple order_type rows exist for 2025-02, these metrics should be summed across all relevant order_types to get the total performance for the month.
+- You may optionally compute a gross margin: (total_sales - total_cost) / total_sales * 100 to summarize profitability.
+- The answer should be a single month’s totals for the specified brand/region; if you want, I can provide the exact SQL or a query plan to retrieve these numbers from the data source.","In February 2025, YAGEO's billing sales in the JAPAN & KOREA region (order_type='SHIPMENT') were USD 3,865,531.81, with a quantity of 6,002,566,653 pcs. Compared to February 2024, sales increased by 4.0% year-over-year.
+
+Filter applied: brand='YAGEO', ru='JAPAN & KOREA', order_type='SHIPMENT', year_month='2025-02'.","[
+  ""```sql\nWITH sales_data AS (\n    SELECT \n        year_month,\n        SUM(total_sales) AS total_sales,\n        SUM(total_qty) AS total_qty\n    FROM ods.fact_monthly_sales_poa_billing\n    WHERE \n        brand = 'YAGEO'\n        AND ru = 'JAPAN & KOREA'\n        AND order_type = 'SHIPMENT'\n        AND year_month IN ('2025-02', '2024-02')\n    GROUP BY year_month\n)\nSELECT \n    MAX(CASE WHEN year_month = '2025-02' THEN total_sales END) AS total_sales_2025_02,\n    MAX(CASE WHEN year_month = '2025-02' THEN total_qty END) AS total_qty_2025_02,\n    MAX(CASE WHEN year_month = '2024-02' THEN total_sales END) AS total_sales_2024_02,\n    MAX(CASE WHEN year_month = '2024-02' THEN total_qty END) AS total_qty_2024_02,\n    CASE \n        WHEN MAX(CASE WHEN year_month = '2024-02' THEN total_sales END) = 0 THEN NULL\n        ELSE \n            (MAX(CASE WHEN year_month = '2025-02' THEN total_sales END) - MAX(CASE WHEN year_month = '2024-02' THEN total_sales END)) * 1.0 \n            / NULLIF(MAX(CASE WHEN year_month = '2024-02' THEN total_sales END), 0) * 100\n    END AS YoY_sales_percent\nFROM sales_data\n```""
+]","[
+  [
+    ""In February 2025, YAGEO's billing sales in the JAPAN & KOREA region (order_type='SHIPMENT') were USD 3,865,531.81, with a quantity of 6,002,566,653 pcs. Compared to February 2024, sales increased by 4.0% year-over-year."",
+    ""Filter applied: brand='YAGEO', ru='JAPAN & KOREA', order_type='SHIPMENT', year_month='2025-02'.""
+  ]
+]",20,FAIL,"Ground Truth states exact 2025-02 numbers cannot be provided from the supplied samples; data should be aggregated from the billing table across all relevant order_types for brand YAGEO in the JAPAN & KOREA region, including total_sales, total_qty, total_cost, and updated_date. The Agent Answer provides a single exact total_sales and total_qty for a specific order_type (SHIPMENT), omits total_cost and updated_date, and includes a YoY comparison not mentioned in the ground truth. Therefore, the response is not aligned with the expected data and structure."
+What is the BB ratio for 2025-03 in AMERICAS for PULSE?,"I can’t provide the exact BB ratio value for 2025-03 in AMERICAS for PULSE because the provided samples do not include 2025-03 data for that combination. However, here is exactly how to compute it and what the result would look like.
+
+What BB ratio means here
+- BB ratio = total_sales_billing (Billing) / total_sales_booking (Booking) for the specified month, region, and brand.
+- It uses monthly aggregated data from both tables:
+  - Billing table: ods.fact_monthly_sales_poa_billing
+  - Booking table: ods.fact_monthly_sales_poa_booking
+- If the denominator (booking total_sales) is 0 or missing, the ratio is undefined/null.
+
+What to return (schema you should see)
+- year_month: 2025-03
+- ru: AMERICAS
+- brand: PULSE
+- total_sales_billing: sum of total_sales from fact_monthly_sales_poa_billing for 2025-03, AMERICAS, PULSE
+- total_qty_billing: sum of total_qty from fact_monthly_sales_poa_billing for 2025-03, AMERICAS, PULSE
+- total_sales_booking: sum of total_sales from fact_monthly_sales_poa_booking for 2025-03, AMERICAS, PULSE
+- total_qty_booking: sum of total_qty from fact_monthly_sales_poa_booking for 2025-03, AMERICAS, PULSE
+- bb_ratio: total_sales_billing / total_sales_booking (null if total_sales_booking is 0 or missing)
+- updated_date: the most recent update date from either table for this combination (for data freshness)
+
+How you’d compute it (example data flow)
+- Query 1 (Billing):
+  - Filter: year_month = '2025-03', ru = 'AMERICAS', brand = 'PULSE'
+  - Retrieve: total_sales_billing, total_qty_billing, updated_date
+- Query 2 (Booking):
+  - Filter: year_month = '2025-03', ru = 'AMERICAS', brand = 'PULSE'
+  - Retrieve: total_sales_booking, total_qty_booking, updated_date
+- Combine:
+  - bb_ratio = total_sales_billing / total_sales_booking (handle division by zero)
+  - Include updated_date (most recent)
+
+If you’d like, I can provide a ready-to-run SQL snippet to fetch this exact row and compute bb_ratio, assuming the 2025-03 AMERICAS PULSE data exists in your data warehouse. If you can supply the actual 2025-03 values, I can calculate the precise BB ratio for you.","The BB ratio (Booking-to-Billing ratio) for PULSE in AMERICAS for March 2025 is 1.35. This is based on booking sales of USD 8,263,449.20 and billing sales (shipment only) of USD 6,121,112.73.
+
+Filter applied:
+brand = PULSE, ru = AMERICAS, year_month = 2025-03, order_type = SHIPMENT.","[
+  ""```sql\nWITH bill AS (\n\tSELECT year_month, brand, ru, SUM(total_sales) AS total_billing_sales\n\tFROM ods.fact_monthly_sales_poa_billing\n\tWHERE year_month = '2025-03' AND brand = 'PULSE' AND ru = 'AMERICAS' AND order_type = 'SHIPMENT'\n\tGROUP BY year_month, brand, ru\n)\n, book AS (\n\tSELECT year_month, brand, ru, SUM(total_sales) AS total_booking_sales\n\tFROM ods.fact_monthly_sales_poa_booking\n\tWHERE year_month = '2025-03' AND brand = 'PULSE' AND ru = 'AMERICAS'\n\tGROUP BY year_month, brand, ru\n)\n\nSELECT \n\ta.year_month, \n\ta.brand, \n\ta.ru,\n\tb.total_booking_sales, \n\ta.total_billing_sales, \n\tCASE WHEN a.total_billing_sales = 0 THEN NULL ELSE b.total_booking_sales/a.total_billing_sales END AS BB_Ratio\nFROM bill a\nJOIN book b \n\tON a.year_month = b.year_month \n\tAND a.brand = b.brand \n\tAND a.ru = b.ru\n```"",
+  ""```sql\nSELECT year_month, SUM(total_sales) AS total_billing_sales\nFROM ods.fact_monthly_sales_poa_billing\nWHERE year_month = '2025-03' AND order_type = 'SHIPMENT' AND brand = 'PULSE' AND ru = 'AMERICAS'\nGROUP BY year_month\n```"",
+  ""```sql\nSELECT year_month, brand, ru, SUM(total_sales) AS total_booking_sales\nFROM ods.fact_monthly_sales_poa_booking\nWHERE year_month = '2025-03' AND brand = 'PULSE' AND ru = 'AMERICAS'\nGROUP BY year_month, brand, ru\n```""
+]","[
+  [
+    ""The BB ratio (Booking-to-Billing ratio) for PULSE in AMERICAS for March 2025 is 1.35. This is based on booking sales of USD 8,263,449.20 and billing sales (shipment only) of USD 6,121,112.73."",
+    ""brand = PULSE, ru = AMERICAS, year_month = 2025-03, order_type = SHIPMENT.""
+  ]
+]",0,FAIL,"Ground truth states that the exact 2025-03 BB ratio for AMERICAS/PULSE cannot be provided from the samples and outlines how to compute it using billing/booking totals. The agent provided a concrete value (1.35) derived from booking total divided by billing total (booking/billing), which is the inverse of the defined BB ratio. Additionally, the agent asserts data existence where the ground truth indicates data is not available in the samples. Therefore, the answer is incorrect both in value and in computed formula."
+Which region had the highest BB ratio in 2025-01 across all brands?,"Short answer: AMERICAS.
+
+How I derived it:
+- Definition: BB ratio = Booking total_sales sum / Billing total_sales sum for the same region and month (2025-01).
+- Aggregated by region (ru) across all brands for 2025-01:
+  - AMERICAS: Booking total_sales = 2345.1; Billing total_sales = 78.0 → BB ratio ≈ 2345.1 / 78.0 ≈ 30.1
+  - Other regions have much smaller or negative ratios (e.g., JAPAN & KOREA ≈ 0.34; EMEA ≈ 4.04; SOUTHEAST ASIA ≈ 0.0056; OTHERS ≈ -0.016; GREAT CHINA ≈ -0.035)
+
+Conclusion: The Americas region shows the highest BB (Booking to Billing) ratio in 2025-01, about 30.1. Note: some regions show unusual negative or extreme values, which may indicate data alignment issues between the two tables; the AMERICAS result uses the available corresponding totals from both tables for that month.","In January 2025, the region with the highest Booking-to-Billing Ratio (BB Ratio) across all brands was GREAT CHINA, with a BB Ratio of 1.087.
+
+Filter applied: year_month = '2025-01', grouped by ru, all brands, order_type = 'SHIPMENT' for billing.","[
+  ""```sql\nWITH bill AS (\n\tSELECT year_month, ru, SUM(total_sales) AS total_billing_sales\n\tFROM ods.fact_monthly_sales_poa_billing\n\tWHERE year_month = '2025-01' AND order_type = 'SHIPMENT'\n\tGROUP BY year_month, ru\n)\n, book AS (\n\tSELECT year_month, ru, SUM(total_sales) AS total_booking_sales\n\tFROM ods.fact_monthly_sales_poa_booking\n\tWHERE year_month = '2025-01'\n\tGROUP BY year_month, ru\n)\n, bb_ratio AS (\n\tSELECT \n\t\tbill.year_month,\n\t\tbill.ru,\n\t\tbook.total_booking_sales,\n\t\tbill.total_billing_sales,\n\t\tCAST(book.total_booking_sales AS FLOAT)/NULLIF(bill.total_billing_sales,0) AS BB_Ratio\n\tFROM bill\n\tJOIN book ON bill.year_month = book.year_month AND bill.ru = book.ru\n)\nSELECT TOP 1 *\nFROM bb_ratio\nORDER BY BB_Ratio DESC\n```""
+]","[
+  [
+    ""In January 2025, the region with the highest Booking-to-Billing Ratio (BB Ratio) across all brands was GREAT CHINA, with a BB Ratio of 1.087."",
+    ""Filter applied: year_month = '2025-01', grouped by ru, all brands, order_type = 'SHIPMENT' for billing.""
+  ]
+]",0,FAIL,"Ground Truth indicates AMERICAS had the highest BB ratio in 2025-01 (≈30.1). The Agent incorrectly reports GREAT CHINA with a BB ratio of 1.087, which is both the wrong region and incorrect value."
+What is the BB ratio for KEMET in 2025-08 in EMEA?,"I don’t have the actual numeric data for 2025-08 in EMEA for brand KEMET, so I can’t compute a numeric BB ratio right now. Here’s exactly what would be returned and how to compute it, so you or I can plug in the numbers once the data is pulled.
+
+Definition (assumed)
+- BB ratio = Billing total_sales / Booking total_sales for the same month, brand, and region.
+- If you meant the inverse (Booking / Billing), tell me and I’ll swap the calculation.
+
+Data to pull (dimensions you’d filter on)
+- year_month: 2025-08
+- ru (Region): EMEA
+- brand: KEMET
+- Note: Use the same sub-dimensions (sub_unit, pbg, pbu, etc.) as available in your schema if you want a more granular breakdown, but for the ratio you’ll typically sum across those.
+
+From tables
+- Billing table (ods.fact_monthly_sales_poa_billing)
+  - Filter: year_month = '2025-08', brand = 'KEMET', ru = 'EMEA'
+  - Compute: billing_total_sales = SUM(total_sales)
+- Booking table (ods.fact_monthly_sales_poa_booking)
+  - Filter: year_month = '2025-08', brand = 'KEMET', ru = 'EMEA'
+  - Compute: booking_total_sales = SUM(total_sales)
+
+Derived metric
+- BB_ratio = billing_total_sales / booking_total_sales
+- Edge cases:
+  - If booking_total_sales = 0 or null, BB_ratio is undefined or could be reported as Infinity/null with a note.
+  - If both are present but negative (unusual for totals), report with caveats.
+
+Expected output structure (once numbers are available)
+- year_month: 2025-08
+- brand: KEMET
+- ru: EMEA
+- billing_total_sales: [numeric value]
+- booking_total_sales: [numeric value]
+- BB_ratio: [numeric value or null/undefined with note]
+
+If you want, I can outline or run the exact queries you’d use to fetch these two sums and then compute the ratio. Also, tell me if you actually want Booking/Billing (the inverse) and I’ll adjust the calculation accordingly.","The BB Ratio (Booking-to-Billing Ratio) for KEMET in EMEA for August 2025 is 136.1%. This is calculated by dividing total booking sales of USD 27,279,173.65 by total billing sales (shipment order type) of USD 20,048,923.94 for the same period and region.
+
+Filter applied:
+brand = KEMET, ru = EMEA, year_month = 2025-08","[
+  ""```sql\nSELECT year_month, brand, ru, SUM(total_sales) AS total_booking_sales\nFROM ods.fact_monthly_sales_poa_booking\nWHERE year_month = '2025-08' AND brand = 'KEMET' AND ru = 'EMEA'\nGROUP BY year_month, brand, ru\n```"",
+  ""```sql\nSELECT year_month, brand, ru, SUM(total_sales) AS total_billing_sales\nFROM ods.fact_monthly_sales_poa_billing\nWHERE year_month = '2025-08'\n  AND order_type = 'SHIPMENT'\n  AND brand = 'KEMET'\n  AND ru = 'EMEA'\nGROUP BY year_month, brand, ru\n```""
+]","[
+  [
+    ""The BB Ratio (Booking-to-Billing Ratio) for KEMET in EMEA for August 2025 is 136.1%. This is calculated by dividing total booking sales of USD 27,279,173.65 by total billing sales (shipment order type) of USD 20,048,923.94 for the same period and region."",
+    ""brand = KEMET, ru = EMEA, year_month = 2025-08""
+  ]
+]",15,FAIL,"Ground truth states that no numeric data is available for 2025-08 in EMEA for brand KEMET and outlines how to compute the BB ratio (Billing_total_sales / Booking_total_sales) along with data sources and structure. The agent, however, provides a concrete numeric BB ratio (136.1%) using Booking/Billing (the inverse of the defined BB ratio) and specific totals, which conflicts with the ground truth and could be incorrect. The answer also omits the explicit data-pull steps and caveats outlined in the ground truth."
+What was the total billing amount for SHIPMENT in 2025-11 in GREAT CHINA for the Capacitor product family?,"Here's what the answer would entail, and the type of data you would receive:
+
+What you’re asking for
+- Table: fact_monthly_sales_poa_billing (monthly aggregated, billing data)
+- Filters:
+  - year_month = 2025-11
+  - order_type = SHIPMENT (only SHIPMENT records)
+  - ru = GREAT CHINA (region filter)
+  - pbg = Capacitor (product family)
+- Metric to return: total_sales (billing amount)
+- Additional summary you’d typically see in the row:
+  - total_qty (sum of quantities)
+  - updated_date (last update timestamp for the data)
+
+Expected output structure
+- year_month: 2025-11
+- ru: GREAT CHINA
+- pbg: Capacitor
+- order_type: SHIPMENT
+- total_sales: [SUM(total_sales) for all matching rows]
+- total_qty: [SUM(total_qty) for all matching rows]
+- updated_date: [latest updated_date among matching rows]
+
+Notes
+- If no records match the filters, total_sales would be 0 (or NULL depending on your SQL handling).
+- You cannot compute averages or per-order metrics here because the data is monthly aggregates, not individual orders.","The total billing amount for SHIPMENT orders in November 2025 (2025-11) in GREAT CHINA for the Capacitor product family was 97,193,517.05 USD.
+
+Filter applied: year_month = 2025-11, order_type = SHIPMENT, ru = GREAT CHINA, pbg = Capacitor.","[
+  ""```sql\nSELECT year_month, SUM(total_sales) AS total_sales\nFROM [ods].[fact_monthly_sales_poa_billing]\nWHERE year_month = '2025-11'\n  AND order_type = 'SHIPMENT'\n  AND ru = 'GREAT CHINA'\n  AND pbg = 'Capacitor'\nGROUP BY year_month\n```""
+]","[
+  [
+    ""The total billing amount for SHIPMENT orders in November 2025 (2025-11) in GREAT CHINA for the Capacitor product family was 97,193,517.05 USD."",
+    ""Filter applied: year_month = 2025-11, order_type = SHIPMENT, ru = GREAT CHINA, pbg = Capacitor.""
+  ]
+]",25,FAIL,"Agent answer does not adhere to the expected output structure. The ground truth specifies a structured record with fields: year_month, ru, pbg, order_type, total_sales, total_qty, updated_date. The agent provided only a single total_sales value (and a narrative) with no total_qty or updated_date, and did not present the full required record. Additionally, the numeric value cannot be validated against the ground truth since no actual data is provided to confirm correctness."
+"In 2025-12 for SE ASIA, how many units were booked for MLCC under the Nexensos brand?","I don’t have the 2025-12 SE ASIA Nexensos MLCC booking data in the provided samples, so I can’t return a specific number here. Here’s what the result would look like and how it would be computed:
+
+- Data to return (monthly aggregated, bookings table):
+  - year_month = '2025-12'
+  - ru = 'SE ASIA'
+  - brand = 'Nexensos'
+  - pbg = 'Capacitor' (to indicate capacitor family)
+  - pbu = 'MLCC' (the product type)
+  - total_qty (the units booked for MLCC under the Nexensos brand)
+  - updated_date (data refresh date)
+
+- How the value is obtained:
+  - From ods.fact_monthly_sales_poa_booking
+  - Filter: year_month = '2025-12', ru = 'SE ASIA', brand = 'Nexensos', pbg = 'Capacitor', pbu = 'MLCC'
+  - Return the single total_qty value (monthly total). If multiple sub-categories exist under those filters, the table is monthly aggregated, so total_qty should already be the sum for that month.
+
+If you’d like, I can provide the exact number as soon as you can share the 2025-12 SE ASIA Nexensos MLCC booking row(s) from the dataset, or I can help craft the exact query to pull it from your data source.","We were unable to find any results matching the following condition: year_month='2025-12', ru='SOUTHEAST ASIA', pbu='MLCC', brand='Nexensos'. Could you please verify that it has been spelled correctly?","[
+  ""```sql\nSELECT SUM(total_qty) AS total_quantity_booked\nFROM ods.fact_monthly_sales_poa_booking\nWHERE year_month = '2025-12'\n  AND ru = 'SOUTHEAST ASIA'\n  AND pbu = 'MLCC'\n  AND brand = 'Nexensos'\n```""
+]","[
+  [
+    ""We were unable to find any results matching the following condition: year_month='2025-12', ru='SOUTHEAST ASIA', pbu='MLCC', brand='Nexensos'. Could you please verify that it has been spelled correctly?""
+  ]
+]",75,FAIL,"The agent reports no results for year_month='2025-12' and brand 'Nexensos' with pbu 'MLCC', but uses ru='SOUTHEAST ASIA' instead of the ground-truth 'SE ASIA'. Additionally, the ground truth describes the data structure (fields like total_qty, updated_date) and the calculation approach, whereas the agent provides only a terse no-result message without those details."
+"For 2025-03, what was the total billing sales for TOKIN in AMERICAS?","- Answer type: A single numeric value representing billing sales (total_sales) for the specified slice.
+- Table to use: ods.fact_monthly_sales_poa_billing (monthly aggregated, billing/actual sales).
+- Metrics to return: total_sales (aggregated with SUM if multiple records exist for the filters).
+- Required filters:
+  - year_month: 2025-03
+  - brand: TOKIN
+  - ru: AMERICAS
+- Note on aggregation: If there are multiple sub_units within AMERICAS for TOKIN in 2025-03, sum total_sales across those records to get the full billing sales for TOKIN in AMERICAS.
+- Current data limitation: The provided samples do not include data for 2025-03, TOKIN, AMERICAS, so a numeric value cannot be given here. If you run the query, you should expect a numeric total_sales value (currency unit as defined in the dataset).","We were unable to find any results matching the following condition: year_month = '2025-03', brand = 'TOKIN', ru = 'AMERICAS', order_type = 'SHIPMENT'. Could you please verify that it has been spelled correctly?","[
+  ""```sql\nSELECT year_month, SUM(total_sales) AS total_billing_sales\nFROM ods.fact_monthly_sales_poa_billing\nWHERE order_type = 'SHIPMENT'\n  AND brand = 'TOKIN'\n  AND ru = 'AMERICAS'\n  AND year_month = '2025-03'\nGROUP BY year_month\n```"",
+  ""```sql\nSELECT year_month, SUM(total_sales) AS total_billing_sales\nFROM ods.fact_monthly_sales_poa_billing\nWHERE year_month = '2025-03'\n  AND brand = 'TOKIN'\n  AND ru = 'AMERICAS'\n  AND order_type = 'SHIPMENT'\nGROUP BY year_month\n```"",
+  ""```sql\nSELECT year_month, brand, ru, SUM(total_sales) AS total_billing_sales\nFROM ods.fact_monthly_sales_poa_billing\nWHERE year_month = '2025-03'\n  AND brand = 'TOKIN'\n  AND ru = 'AMERICAS'\n  AND order_type = 'SHIPMENT'\nGROUP BY year_month, brand, ru\n```""
+]","[
+  [
+    ""We were unable to find any results matching the following condition: year_month = '2025-03', brand = 'TOKIN', ru = 'AMERICAS', order_type = 'SHIPMENT'. Could you please verify that it has been spelled correctly?""
+  ]
+]",20,FAIL,"The agent did not provide the required numeric total_sales for 2025-03 TOKIN AMERICAS. It added an extraneous filter (order_type = 'SHIPMENT') not present in the ground truth and claimed no results, whereas the ground truth notes that a numeric total_sales should be returned if queried (data may be missing in samples but a value is expected)."
+Compare 2025-03 bookings for TOKIN in SE ASIA vs 2025-03 bookings in Great China. Which region had higher volume?,"I can guide you on the exact metric and how to compute, but I don’t have the 2025-03 TOKIN bookings data for SE Asia and Great China in the provided snippet. Here’s how it should be answered using the booking table (fact_monthly_sales_poa_booking):
+
+What to return (monthly, by region)
+- year_month: 2025-03
+- brand: TOKIN
+- region SE Asia (ru = SOUTHEST ASIA)
+  - total_qty (booking volume)
+- region Great China (ru = GREAT CHINA)
+  - total_qty (booking volume)
+- comparison: which region has the higher total_qty
+
+Notes
+- The metric to use for “volume” is total_qty.
+- If you also want the revenue perspective, you could include total_sales for each region, but the primary volume comparison should use total_qty.
+- Regions are mapped from ru: SE Asia = SOUTHEAST ASIA, Great China = GREAT CHINA.
+
+What you’d run to get the numbers
+- Filter: year_month = '2025-03', brand = 'TOKIN', ru in ('SOUTHEAST ASIA','GREAT CHINA')
+- Group by ru, aggregate total_qty
+- Compare the two resulting totals to see which region is higher
+
+If you’d like, I can provide a sample result structure and explain how to present the delta (e.g., higher by X units, or Y% higher). If you can share the actual 2025-03 data for TOKIN in SE Asia and Great China, I’ll give you the exact numbers and the clear winner.","For March 2025, there were no bookings recorded for brand TOKIN in Southeast Asia (sub_unit = 'SOUTHEAST ASIA').
+
+In comparison, Great China (ru = 'GREAT CHINA') had a total booking quantity of 97,115,342 pcs for TOKIN in the same period.
+
+Therefore, Great China had a higher booking volume for TOKIN in March 2025.
+
+Filter applied:
+Brand = TOKIN, Year-Month = 2025-03, Region = Southeast Asia (sub_unit), Great China (ru)","[
+  ""```sql\nSELECT year_month, brand, sub_unit, SUM(total_qty) AS total_booking_qty\nFROM ods.fact_monthly_sales_poa_booking\nWHERE year_month = '2025-03'\n  AND brand = 'TOKIN'\n  AND sub_unit = 'SOUTHEAST ASIA'\nGROUP BY year_month, brand, sub_unit\n```"",
+  ""```sql\nSELECT year_month, brand, sub_unit, SUM(total_qty) AS total_booking_quantity\nFROM ods.fact_monthly_sales_poa_booking\nWHERE year_month = '2025-03'\n  AND brand = 'TOKIN'\n  AND sub_unit = 'SOUTHEAST ASIA'\nGROUP BY year_month, brand, sub_unit\n```"",
+  ""```sql\nSELECT year_month, brand, ru, SUM(total_qty) AS total_booking_qty\nFROM ods.fact_monthly_sales_poa_booking\nWHERE year_month = '2025-03' AND brand = 'TOKIN' AND ru = 'GREAT CHINA'\nGROUP BY year_month, brand, ru\n```""
+]","[
+  [
+    ""In comparison, Great China (ru = 'GREAT CHINA') had a total booking quantity of 97,115,342 pcs for TOKIN in the same period."",
+    ""Brand = TOKIN, Year-Month = 2025-03, Region = Southeast Asia (sub_unit), Great China (ru)""
+  ]
+]",25,FAIL,"Ground Truth indicates that there is no provided 2025-03 TOKIN bookings data for SE Asia and Great China in the snippet, and suggests guiding on methodology or awaiting actual data. The Agent, however, claims precise figures (no SEA bookings and 97,115,342 pcs for Great China) and declares a winner, which is not supported by the given snippet and ignores the need to compute from available data. This deviates from the instructed approach and cannot be validated against the Ground Truth."
+Compute BB ratio for 2025-02 in AMERICAS for TOKIN.,"I don’t have February 2025 values in the provided samples to return an exact numeric BB ratio. However, here is exactly what to compute and what the result would look like, given the dimensions you specified.
+
+What BB ratio means here
+- BB ratio = total billed sales for TOKIN in AMERICAS for 2025-02
+               divided by
+             total booked sales for TOKIN in AMERICAS for 2025-02
+
+Data to pull (same dimensions from both tables)
+- year_month: 2025-02
+- brand: TOKIN
+- ru (region): AMERICAS
+- For billing table (ods.fact_monthly_sales_poa_billing): sum of total_sales
+- For booking table (ods.fact_monthly_sales_poa_booking): sum of total_sales
+
+Calculation
+- billed_sales = SUM(total_sales) from fact_monthly_sales_poa_billing where year_month='2025-02', brand='TOKIN', ru='AMERICAS'
+- booked_sales = SUM(total_sales) from fact_monthly_sales_poa_booking where year_month='2025-02', brand='TOKIN', ru='AMERICAS'
+- bb_ratio = billed_sales / booked_sales if booked_sales > 0; otherwise undefined/null
+
+Output fields you would expect
+- year_month: 2025-02
+- brand: TOKIN
+- ru: AMERICAS
+- billed_sales: [numeric value]
+- booked_sales: [numeric value]
+- bb_ratio: [numeric value or null if booked_sales = 0]
+- updated_date_billing: [date from billing data]
+- updated_date_booking: [date from booking data]
+
+Notes and caveats
+- If booked_sales is 0, the ratio is undefined; you should return null or indicate “no bookings this month.”
+- If you want a more granular view, you could also return the two components (billed_sales, booked_sales) alongside the ratio.
+- The ratio will reflect all TOKIN-related entries in AMERICAS for 2025-02; if you want to exclude certain shipment types, specify the order_type filter in the billing table (e.g., only SHIPMENT, or include BACKLOG, etc.).","We were unable to find any results matching the following condition: year_month = 2025-02, brand = TOKIN, ru = AMERICAS. Could you please verify that it has been spelled correctly?","[
+  ""```sql\nSELECT \n    '2025-02' AS year_month,\n    'TOKIN' AS brand,\n    (SELECT SUM(total_sales) \n     FROM ods.fact_monthly_sales_poa_booking \n     WHERE year_month = '2025-02' AND brand = 'TOKIN' AND ru = 'AMERICAS') AS total_booking_sales,\n    (SELECT SUM(total_sales) \n     FROM ods.fact_monthly_sales_poa_billing \n     WHERE year_month = '2025-02' AND brand = 'TOKIN' AND ru = 'AMERICAS' AND order_type = 'SHIPMENT') AS total_billing_sales\n```"",
+  ""```sql\nSELECT \n    b.year_month, \n    b.brand, \n    b.ru, \n    SUM(b.total_sales) AS total_booking_sales,\n    SUM(bl.total_sales) AS total_billing_sales_shipment\nFROM ods.fact_monthly_sales_poa_booking b\nLEFT JOIN ods.fact_monthly_sales_poa_billing bl\n    ON b.year_month = bl.year_month\n    AND b.brand = bl.brand\n    AND b.ru = bl.ru\n    AND bl.order_type = 'SHIPMENT'\nWHERE b.year_month = '2025-02'\n  AND b.brand = 'TOKIN'\n  AND b.ru = 'AMERICAS'\nGROUP BY b.year_month, b.brand, b.ru\n```""
+]","[
+  [
+    ""We were unable to find any results matching the following condition: year_month = 2025-02, brand = TOKIN, ru = AMERICAS. Could you please verify that it has been spelled correctly?""
+  ]
+]",25,FAIL,"The Ground Truth provides a full methodology, required fields (billed_sales, booked_sales, bb_ratio, updated dates), and exact computation steps for 2025-02 in TOKIN/AMERICAS. The Agent Answer only states that no results were found and asks to verify spelling, offering no computed values or the expected output fields. It fails to deliver the calculation or even the expected structure."
+"Can you provide the average sale per order for 2025-04 in AMERICAS for PULSE? If not, explain why.","- Short answer: I cannot provide the “average sale per order” for 2025-04 in AMERICAS for PULSE with the available data. The data model only includes total_sales and total_qty (per month) and does not include a count of orders. Therefore, average sale per order cannot be calculated from these tables.
+
+- Why: Average sale per order requires an order_count metric, which is not present in either:
+  - Billing table: ods.fact_monthly_sales_poa_billing (has total_sales and total_qty, but not order_count)
+  - Booking table: ods.fact_monthly_sales_poa_booking (has total_sales and total_qty, but not order_count)
+
+- What I can provide instead (if you want): 
+  - Total sales and total quantity for 2025-04 for AMERICAS and the PULSE brand from the billing table (if data exists for that period).
+  - A proxy metric you could use, though not exactly “average sale per order”: average sale per unit = total_sales / total_qty. This is not the same as per-order average, but can offer a rough price-per-unit view.
+
+- What I need to proceed:
+  - Confirm that you want me to fetch the 2025-04 AMERICAS PULSE row from the billing table (or provide the data if you have it).
+  - Alternatively, allow me to return total_sales and total_qty for that period and note that average per order cannot be computed due to missing order_count.","The average sale per order you requested does not exist in this data source yet. Available columns are: year_month, order_type, brand, ru, sub_unit, pbg, pbu, pbu_1, pbu_2, focus_flag, customer_parent, local_assembler, final_customer, g7, fu_us_oem_flag, fu_global_ems_flag, fu_g7_flag, fu_emea_oem_flag, erp_sales_rep, total_sales, total_qty, total_cost, updated_date.",[],"[
+  []
+]",25,FAIL,"Agent Answer fails to explain the specific data-model limitation (no order_count metric) that prevents calculating average sale per order for 2025-04 AMERICAS PULSE. It does not reference the relevant Billing/Booking tables or offer the proposed alternatives (total_sales/total_qty or a proxy like average per unit). It also omits the target context (AMERICAS, PULSE, 2025-04) and provides only a generic statement about the data source."
+Which final_customer contributed the most to billing in 2025-09 in AMERICAS?,"I don’t have the actual 2025-09 AMERICAS billing data in the provided samples, so I can’t name the top final_customer yet.
+
+What the answer would look like (once you query ods.fact_monthly_sales_poa_billing):
+- Filter: year_month = '2025-09', ru = 'AMERICAS'
+- Group by: final_customer
+- Metric: sum(total_sales) as total_sales_by_customer
+- Result: the final_customer with the highest total_sales_by_customer
+- Optional: include total_qty sum for context, and updated_date if you want the data freshness
+- If multiple customers tie for the top, return all tied customers with the same total_sales
+- If no rows exist for 2025-09 in AMERICAS, report no data for that period
+
+Example structure of the result (no actual values since data isn’t provided here):
+- final_customer: ""ENPHASE""
+- total_sales: 123456.78
+- total_qty: 7890
+- year_month: 2025-09
+- ru: AMERICAS
+- updated_date: 2026-01-19 (or the latest update)
+
+If you want, I can generate the exact answer: provide access to the data or share the underlying dataset for 2025-09 in AMERICAS, and I’ll return the top final_customer and the corresponding total_sales.","For billing in September 2025 within the AMERICAS region, the final_customer that contributed the most was ""NOT ASSIGNED"" with total sales of 21,614,568.91 USD.
+
+Filter applied: year_month = '2025-09', ru = 'AMERICAS', order_type = 'SHIPMENT', grouped by final_customer.","[
+  ""```sql\nSELECT TOP 1\n    final_customer,\n    SUM(total_sales) AS total_sales\nFROM ods.fact_monthly_sales_poa_billing\nWHERE year_month = '2025-09'\n  AND ru = 'AMERICAS'\n  AND order_type = 'SHIPMENT'\nGROUP BY final_customer\nORDER BY SUM(total_sales) DESC;\n```""
+]","[
+  [
+    ""For billing in September 2025 within the AMERICAS region, the final_customer that contributed the most was \""NOT ASSIGNED\"" with total sales of 21,614,568.91 USD."",
+    ""Filter applied: year_month = '2025-09', ru = 'AMERICAS', order_type = 'SHIPMENT', grouped by final_customer.""
+  ]
+]",0,FAIL,"Ground Truth states there is no available data for 2025-09 in AMERICAS and cannot name the top final_customer. The Agent Answer provides a concrete top final_customer ('NOT ASSIGNED') with a total_sales figure, which contradicts the Ground Truth. Therefore, the answer is incorrect. Additionally, the agent mentions a filter (order_type = SHIPMENT) not indicated in the Ground Truth and provides a specific numeric result not supported by the provided data."
+"For 2025-05 vs 2025-04, bookings for Nexensos in AMERICAS: which month showed growth?","I don’t have the 2025-04 and 2025-05 Nexensos bookings for AMERICAS in the provided data. To answer which month showed growth, I would calculate from the booking table as follows.
+
+What to return (type of data and metrics)
+- Filters:
+  - year_month: 2025-04 and 2025-05
+  - brand: Nexensos
+  - ru (region): AMERICAS
+- Metrics (per month):
+  - total_sales (sum): total undeliverable sales amount for the month (from bookings table)
+  - total_qty (sum): total quantity booked for the month
+- Computed growth (month-over-month):
+  - growth_sales_percent = ((May total_sales - Apr total_sales) / Apr total_sales) * 100
+  - growth_qty_percent = ((May total_qty - Apr total_qty) / Apr total_qty) * 100
+- Result summary:
+  - For 2025-04: total_sales, total_qty
+  - For 2025-05: total_sales, total_qty
+  - Indicate which month showed growth based on growth_sales_percent (or growth_qty_percent as a corroborating metric)
+  - If May > Apr, answer: May showed growth; if May < Apr, answer: April showed growth; if equal, neither showed growth
+
+Example structure (numbers would be filled from the data)
+- 2025-04 | Nexensos, AMERICAS | total_sales: X1, total_qty: Q1
+- 2025-05 | Nexensos, AMERICAS | total_sales: X2, total_qty: Q2
+- growth in sales: G_sales = ((X2 - X1) / X1) * 100%
+- growth in qty: G_qty = ((Q2 - Q1) / Q1) * 100%
+- conclusion: If X2 > X1, May showed growth in bookings; otherwise April did (or neither if equal)
+
+If you can share the 2025-04 and 2025-05 Nexensos AMERICAS rows (or give me access to query the data), I’ll compute the exact numbers and state which month showed growth.","In the AMERICAS region, booking sales for the Nexensos brand were as follows:
+- April 2025: USD 1,093,240.72
+- May 2025: USD 446,788.92
+
+May 2025 did not show growth; bookings decreased compared to April 2025.
+
+Filter applied: brand = Nexensos, ru = AMERICAS, year_month = 2025-04 vs 2025-05, order_type = (all bookings)","[
+  ""```sql\nSELECT year_month, SUM(total_sales) AS total_booking_sales\nFROM ods.fact_monthly_sales_poa_booking\nWHERE (year_month = '2025-05' OR year_month = '2025-04')\n  AND brand = 'Nexensos'\n  AND ru = 'AMERICAS'\nGROUP BY year_month\nORDER BY year_month\n```""
+]","[
+  [
+    ""- April 2025: USD 1,093,240.72"",
+    ""Filter applied: brand = Nexensos, ru = AMERICAS, year_month = 2025-04 vs 2025-05, order_type = (all bookings)""
+  ]
+]",25,FAIL,"Ground Truth states that the 2025-04 and 2025-05 Nexensos bookings for AMERICAS are not provided and that one would need to compute from the data. The Agent Answer, however, supplies specific figures for April and May and a conclusion about growth, which contradicts the Ground Truth's stance and cannot be verified against the provided data."
+What is the total billing quantity for 2025-01 in RU HEAD OFFICE sub_unit for FERROXCUBE (Resistors)?,"- Type of data: Billing (monthly aggregated), total quantity (total_qty) for the billed shipments of FERROXCUBE in Resistors, for the RU HEAD OFFICE sub_unit, in month 2025-01.
+
+- Result: 423,000 units.
+
+- Notes:
+  - This uses the fact_monthly_sales_poa_billing table with filters: year_month = 2025-01, sub_unit = RU HEAD OFFICE, brand = FERROXCUBE, pbg = Resistors.
+  - If you also want billing amount (total_sales) or cost, I can return those as well, using the same filters.","We were unable to find any results matching the following condition: year_month = '2025-01', sub_unit = 'RU HEAD OFFICE', brand = 'FERROXCUBE', pbg = 'Resistors', order_type = 'SHIPMENT'. Could you please verify that it has been spelled correctly?","[
+  ""```sql\nSELECT SUM(total_qty) AS total_billing_quantity\nFROM ods.fact_monthly_sales_poa_billing\nWHERE year_month = '2025-01'\n  AND sub_unit = 'RU HEAD OFFICE'\n  AND brand = 'FERROXCUBE'\n  AND pbg = 'Resistors'\n  AND order_type = 'SHIPMENT'\n```""
+]","[
+  [
+    ""We were unable to find any results matching the following condition: year_month = '2025-01', sub_unit = 'RU HEAD OFFICE', brand = 'FERROXCUBE', pbg = 'Resistors', order_type = 'SHIPMENT'. Could you please verify that it has been spelled correctly?""
+  ]
+]",5,FAIL,"Ground truth expects total_qty = 423,000 units for 2025-01, RU HEAD OFFICE, FERROXCUBE, Resistors. The agent did not provide this value and instead reported no results, introducing a mismatch (including an order_type condition not present in the ground truth). Therefore the response is incorrect."
+"In 2025-10, what was the backlog (BACKLOG - GIT) billing value for ENPHASE in AMERICAS?","I don’t have the exact 2025-10 backlog (BACKLOG - GIT) billing value for ENPHASE in AMERICAS in the provided data. The answer should be a single numeric value representing the backlog billing amount for that month, derived from total_sales in the billing fact.
+
+What the result should look like (and how to compute it)
+- Source: ods.fact_monthly_sales_poa_billing
+- Metric: total_sales (the billing amount)
+- Aggregation: SUM(total_sales) if multiple records match
+- Filters (dimensions):
+  - year_month = 2025-10
+  - order_type = BACKLOG - GIT
+  - ru = AMERICAS
+  - final_customer = ENPHASE
+- Output: a single numeric value with the currency unit (e.g., USD)
+
+Optional accompanying info you’d typically include:
+- updated_date: the data last updated date for the month
+- A note if no records exist for these filters (would be 0 or null)
+
+If you can provide the underlying dataset for 2025-10, I can compute and return the exact backlog billing value.","We were unable to find any results matching the following condition: order_type = 'BACKLOG - GIT', customer_parent = 'ENPHASE', ru = 'AMERICAS'. Could you please verify that it has been spelled correctly?","[
+  ""```sql\nSELECT SUM(total_sales) AS total_billing_value\nFROM ods.fact_monthly_sales_poa_billing\nWHERE order_type = 'BACKLOG - GIT'\n  AND customer_parent = 'ENPHASE'\n  AND ru = 'AMERICAS'\n```""
+]","[
+  [
+    ""We were unable to find any results matching the following condition: order_type = 'BACKLOG - GIT', customer_parent = 'ENPHASE', ru = 'AMERICAS'. Could you please verify that it has been spelled correctly?""
+  ]
+]",40,FAIL,"Ground truth expects a single numeric backlog billing value for 2025-10 (BACKLOG - GIT, ENPHASE, AMERICAS) derived from total_sales. The agent did not provide the numeric value or indicate 0/null; instead, it only stated that no results matched and suggested spelling verification. This does not meet the expected output."
+"For 2025-05, which sub_unit in AMERICAS contributed most to total_sales in billing for FERROXCUBE?","I don’t have the 2025-05 data for FERROXCUBE in the billing table, so I can’t provide the exact top sub_unit name or the exact total_sales amount.
+
+What the answer would look like (type of data to return):
+- Filters: year_month = '2025-05', ru = 'AMERICAS', brand = 'FERROXCUBE', and order_type corresponding to billing (SHIPMENT, PAST DUE, etc. as applicable in the billing table).
+- Calculation: Group by sub_unit, then sum total_sales for FERROXCUBE within AMERICAS.
+- Result: the sub_unit with the highest total_sales (top_sub_unit) and the corresponding total_sales value. If there are ties, return all top sub_units.
+- Optional fields: total_qty corresponding to that top_sub_unit, and updated_date indicating the data refresh date for that month (if available per sub_unit).
+
+Example structure (no real numbers since data isn’t provided):
+- year_month: 2025-05
+- ru: AMERICAS
+- brand: FERROXCUBE
+- top_sub_unit: <name of the sub_unit with highest sales>
+- total_sales: <numeric value for that sub_unit>
+- total_qty: <corresponding quantity for that sub_unit> (optional)
+- updated_date: <date> (if available)
+
+If you can share the 2025-05 rows from ods.fact_monthly_sales_poa_billing (or grant access to run the query), I can compute the exact top_sub_unit and the total_sales value.","We were unable to find any results matching the following condition: year_month = '2025-05', ru = 'AMERICAS', brand = 'FERROXCUBE', order_type = 'SHIPMENT'. Could you please verify that it has been spelled correctly?","[
+  ""```sql\nSELECT TOP 1\n    sub_unit,\n    SUM(total_sales) AS total_sales\nFROM ods.fact_monthly_sales_poa_billing\nWHERE year_month = '2025-05'\n  AND ru = 'AMERICAS'\n  AND brand = 'FERROXCUBE'\n  AND order_type = 'SHIPMENT'\nGROUP BY sub_unit\nORDER BY SUM(total_sales) DESC;\n```""
+]","[
+  [
+    ""We were unable to find any results matching the following condition: year_month = '2025-05', ru = 'AMERICAS', brand = 'FERROXCUBE', order_type = 'SHIPMENT'. Could you please verify that it has been spelled correctly?""
+  ]
+]",30,FAIL,"Ground truth indicates that the 2025-05 data for FERROXCUBE in billing is not available, so the exact top_sub_unit and total_sales cannot be provided, and it outlines the expected data structure and calculation. The agent instead reports that no results match a specific condition and asks to verify spelling, without providing the structured results, calculation approach, or acknowledging data unavailability in the same way. This diverges from the ground truth and does not offer the expected top_sub_unit analysis."
+What was the total bookings value for final_customer MOTOROLA in 2025-01 in SE ASIA?,"- Answer: No data available for final_customer MOTOROLA in ru SE ASIA (2025-01) in the bookings table.
+- What is available in 2025-01 bookings:
+  - MOTOROLA appears only in ru = JAPAN & KOREA
+  - total_sales for that MOTOROLA entry: 1,642.50
+  - total_qty: 182,000
+- If you want the total bookings value for MOTOROLA across all regions in 2025-01, it is 1,642.50.
+- Note: The data are monthly aggregates; there is no per-order detail, so we report totals by the specified dimensions.","The total bookings value for final_customer MOTOROLA in Southeast Asia for January 2025 was 253,010.29 USD.
+
+Filter applied: final_customer='MOTOROLA', ru='SOUTHEAST ASIA', year_month='2025-01'","[
+  ""```sql\nSELECT year_month, final_customer, ru, SUM(total_sales) AS total_booking_sales\nFROM ods.fact_monthly_sales_poa_booking\nWHERE year_month = '2025-01'\n  AND final_customer = 'MOTOROLA'\n  AND ru = 'SOUTHEAST ASIA'\nGROUP BY year_month, final_customer, ru\n```""
+]","[
+  [
+    ""Filter applied: final_customer='MOTOROLA', ru='SOUTHEAST ASIA', year_month='2025-01'""
+  ]
+]",0,FAIL,"The Ground Truth states there is no data for final_customer MOTOROLA in SE ASIA (2025-01). The agent, however, reported a value of 253,010.29 USD for SE Asia in Jan 2025, which is incorrect. The correct outcome per the ground truth would be no data available (or not applicable) for SE Asia; the only valid regional total listed is 1,642.50 across all regions, not SE Asia specifically."
+"In 2025-06, how did the ARROW channel perform in bookings in GREAT CHINA?","Short answer: I don’t have 2025-06 ARROW in GREAT CHINA data available in the samples to give exact numbers. Still, here is exactly what I would return if the data existed in the bookings table.
+
+What I would query
+- Table: ods.fact_monthly_sales_poa_booking
+- Filters:
+  - year_month = 2025-06
+  - g7 = ARROW
+  - ru = GREAT CHINA
+
+Metrics returned (monthly aggregates)
+- total_sales: total undelivered bookings amount for that month/channel/region
+- total_qty: total quantity booked for that month/channel/region
+- updated_date: when the data was last updated for that row
+
+Result shape (one row)
+- year_month: 2025-06
+- g7: ARROW
+- ru: GREAT CHINA
+- total_sales: [numeric value]
+- total_qty: [numeric value]
+- updated_date: [date]
+
+Notes
+- Booking data is monthly aggregates; you cannot derive order counts or average sale per order from this dataset.
+- If you want to assess performance trends, we could also compute MoM or YoY changes, but that would require prior-month data for ARROW in GREAT CHINA.","In June 2025, the ARROW channel in GREAT CHINA achieved total bookings of USD 5,985,574.07 with a booked quantity of 974,762,004 pcs. This represents a significant increase compared to June 2024, which posted bookings sales of USD 1,407,749.58 and 234,106,774 pcs. The YoY growth for bookings is 325.3% in value and 316.6% in quantity.
+
+Filter applied: booking sales, g7='ARROW', ru='GREAT CHINA', year_month=2025-06 vs 2024-06.","[
+  ""```sql\nSELECT year_month, \n             SUM(total_sales) AS total_sales, \n             SUM(total_qty) AS total_qty\nFROM ods.fact_monthly_sales_poa_booking\nWHERE year_month IN ('2025-06', '2024-06')\n  AND g7 = 'ARROW'\n  AND ru = 'GREAT CHINA'\nGROUP BY year_month\n```""
+]","[
+  [
+    ""In June 2025, the ARROW channel in GREAT CHINA achieved total bookings of USD 5,985,574.07 with a booked quantity of 974,762,004 pcs. This represents a significant increase compared to June 2024, which posted bookings sales of USD 1,407,749.58 and 234,106,774 pcs. The YoY growth for bookings is 325.3% in value and 316.6% in quantity."",
+    ""Filter applied: booking sales, g7='ARROW', ru='GREAT CHINA', year_month=2025-06 vs 2024-06.""
+  ]
+]",20,FAIL,"Ground Truth states that 2025-06 ARROW in GREAT CHINA data is not available in the samples and would require querying the bookings table with specific fields; the Agent Answer provides concrete totals and YoY growth figures for June 2025 without referencing the data availability constraint, and does not align with the described query structure or the note about data being unavailable. This indicates a mismatch and unverified claims rather than the described placeholder/template response."
+"If a colleague asks for the average sale per order for 2025-04 in AMERICAS, how would you respond given our data limitations?","Short answer: I can’t compute average sale per order for 2025-04 in AMERICAS with the current data.
+
+Why:
+- The available data only exposes monthly totals (total_sales and total_qty) and does not include a count of orders. Without an order_count metric, the metric “average sale per order” cannot be derived.
+- The sample data provided covers 2025-01, not 2025-04. We would need the 2025-04 row for AMERICAS from the billing table (ods.fact_monthly_sales_poa_billing) to even show totals.
+
+What we can provide (if helpful):
+- We can report total_sales and total_qty for 2025-04 in AMERICAS from the billing table, but not “average sale per order.”
+- As a proxy (not the requested metric, but sometimes useful), we could compute:
+  - Average revenue per unit = total_sales / total_qty
+  - Note: This is not the same as average sale per order, since it uses quantity rather than order count.
+
+What I’d need to answer as asked:
+- A metric for total number of orders (order_count) for 2025-04 in AMERICAS, or an existing field that captures average sale per order.
+
+Next step options:
+- If you’re okay with a proxy, I can return average revenue per unit for 2025-04 AMERICAS using total_sales and total_qty (from the billing table).
+- Alternatively, provide or enable an order_count metric for 2025-04 AMERICAS so I can compute the true average sale per order.","The average sale per order you requested does not exist in this data source yet. Available columns are: year_month, order_type, brand, ru, sub_unit, pbg, pbu, pbu_1, pbu_2, focus_flag, customer_parent, local_assembler, final_customer, g7, fu_us_oem_flag, fu_global_ems_flag, fu_g7_flag, fu_emea_oem_flag, erp_sales_rep, total_sales, total_qty, total_cost, updated_date.",[],"[
+  []
+]",55,FAIL,"The Agent Answer correctly states that the average sale per order cannot be computed due to data limitations, but it fails to specify the context (AMERICAS for 2025-04) and the missing order_count metric. It also omits suggested alternatives (proxy metrics like average revenue per unit or providing 2025-04 totals) and the need for an explicit 2025-04 AMERICAS row. Overall, there is partial alignment but not complete alignment with the ground-truth guidance."

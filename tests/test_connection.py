@@ -3,8 +3,8 @@ import sys
 from dotenv import load_dotenv
 
 # Add project root to sys.path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from src.fabric_data_agent_client import FabricDataAgentClient
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
+from sales_agent.client import FabricDataAgentClient
 
 def test_interaction():
     # Load environment variables from the project root

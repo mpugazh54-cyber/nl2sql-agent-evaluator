@@ -1,8 +1,8 @@
 import os
 from dotenv import load_dotenv
 from openai import OpenAI
-from fabric_data_agent_client import FabricDataAgentClient
-from multi_agent_analyst import Orchestrator
+from .client import FabricDataAgentClient
+from .analyst import Orchestrator
 
 # Load environment variables
 load_dotenv()

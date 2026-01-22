@@ -3,7 +3,7 @@ from typing import List, Dict, Optional
 from dataclasses import dataclass, field
 import json
 from openai import OpenAI
-from fabric_data_agent_client import FabricDataAgentClient
+from .client import FabricDataAgentClient
 
 def log_response_to_file(agent_name: str, response: str):
     with open("agent_responses.log", "a") as f:
