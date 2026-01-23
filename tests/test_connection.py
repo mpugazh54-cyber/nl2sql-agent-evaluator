@@ -1,3 +1,11 @@
+    """
+    Integration test to validate the connection to the Fabric Data Agent.
+
+    Inputs:
+        - .env (TENANT_ID, DATA_AGENT_URL)
+    Outputs:
+        - Console highlights of agent response and generated SQL
+    """
 import os
 import sys
 from dotenv import load_dotenv

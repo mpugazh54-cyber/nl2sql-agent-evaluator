@@ -1,16 +1,14 @@
 #!/usr/bin/env python
 # coding: utf-8
 """
-Fabric Data Agent Runner
+Fabric Data Agent Runner script for update and test cycles.
+Designed to be executed within a Microsoft Fabric Notebook cell.
 
-This script runs in a Fabric Notebook and:
-1. Loads agent configuration from OneLake synced JSON
-2. Updates the data agent with latest instructions
-3. Runs test queries and captures full conversation traces
-4. Saves detailed logs for Antigravity analysis
-
-Usage:
-    Copy this entire script into a Fabric Notebook cell and run it.
+Inputs:
+    - /lakehouse/default/Files/agent/agent_config.json
+    - /lakehouse/default/Files/agent/test_queries.json
+Outputs:
+    - /lakehouse/default/Files/agent/fabric_run_logs.json
 """
 
 import json

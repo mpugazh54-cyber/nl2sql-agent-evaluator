@@ -1,11 +1,15 @@
 #!/usr/bin/env python
 # coding: utf-8
 """
-Download logs from Fabric OneLake using Azure ADLS Gen2 API.
-This provides instant access to logs without waiting for OneLake sync.
+Sync log files directly from Fabric OneLake using the Azure Data Lake Storage API.
 
 Prerequisites:
     pip install azure-storage-file-datalake azure-identity
+
+Inputs:
+    - Fabric OneLake Files/agent/run_logs.json
+Outputs:
+    - docs/process/fabric_run_logs.json
 """
 
 import json

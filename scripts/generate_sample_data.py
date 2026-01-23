@@ -1,3 +1,13 @@
+    """
+Utility to fetch distinct sample values from Fabric SQL Endpoint tables.
+
+Inputs:
+    - .env (FABRIC_SQL_ENDPOINT)
+Outputs:
+    - scripts/sample_data_billing.txt
+    - scripts/sample_data_booking.txt
+"""
+
 import os
 import pyodbc
 import pandas as pd

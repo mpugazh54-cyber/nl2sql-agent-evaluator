@@ -1,15 +1,18 @@
 #!/usr/bin/env python
 # coding: utf-8
 """
-Deploy Agent to Fabric (Compile + Upload)
-
-This script:
-1. Compiles the agent configuration from local markdown instructions.
-2. Generates the 'agent_config.json' file.
-3. Uploads the config, runner, and queries to Fabric OneLake.
+Compile agent instructions and upload configuration to Fabric OneLake.
 
 Prerequisites:
     pip install azure-storage-file-datalake azure-identity
+
+Inputs:
+    - docs/system_prompts/agent_instructions.md
+    - docs/system_prompts/data_instructions.md
+    - docs/system_prompts/example_queries.json
+Outputs:
+    - docs/config/agent_config.json (local)
+    - Fabric OneLake Files/agent/agent_config.json (cloud)
 """
 
 import json
