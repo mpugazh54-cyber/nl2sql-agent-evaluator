@@ -1,0 +1,16 @@
+📝 Execution log started at 2026-01-23 09:56:33.632937
+📂 Logging to: log_20260123_095633.txt
+
+🚀 Initializing Fabric Data Agent Client...
+Initializing Fabric Data Agent Client...
+Tenant ID: 66d44188-4e30-446d-9ab1-a4ae1962a1b1
+Data Agent URL: https://api.fabric.microsoft.com/v1/workspaces/c731a089-60d7-4a7c-b7d7-68e549c9972f/dataagents/1dd0520d-b903-42e6-bbc1-42111b19a90e/aiassistant/openai
+✅ Using cached credentials
+
+❓ Question: Show me the top 3 brands by total sales in 2025-01 from billing.
+⏳ Waiting for agent response...
+
+🔍 Getting detailed run info for: Show me the top 3 brands by total sales in 2025-01 from billing.
+⏳ Status: queued
+⏳ Status: queued
+⏳ Status: in_progress

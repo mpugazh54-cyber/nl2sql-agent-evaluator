@@ -108,9 +108,9 @@ def main():
     fabric_client = FabricDataAgentClient(tenant_id=tenant_id, data_agent_url=data_agent_url)
     openai_client = OpenAI(api_key=openai_api_key, base_url=openai_base_url)
 
-    input_file = os.path.join(data_raw_dir, "test_case.csv")
-    results_dir = os.path.join(root_dir, "data", "results")
-    os.makedirs(results_dir, exist_ok=True)
+    input_file = os.path.join(root_dir, "data", "test_case.csv")
+    results_dir = os.path.join(root_dir, "data")
+    # os.makedirs(results_dir, exist_ok=True) # data dir should exist
     output_file = os.path.join(results_dir, f"test_results_{timestamp}.csv")
     
     if not os.path.exists(input_file):

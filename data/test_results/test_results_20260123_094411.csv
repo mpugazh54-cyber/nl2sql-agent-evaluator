@@ -1,0 +1,59 @@
+﻿user_prompt,expected_answer,agent_answer,generated_sql,similarity_score,evaluation_grade,evaluation_reason
+"For 2025-07 in AMERICAS, how did our billing for KEMET compare to the previous month?","- Approach:
+  - Filter Billing data to year_month = 2025-07, ru = AMERICAS, brand = KEMET, and order_type in SHIPMENT, PAST DUE, or PAST DUE - GIT.
+  - Aggregate current month billing as total_sales for those filtered records.
+  - Filter for the previous month (2025-06) with the same criteria and aggregate total_sales.
+  - Compare: compute absolute delta (2025-07 total_sales − 2025-06 total_sales) and percent change (delta / 2025-06 total_sales × 100). Handle cases where previous month is missing or zero.
+
+- What we can output:
+  - 2025-07 AMERICAS KEMET billing total_sales
+  - 2025-06 AMERICAS KEMET billing total_sales (previous month)
+  - Change: absolute and percent
+
+- Important note:
+  - The provided Billing Samples only show data for 2025-01 (and do not include explicit 2025-07 or 2025-06 records for AMERICAS with brand KEMET). Therefore, with the current data, we cannot compute the requested comparison.
+
+- If you can supply:
+  - The 2025-07 and 2025-06 Billing rows for AMERICAS, brand KEMET (or confirm that such rows exist in the full dataset), I can compute and return the exact current month billing, previous month billing, and the delta/percent change.","We encountered a technical issue while processing your request. I was unable to retrieve the July 2025 and June 2025 billing sales numbers for KEMET in the AMERICAS region.
+
+Would you like me to try again, or would you prefer another approach—such as checking a different time period or including other brands or regions? Let me know your preference.",[],25,FAIL,"The agent did not identify or state the required analysis dimensions and filtering conditions (grouping by brand, RU, and time; filters: year_month=2025-07, ru=AMERICAS, brand=KEMET, order_type in SHIPMENT, PAST DUE, or PAST DUE - GIT). It only mentioned a general technical issue and did not outline the specified approach or data requirements."
+What were the top brands in 2025-04 in EMEA by bookings value and quantity?,"- Based on the provided Booking Samples, there is no data for 2025-04. The only Booking sample month shown is 2025-01. Therefore, we cannot compute the top brands for 2025-04 in EMEA from this data.
+
+What you would do if 2025-04 data were available:
+- Filters:
+  - year_month = ""2025-04""
+  - order_type = ""BOOKING""
+  - ru = ""EMEA""
+- Aggregations by brand:
+  - booking_value = SUM(total_sales)
+  - booking_qty = SUM(total_qty)
+- Rankings:
+  - Top brands by bookings value: sort by booking_value DESC, take top N (e.g., top 5 or top 10)
+  - Top brands by bookings quantity: sort by booking_qty DESC, take top N
+- Output shape (two lists):
+  - By bookings value: Brand, booking_value, booking_qty
+  - By bookings quantity: Brand, booking_qty, booking_value
+
+If you can provide the 2025-04 Booking data (or confirm where it resides), I can compute and return the exact top brands for both metrics.","I was unable to retrieve the top brands in EMEA by booking value and quantity for April 2025 due to a technical error in processing the request.
+
+To answer your question, I would have filtered the booking dataset for ru = 'EMEA' and year_month = '2025-04', grouped by brand, and then summed the total_sales (USD) and total_qty (pcs) for each brand, sorted by total_sales in descending order.
+
+If you are able to retry or adjust the request, I can attempt the query again or provide an alternative approach. Let me know how you'd like to proceed.",[],45,FAIL,"Key filters and outputs are incomplete per ground truth. Agent identified grouping by brand and RU/year_month, and aggregations total_sales and total_qty, but missed the required order_type filter (BOOKING). The agent did not specify rankings for both metrics (top by booking_value and top by booking_qty) or the two-output shape (two lists with specific fields). The response also starts with a note about a technical error rather than outlining the planned approach for available data."
+"In 2025-02, how did YAGEO perform in JAPAN & KOREA region for billing?","- Data availability: The Billing Samples set only contains data for 2025-01. There is no 2025-02 entry, so I cannot determine YAGEO’s billing performance for February 2025 in JAPAN & KOREA from the provided data.
+
+- What I would filter for if 2025-02 data existed:
+  - year_month = '2025-02'
+  - brand = 'YAGEO'
+  - ru = 'JAPAN & KOREA' (or ru contains that value)
+  - Then report metrics such as:
+    - total_sales (revenue)
+    - total_cost (cost)
+    - total_qty (units)
+    - gross_margin = total_sales - total_cost
+    - margin_rate = gross_margin / total_sales
+
+- Data quality note: In Billing Samples, multiple brands/regions appear in the same row (multi-value fields), so you’d typically need to split (explode) into one row per brand-region-month to attribute totals accurately.
+
+- If you want a closest available proxy: the 2025-01 Billing Samples do include YAGEO and JAPAN & KOREA within the same record, but the row is multi-valued and not easily attributable to a single brand-region figure. I can help restructure or query once you provide a 2025-02 row, or we can request a normalized data view for precise February results.","There was a technical error while trying to retrieve the data for YAGEO billing performance in JAPAN & KOREA for February 2025. The system was unable to process your request due to a query issue.
+
+Would you like to try a different time period or adjust your filters? If you have a specific detail to add, please let me know and I can attempt to fetch the data again. No data has been fabricated or substituted.",[],15,FAIL,"Agent did not identify the specified analysis dimensions and filters from the ground truth. Ground truth expects: year_month = '2025-02', brand = 'YAGEO', ru = 'JAPAN & KOREA', plus data availability note and explicit guidance on metrics. The agent instead only stated a generic technical query error and suggested trying a different time period, without confirming the required dimensions/filters or data availability for 2025-02."

@@ -35,7 +35,8 @@ except ImportError:
 
 # Paths
 SCRIPT_DIR = Path(__file__).parent
-PROJECT_ROOT = SCRIPT_DIR.parent
+# Go up two levels: scripts/system_prompts_deploy -> scripts -> project_root
+PROJECT_ROOT = SCRIPT_DIR.parent.parent
 
 # Input Files
 AGENT_INSTRUCTIONS = PROJECT_ROOT / "docs" / "system_prompts" / "agent_instructions.md"

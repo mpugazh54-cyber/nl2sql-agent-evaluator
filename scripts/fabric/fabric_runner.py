@@ -158,25 +158,48 @@ def main():
         except Exception as e:
             print(f"   ✗ {tbl['schema']}.{tbl['table']} - {e}")
     
-    # Add few-shot examples
-    print(f"\n💡 Adding {len(few_shots)} few-shot examples...")
-    # First, clear existing few-shots (optional)
-    existing_fewshots = datasource.get_fewshots()
-    for fs in existing_fewshots:
-        try:
-            datasource.remove_fewshot(fs["id"])
-        except:
-            pass
-    
-    # Add new few-shots (with dynamic keys to avoid duplicates)
-    timestamp_suffix = int(time.time())
-    unique_few_shots = {
-        f"{q} (v{timestamp_suffix})": sql 
-        for q, sql in few_shots.items()
-    }
-    
-    datasource.add_fewshots(unique_few_shots)
-    print(f"   ✅ Few-shots updated (v{timestamp_suffix})")
+    # Synchronize few-shot examples (Truncate and Reload)
+    print(f"\n💡 Synchronizing {len(few_shots)} few-shot examples (Truncate & Reload)...")
+
+    # 1. Clear ALL existing few-shots
+    existing_raw = datasource.get_fewshots()
+    if hasattr(existing_raw, "to_dict"):
+        existing = existing_raw.to_dict(orient="records")
+    else:
+        existing = existing_raw
+        
+    if existing:
+        print(f"   🗑️ Clearing {len(existing)} existing examples...")
+        for item in existing:
+            # Try 'Id' then 'id'
+            fs_id = item.get("Id") or item.get("id")
+            if fs_id:
+                try:
+                    datasource.remove_fewshot(fs_id)
+                except Exception as e:
+                    print(f"      ⚠️ Failed to delete '{fs_id}': {e}")
+            else:
+                 print(f"      ⚠️ Could not find 'Id' in item: {item}")
+    else:
+        print("   ✓ No existing examples to clear.")
+        
+    # 2. Add New (Clean, no timestamp)
+    print(f"   ➕ Adding {len(few_shots)} new examples...")
+    try:
+        # few_shots is {question: sql}
+        datasource.add_fewshots(few_shots)
+        print(f"   ✅ Added {len(few_shots)} examples.")
+    except Exception as e:
+        print(f"   ❌ Failed to add examples: {e}")
+
+    # 3. Verify final state
+    post_raw = datasource.get_fewshots()
+    if hasattr(post_raw, "to_dict"):
+        post_list = post_raw.to_dict(orient="records")
+    else:
+        post_list = post_raw
+        
+    print(f"\n🔎 Synchronization complete. Total stored: {len(post_list)}")
     
     # Publish agent
     print("\n🚀 Publishing agent...")

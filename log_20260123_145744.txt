@@ -1,0 +1,64 @@
+📝 Execution log started at 2026-01-23 14:57:44.666877
+📂 Logging to: log_20260123_145744.txt
+
+🚀 Initializing Fabric Data Agent Client...
+Initializing Fabric Data Agent Client...
+Tenant ID: 66d44188-4e30-446d-9ab1-a4ae1962a1b1
+Data Agent URL: https://api.fabric.microsoft.com/v1/workspaces/c731a089-60d7-4a7c-b7d7-68e549c9972f/dataagents/1dd0520d-b903-42e6-bbc1-42111b19a90e/aiassistant/openai
+✅ Using cached credentials
+
+❓ Question: Show me the top 3 brands by total sales in 2025-01 from billing.
+⏳ Waiting for agent response...
+
+🔍 Getting detailed run info for: Show me the top 3 brands by total sales in 2025-01 from billing.
+⏳ Status: queued
+⏳ Status: queued
+⏳ Status: in_progress
+⏳ Status: in_progress
+⏳ Status: in_progress
+🗃️ Found 1 SQL queries in lakehouse operations
+📄 SQL Query 1:
+   ```sql
+SELECT TOP 3
+    brand,
+    SUM(total_sales) AS total_sales,
+    MAX(updated_date) AS updated_date
+FROM ods.fact_monthly_sales_poa_billing
+WHERE year_month = '2025-01'
+  AND order_type = 'SHIPMENT'
+GROUP BY brand
+ORDER BY SUM(total_sales) DESC
+```
+   🎯 This query retrieved the data!
+   📊 Data Preview:
+      | KEMET |
+      |---|
+      | 113,158,561.57 USD |
+      | 80,346,609.70 USD |
+      | 40,474,924.25 USD |
+
+
+--- AGENT RESPONSE ---
+Answer: The top 3 brands by total sales in January 2025 from billing (order_type='SHIPMENT') are:
+1. KEMET: 113,158,561.57 USD
+2. YAGEO: 80,346,609.70 USD
+3. PULSE: 40,474,924.25 USD
+
+Filter applied:
+year_month = '2025-01', order_type = 'SHIPMENT', grouped by brand.
+
+--- SQL ANALYSIS ---
+Queries: [
+  "```sql\nSELECT TOP 3\n    brand,\n    SUM(total_sales) AS total_sales,\n    MAX(updated_date) AS updated_date\nFROM ods.fact_monthly_sales_poa_billing\nWHERE year_month = '2025-01'\n  AND order_type = 'SHIPMENT'\nGROUP BY brand\nORDER BY SUM(total_sales) DESC\n```"
+]
+Data Previews: [
+  [
+    "| KEMET |",
+    "|---|",
+    "| 113,158,561.57 USD |",
+    "| 80,346,609.70 USD |",
+    "| 40,474,924.25 USD |"
+  ]
+]
+
+--- FULL DETAILS (JSON) ---

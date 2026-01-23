@@ -10,8 +10,8 @@ load_dotenv()
 def main():
     # Configuration
     # You need to set these in your .env file or environment
-    TENANT_ID = os.getenv("TENANT_ID", "66d44188-4e30-446d-9ab1-a4ae1962a1b1")
-    DATA_AGENT_URL = os.getenv("DATA_AGENT_URL", "https://api.fabric.microsoft.com/v1/workspaces/c731a089-60d7-4a7c-b7d7-68e549c9972f/dataagents/f16ff0f4-6945-4575-968e-5f56a103ad69/aiassistant/openai")
+    TENANT_ID = os.getenv("TENANT_ID")
+    DATA_AGENT_URL = os.getenv("DATA_AGENT_URL")
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
     
     if not OPENAI_API_KEY:

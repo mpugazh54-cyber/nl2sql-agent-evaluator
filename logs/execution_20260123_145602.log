@@ -1,0 +1,33 @@
+📝 Execution log started at 2026-01-23 14:56:02.831330
+📖 Loading context for Ground Truth generation...
+Initializing Fabric Data Agent Client...
+Tenant ID: 66d44188-4e30-446d-9ab1-a4ae1962a1b1
+Data Agent URL: https://api.fabric.microsoft.com/v1/workspaces/c731a089-60d7-4a7c-b7d7-68e549c9972f/dataagents/1dd0520d-b903-42e6-bbc1-42111b19a90e/aiassistant/openai
+🔄 Cached token is expired
+
+🔐 Starting authentication...
+A browser window will open for you to sign in to your Microsoft account.
+🔄 Refreshing authentication token...
+✅ Token obtained, expires at: Fri Jan 23 16:14:56 2026
+💾 Token cached until Fri Jan 23 16:14:56 2026
+💾 Token cached until Fri Jan 23 16:14:56 2026
+✅ Authentication successful!
+📋 Found 3 test cases. Starting pipeline...
+
+[1/3] Query: For 2025-07 in AMERICAS, how did our billing for KEMET compare to the previous month?...
+🤖 Step 1: Generating Ground Truth...
+🚀 Step 2: Running Data Agent...
+
+🔍 Getting detailed run info for: For 2025-07 in AMERICAS, how did our billing for KEMET compare to the previous month?
+⏳ Status: queued
+⏳ Status: queued
+⏳ Status: in_progress
+⏳ Status: in_progress
+⏳ Status: in_progress
+⏳ Status: in_progress
+⏳ Status: in_progress
+⏳ Status: in_progress
+⏳ Status: in_progress
+⏳ Status: in_progress
+⏳ Status: in_progress
+⏳ Status: in_progress

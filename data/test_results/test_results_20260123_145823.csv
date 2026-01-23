@@ -1,0 +1,138 @@
+﻿user_prompt,expected_answer,agent_answer,generated_sql,similarity_score,evaluation_grade,evaluation_reason
+"For 2025-07 in AMERICAS, how did our billing for KEMET compare to the previous month?","- Analysis focus and filters you should apply
+  - Data domain: Billing data only.
+  - Filters:
+    - year_month = 2025-07
+    - ru = AMERICAS
+    - brand = KEMET
+  - Aggregation: sum total_sales across all order_type values (SHIPMENT, PAST DUE, etc.) for that combination. This yields the billing amount for KEMET in AMERICAS for 2025-07.
+  - Previous month comparison: repeat the same aggregation for year_month = 2025-06 with the same ru and brand, to obtain the prior month’s billing.
+
+- What to compute
+  - Billing_07_KEMET_AMERICAS = sum(total_sales) for 2025-07, AMERICAS, KEMET
+  - Billing_06_KEMET_AMERICAS = sum(total_sales) for 2025-06, AMERICAS, KEMET
+  - Change_amount = Billing_07_KEMET_AMERICAS - Billing_06_KEMET_AMERICAS
+  - Change_percent = (Change_amount / Billing_06_KEMET_AMERICAS) * 100, with appropriate handling if Billing_06_KEMET_AMERICAS is zero or NULL
+
+- Expected result format (example)
+  - Billing_07_KEMET_AMERICAS: [sum of total_sales for 2025-07 / AMERICAS / KEMET]
+  - Billing_06_KEMET_AMERICAS: [sum of total_sales for 2025-06 / AMERICAS / KEMET]
+  - Change_amount: [Billing_07_KEMET_AMERICAS - Billing_06_KEMET_AMERICAS]
+  - Change_percent: [percentage change from 2025-06 to 2025-07]
+
+- Important notes
+  - If there are no records for 2025-07 (or 2025-06) for KEMET in AMERICAS, the corresponding billing value should be treated as 0 or NULL, and the change computations should reflect that (e.g., a move from 0 to a positive value would be a rise with undefined percent change if the prior month is 0).
+  - Ensure all order types are included in the sum unless you need a breakdown by order_type.
+  - Currency: assume USD unless otherwise specified.
+
+- Example SQL-like approach (conceptual)
+  - Retrieve 2025-07:
+    - SELECT sum(total_sales) AS billing_07 FROM BillingSamples WHERE year_month = '2025-07' AND ru = 'AMERICAS' AND brand = 'KEMET';
+  - Retrieve 2025-06:
+    - SELECT sum(total_sales) AS billing_06 FROM BillingSamples WHERE year_month = '2025-06' AND ru = 'AMERICAS' AND brand = 'KEMET';
+  - Compute delta and percent change from billing_06 to billing_07.","In July 2025, KEMET billing sales in the AMERICAS region reached 26,816,006.59 USD for SHIPMENT orders. This represents an increase from the previous month, June 2025, which recorded 23,385,491.80 USD—showing a month-over-month growth.
+
+Additionally, there was a 6.8% year-over-year increase compared to July 2024, which recorded 25,112,914.80 USD.
+
+Filter applied:
+year_month = 2025-07, ru = AMERICAS, brand = KEMET, order_type = SHIPMENT.","[
+  ""```sql\nWITH SalesData AS (\n    SELECT \n        year_month,\n        SUM(total_sales) AS total_sales,\n        MAX(updated_date) AS updated_date\n    FROM ods.fact_monthly_sales_poa_billing\n    WHERE \n        brand = 'KEMET'\n        AND ru = 'AMERICAS'\n        AND order_type = 'SHIPMENT'\n        AND year_month IN ('2025-07', '2025-06', '2024-07')\n    GROUP BY year_month\n)\nSELECT \n    sd1.year_month,\n    sd1.total_sales,\n    sd1.updated_date,\n    sd2.total_sales AS prev_month_sales,\n    sd3.total_sales AS yoy_sales,\n    CASE \n        WHEN sd3.total_sales IS NOT NULL AND sd3.total_sales <> 0 \n        THEN ROUND(100.0 * (sd1.total_sales - sd3.total_sales) / sd3.total_sales, 2)\n        ELSE NULL\n    END AS YoY_Percent\nFROM SalesData sd1\nLEFT JOIN SalesData sd2 ON \n    (sd1.year_month = '2025-07' AND sd2.year_month = '2025-06')\nLEFT JOIN SalesData sd3 ON \n    (sd1.year_month = '2025-07' AND sd3.year_month = '2024-07')\nWHERE sd1.year_month = '2025-07'\n```""
+]",20,FAIL,"Analysis dimensions and filtering do not match ground truth: ground truth requires billing data aggregated across all order_type values for 2025-07 and 2025-06 in AMERICAS with brand KEMET; agent restricted aggregation to SHIPMENT only and did not provide the required Billing_07_KEMET_AMERICAS, Billing_06_KEMET_AMERICAS, Change_amount, and Change_percent in the specified format. Additionally, agent reported a YoY change rather than the required MoM change for 2025-06 vs 2025-07."
+What were the top brands in 2025-04 in EMEA by bookings value and quantity?,"To answer ""top brands in 2025-04 in EMEA by bookings value and quantity,"" here is the correct analysis approach and filtering you should apply.
+
+Filters (dimensional filters)
+- year_month = 2025-04
+- order_type = BOOKING
+- ru = EMEA
+- Optional depending on scope:
+  - focus_flag: include all (Yes/No) or restrict to a subset (e.g., focus_flag = Yes) if you only want focused brands
+  - If you want to separate by market segments later, you could also filter by sub_unit or pbg, but not necessary for the core top-brand question
+
+Measures (metrics)
+- bookings_value = sum(total_sales) for the filtered rows
+- bookings_qty = sum(total_qty) for the filtered rows
+
+Dimension to group by
+- brand
+
+Ranking and output
+- Top brands by bookings value:
+  - Sort by bookings_value descending
+  - Tie-break with bookings_qty descending, then brand name
+  - Report top N (commonly top 5 or top 10)
+  - Output columns: brand, bookings_value, bookings_qty
+- Top brands by bookings quantity:
+  - Sort by bookings_qty descending
+  - Tie-break with bookings_value descending, then brand name
+  - Output columns: brand, bookings_qty, bookings_value
+
+Notes and caveats
+- Negative bookings_value (if any) will appear at the bottom when ranking by value; decide if you want to exclude negatives from the top list or show them for completeness.
+- Ensure you sum across all relevant records for the same brand within EMEA (i.e., aggregate across all sub_units, pbg/pbu combinations, etc., for 2025-04 in EMEA).
+- If you want a combined view (both value and quantity ranked together), you could present two parallel top-5 lists or a matrix showing brand with both metrics.
+
+What I need to compute actual top brands
+- The 2025-04 booking sample data (EMEA) for the Booking table, including:
+  - brand
+  - total_sales (booking value)
+  - total_qty (booking quantity)
+  - year_month = 2025-04
+  - order_type = BOOKING
+  - ru = EMEA
+If you provide that data (or grant access to it), I’ll return:
+- Top 5 brands by bookings value in 2025-04 (brand, bookings_value, bookings_qty)
+- Top 5 brands by bookings quantity in 2025-04 (brand, bookings_qty, bookings_value)
+
+If you’d like, I can also produce a combined ranking (e.g., a dual-metric table or a normalized score) once you confirm how you want to handle ties and whether to include negative values.","In April 2025, the top brands by bookings value and quantity in the EMEA region were:
+
+By Bookings Value (USD):
+1. KEMET: $12,414,178.61
+2. PULSE: $12,377,840.15
+3. YAGEO: $1,011,742.52
+4. FERROXCUBE: $308,289.01
+5. Nexensos: $78,195.78
+6. CHILISIN: $24,762.10
+
+By Bookings Quantity (pcs):
+1. KEMET: 1,297,426,467 pcs
+2. YAGEO: 860,578,493 pcs
+3. FERROXCUBE: 23,909,097 pcs
+4. PULSE: 4,272,702 pcs
+5. CHILISIN: 632,000 pcs
+6. Nexensos: -91,212 pcs
+
+Note: Some brands, such as Nexensos, have negative quantity values, which may indicate returns or data corrections.
+
+Filter applied:
+- year_month = '2025-04'
+- ru = 'EMEA'
+- Source: Bookings (fact_monthly_sales_poa_booking)","[
+  ""```sql\nSELECT\n    brand,\n    SUM(total_sales) AS total_sales,\n    SUM(total_qty) AS total_qty,\n    MAX(updated_date) AS updated_date\nFROM ods.fact_monthly_sales_poa_booking\nWHERE year_month = '2025-04'\n  AND fu_emea_oem_flag = 'yes'\nGROUP BY brand\nORDER BY total_sales DESC, total_qty DESC\n```""
+]",92,PASS,"Dimensions and filters are correctly identified: group by brand; filters year_month = 2025-04, ru = EMEA, order_type = BOOKING. Measures match (sum total_sales for bookings_value and sum total_qty for bookings_qty). Ranking logic and output structure align (top by value with tie-breakers; top by quantity with tie-breakers). Noted deviation: shows 6 brands instead of strictly top 5, but the ranking approach and handling of negatives are consistent with the ground truth."
+"In 2025-02, how did YAGEO perform in JAPAN & KOREA region for billing?","- Short answer: Not available in the provided data. The Billing Samples only include 2025-01. There is no 2025-02 row to report YAGEO’s performance in JAPAN & KOREA.
+
+- What would be reported if 2025-02 data existed:
+  - Filtering rules to apply:
+    - year_month = 2025-02
+    - order_type = one of the Billing types (typically SHIPMENT for billing-level revenue)
+    - brand = YAGEO
+    - ru = JAPAN & KOREA
+  - Metrics to present:
+    - total_sales (billing revenue)
+    - total_cost
+    - total_qty
+    - optionally gross_margin = total_sales - total_cost
+    - updated_date (data freshness)
+  - If there are multiple matching rows, provide:
+    - a per-row breakdown (by the remaining dimensions such as sub_unit, pbg, pbu, pbu_1, pbu_2, focus_flag, customer_parent, etc.)
+    - and a month-over-month delta against 2025-01 for YAGEO in JAPAN & KOREA
+
+- Next step to answer accurately:
+  - Provide or supply the 2025-02 Billing dataset (or confirm the 2025-02 rows for YAGEO in JAPAN & KOREA). Then I can return the exact total_sales, total_cost, and total_qty (and compute growth versus 2025-01 if desired).","In February 2025, YAGEO achieved total billing sales of USD 3,865,531.81 and a total quantity of 6,002,566,653 pieces in the JAPAN & KOREA region (filtered by order_type='SHIPMENT').
+
+This represents a 5.1% increase in billing sales and a 5.1% increase in quantity compared to February 2024, when sales were USD 3,716,491.87 and quantity was 5,710,294,118 pieces.
+
+Filter applied: year_month='2025-02', ru='JAPAN & KOREA', brand='YAGEO', order_type='SHIPMENT'","[
+  ""```sql\nSELECT year_month, SUM(total_sales) AS total_sales, SUM(total_qty) AS total_qty, MAX(updated_date) AS updated_date\nFROM [ods].[fact_monthly_sales_poa_billing]\nWHERE year_month = '2024-02'\n  AND brand = 'YAGEO'\n  AND ru = 'JAPAN & KOREA'\n  AND order_type = 'SHIPMENT'\nGROUP BY year_month\n```"",
+  ""```sql\nSELECT year_month, ru, brand, SUM(total_sales) AS total_billing_sales, SUM(total_qty) AS total_billing_qty, MAX(updated_date) AS updated_date\nFROM ods.fact_monthly_sales_poa_billing\nWHERE year_month = '2025-02'\n  AND brand = 'YAGEO'\n  AND ru = 'JAPAN & KOREA'\n  AND order_type = 'SHIPMENT'\nGROUP BY year_month, ru, brand\n```""
+]",20,FAIL,"Ground Truth indicates that 2025-02 data for YAGEO in JAPAN & KOREA billing is not available (only 2025-01 exists). The agent correctly identified the filtering dimensions in part (year_month=2025-02, brand=YAGEO, ru='JAPAN & KOREA', order_type='SHIPMENT'), but it provided specific totals and MoM comparison that are not supported by the provided ground truth data, making the answer incorrect."

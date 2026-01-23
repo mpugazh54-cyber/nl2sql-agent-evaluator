@@ -7,7 +7,7 @@ Prerequisites:
     pip install azure-storage-file-datalake azure-identity
 
 Inputs:
-    - Fabric OneLake Files/agent/run_logs.json
+    - Fabric OneLake Files/agent/fabric_run_logs.json
 Outputs:
     - docs/process/fabric_run_logs.json
 """
@@ -27,7 +27,8 @@ from azure.storage.filedatalake import DataLakeServiceClient
 
 # Local paths
 SCRIPT_DIR = Path(__file__).parent
-PROJECT_ROOT = SCRIPT_DIR.parent
+# Go up two levels: scripts/system_prompts_deploy -> scripts -> project_root
+PROJECT_ROOT = SCRIPT_DIR.parent.parent
 LOCAL_LOGS = PROJECT_ROOT / "docs" / "process" / "fabric_run_logs.json"
 
 # OneLake configuration
@@ -38,7 +39,7 @@ ONELAKE_URL = f"https://{ONELAKE_ACCOUNT}.dfs.fabric.microsoft.com"
 WORKSPACE_NAME = "apac-dp-poc2024"
 LAKEHOUSE_NAME = "DATAAGENT_LH"
 TARGET_FOLDER = "Files/agent"
-LOG_FILE = "run_logs.json"
+LOG_FILE = "fabric_run_logs.json"
 
 # ============================================================================
 # SYNC FUNCTIONS
