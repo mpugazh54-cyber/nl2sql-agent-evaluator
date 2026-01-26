@@ -1,0 +1,140 @@
+﻿user_prompt,expected_answer,agent_answer,generated_sql,similarity_score,evaluation_grade,evaluation_reason
+"For 2025-07 in AMERICAS, how did our billing for KEMET compare to the previous month?","Could you please clarify your question? Adding keywords such as time period, brand, region, customer, PBU, or metric will help me give an accurate answer.
+
+Analysis status:
+- Data for 2025-07, AMERICAS, brand KEMET in the billing table is not present in the current samples.
+- To proceed, I can provide the exact data if you allow querying, but I must share the exact structure and the method since numbers are not in the provided data.
+
+Ghost record template (data would look like this if available):
+If the data was available, the record would look like: {""year_month"": ""2025-07"", ""ru"": ""AMERICAS"", ""brand"": ""KEMET"", ""total_sales"": null, ""total_qty"": null, ""updated_date"": null}
+
+Methodology (how I would compute once data exists):
+- Filter: ru = AMERICAS, brand = KEMET, year_month IN ('2025-07','2025-06') on ods.fact_monthly_sales_poa_billing.
+- Metrics: sum(total_sales) as total_sales, sum(total_qty) as total_qty.
+- MoM comparison: MoM_change = (2025-07 total_sales - 2025-06 total_sales) / 2025-06 total_sales * 100.0
+- If prior-year data exists (2024-07), compute YoY_change similarly and append as YoY%.
+
+SQL queries you can run to fetch the data and compute MoM (and optionally YoY):
+1) Retrieve current and previous month totals for billing (AMERICAS, KEMET)
+SELECT year_month, SUM(total_sales) AS total_sales, SUM(total_qty) AS total_qty, MAX(updated_date) AS updated_date
+FROM ods.fact_monthly_sales_poa_billing
+WHERE ru = 'AMERICAS'
+  AND brand = 'KEMET'
+  AND year_month IN ('2025-07','2025-06')
+GROUP BY year_month
+ORDER BY year_month;
+
+2) Compute MoM change between 2025-07 and 2025-06
+SELECT
+  cur.year_month AS current_month,
+  cur.total_sales AS current_sales,
+  prev.total_sales AS previous_sales,
+  CASE
+    WHEN prev.total_sales IS NULL OR prev.total_sales = 0 THEN NULL
+    ELSE (cur.total_sales - prev.total_sales) / prev.total_sales * 100.0
+  END AS mom_change_pct
+FROM (
+  SELECT year_month, SUM(total_sales) AS total_sales
+  FROM ods.fact_monthly_sales_poa_billing
+  WHERE ru = 'AMERICAS' AND brand = 'KEMET' AND year_month = '2025-07'
+  GROUP BY year_month
+) AS cur
+LEFT JOIN (
+  SELECT year_month, SUM(total_sales) AS total_sales
+  FROM ods.fact_monthly_sales_poa_billing
+  WHERE ru = 'AMERICAS' AND brand = 'KEMET' AND year_month = '2025-06'
+  GROUP BY year_month
+) AS prev ON 1=1;
+
+3) Optional YoY comparison (if 2024-07 data exists)
+SELECT
+  cur.year_month AS current_month_yr,
+  cur.total_sales AS current_sales_yr,
+  yoy.total_sales AS yoy_sales,
+  CASE
+    WHEN yoy.total_sales IS NULL OR yoy.total_sales = 0 THEN NULL
+    ELSE (cur.total_sales - yoy.total_sales) / yoy.total_sales * 100.0
+  END AS yoy_change_pct
+FROM (
+  SELECT year_month, SUM(total_sales) AS total_sales
+  FROM ods.fact_monthly_sales_poa_billing
+  WHERE ru = 'AMERICAS' AND brand = 'KEMET' AND year_month = '2025-07'
+  GROUP BY year_month
+) AS cur
+LEFT JOIN (
+  SELECT year_month, SUM(total_sales) AS total_sales
+  FROM ods.fact_monthly_sales_poa_billing
+  WHERE ru = 'AMERICAS' AND brand = 'KEMET' AND year_month = '2024-07'
+  GROUP BY year_month
+) AS yoy ON 1=1;
+
+Filter applied (for transparency):
+- Table: ods.fact_monthly_sales_poa_billing
+- ru: AMERICAS
+- brand: KEMET
+- year_month: 2025-07 (current) and 2025-06 (previous month for MoM)
+- Metrics: total_sales (USD), total_qty (pcs)
+
+Time range covered by the queries:
+- Current month: 2025-07
+- Previous month for comparison: 2025-06
+- If YoY is requested and data exists, 2024-07 would be used for YoY comparison.","In the AMERICAS region, billing sales (order_type='SHIPMENT') for KEMET in July 2025 were USD 26,816,006.59, compared to USD 23,385,491.80 in June 2025. This represents a month-on-month increase of 14.67%.
+
+Filter applied: year_month IN ('2025-07', '2025-06'), ru='AMERICAS', brand='KEMET', order_type='SHIPMENT'.","[
+  ""```sql\nWITH sales_data AS (\n    SELECT \n        year_month, \n        SUM(total_sales) AS total_sales_usd\n    FROM [ods].[fact_monthly_sales_poa_billing]\n    WHERE \n        brand = 'KEMET'\n        AND ru = 'AMERICAS'\n        AND order_type = 'SHIPMENT'\n        AND year_month IN ('2025-06', '2025-07')\n    GROUP BY year_month\n)\nSELECT \n    MAX(CASE WHEN year_month = '2025-07' THEN total_sales_usd END) AS july_2025_total_sales_usd,\n    MAX(CASE WHEN year_month = '2025-06' THEN total_sales_usd END) AS june_2025_total_sales_usd,\n    CASE \n        WHEN MAX(CASE WHEN year_month = '2025-06' THEN total_sales_usd END) = 0 THEN NULL\n        ELSE \n            (MAX(CASE WHEN year_month = '2025-07' THEN total_sales_usd END) - MAX(CASE WHEN year_month = '2025-06' THEN total_sales_usd END)) \n            / NULLIF(MAX(CASE WHEN year_month = '2025-06' THEN total_sales_usd END), 0) * 100\n    END AS month_on_month_pct_change\nFROM sales_data\n```""
+]",25,FAIL,"Ground truth states data for 2025-07, AMERICAS, KEMET in the billing table is not present and asks for clarification rather than providing numbers. The agent provided concrete figures and an MoM calculation, which contradicts the data availability note. Additionally, the agent applied an extra filter (order_type='SHIPMENT') not present in the ground truth's described filters. While the agent used year_month, ru, and brand (aligned), the data presence gap and the additional filter lead to a mismatch in analysis and filtering expectations."
+"In 2025-02, how did YAGEO perform in JAPAN & KOREA region for billing?","Data not available in the current samples for 2025-02: YAGEO in JAPAN & KOREA on the billing table.
+
+Ghost record template (if data were available)
+{year_month, ru, brand, total_sales, total_qty, updated_date}
+
+Methodology I would use if data existed
+- Filter to year_month = '2025-02', ru = 'JAPAN & KOREA', brand = 'YAGEO' on the billing dataset.
+- Aggregate totals: sum total_sales and sum total_qty for that month/region/brand.
+- Return updated_date as the latest update timestamp for that record.
+
+SQL you could use to fetch this data
+SELECT
+  year_month,
+  ru,
+  brand,
+  SUM(total_sales) AS total_sales,
+  SUM(total_qty) AS total_qty,
+  MAX(updated_date) AS updated_date
+FROM
+  ods.fact_monthly_sales_poa_billing
+WHERE
+  year_month = '2025-02'
+  AND ru = 'JAPAN & KOREA'
+  AND brand = 'YAGEO'
+GROUP BY
+  year_month,
+  ru,
+  brand;
+
+Filter applied:
+- year_month = 2025-02
+- ru = JAPAN & KOREA
+- brand = YAGEO
+- table = ods.fact_monthly_sales_poa_billing
+- metric focus = total_sales, total_qty (billing, SHIPMENT and non-shipment types)","We were unable to find any results matching the following condition: brand = 'YAGEO', ru = 'JAPAN & KOREA', year_month = '2025-02' (and '2024-02' for comparison).
+
+This means there is no available billing data for YAGEO in the JAPAN & KOREA region for February 2025 or February 2024 in the current data sample. Possible reasons include no recorded transactions for YAGEO in this region and period, or the data has not been updated yet.
+
+If the data was available, the record would look like:
+{year_month, ru, brand, total_sales, total_qty, updated_date}
+
+I would filter by brand YAGEO and region JAPAN & KOREA for the year_month 2025-02 (and 2024-02 for YoY%), then sum the total_sales and total_qty.
+
+SQL query that would be used:
+SELECT year_month, ru, brand, SUM(total_sales) AS total_sales, SUM(total_qty) AS total_qty, MAX(updated_date) AS updated_date
+FROM fact_monthly_sales_poa_billing
+WHERE brand = 'YAGEO' AND ru = 'JAPAN & KOREA' AND year_month IN ('2025-02', '2024-02')
+GROUP BY year_month, ru, brand
+ORDER BY year_month DESC
+
+Filter applied: brand = YAGEO, ru = JAPAN & KOREA, year_month = 2025-02 (and 2024-02 for YoY%).","[
+  ""```sql\nSELECT \n    year_month,\n    SUM(total_sales) AS total_sales,\n    SUM(total_qty) AS total_quantity,\n    MAX(updated_date) AS updated_date\nFROM \n    [ods].[fact_monthly_sales_poa_billing]\nWHERE \n    brand = 'YAGEO'\n    AND ru IN ('JAPAN', 'KOREA')\n    AND year_month IN ('2025-02', '2024-02')\nGROUP BY \n    year_month\nORDER BY \n    year_month DESC\n```"",
+  ""```sql\nSELECT \n    year_month,\n    SUM(total_sales) AS total_sales,\n    SUM(total_qty) AS total_quantity,\n    MAX(updated_date) AS updated_date\nFROM ods.fact_monthly_sales_poa_billing\nWHERE brand = 'YAGEO'\n  AND ru IN ('JAPAN', 'KOREA')\n  AND year_month IN ('2025-02', '2024-02')\nGROUP BY year_month\nORDER BY year_month DESC\n```"",
+  ""```sql\nSELECT \n    year_month,\n    SUM(total_sales) AS total_sales,\n    SUM(total_qty) AS total_qty,\n    MAX(updated_date) AS updated_date\nFROM ods.fact_monthly_sales_poa_billing\nWHERE brand = 'YAGEO'\n  AND ru IN ('JAPAN', 'KOREA')\n  AND year_month IN ('2025-02', '2024-02')\nGROUP BY year_month\nORDER BY year_month DESC\n```""
+]",95,PASS,"Agent correctly identified the analysis dimensions (year_month, ru, brand) and applied the filtering conditions (year_month = '2025-02', ru = 'JAPAN & KOREA', brand = 'YAGEO'). They correctly stated data is unavailable for 2025-02 (and referenced 2024-02 for YoY comparison), aligning with the ground truth. The response also mirrors the ghost record structure and the intended SQL approach. A minor wording/table prefix difference (ods. prefix) is negligible."

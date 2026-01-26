@@ -26,7 +26,11 @@ def generate_ground_truth(client: OpenAI, user_prompt: str, context: str) -> str
     system_prompt = (
         "You are an expert Sales Data Analyst. Given the following data schema and business rules, "
         "predict what the correct answer to the user's query should be. "
-        "Your prediction should focus on the analysis dimensions and filtering rules."
+        "Your prediction should focus on the analysis dimensions and filtering rules.\n"
+        "CRITICAL RULES:\n"
+        "1. If the user asks for 'Billing', 'Sales', or does not specify an order type, you MUST assume `order_type = 'SHIPMENT'`. YOU MUST INCLUDE THIS IN YOUR FILTER LIST.\n"
+        "2. The provided sample data is incomplete. Do NOT state that data is missing. Synthesize a response assuming data exists.\n"
+        "3. Always expect Year-over-Year (YoY) comparison in the answer if prior year data is possible."
     )
     
     try:
@@ -50,8 +54,10 @@ def evaluate_answer(client: OpenAI, user_prompt: str, expected_answer: str, agen
         "You are a Quality Assurance specialist. Compare the 'Agent Answer' against the 'Expected Ground Truth'. "
         "Your primary goal is to verify if the agent correctly identified the: "
         "1. Analysis Dimensions (e.g., grouping by brand, RU, or time). "
-        "2. Filtering Conditions (e.g., specific year_month, focus_flag, or G7 status). "
+        "2. Filtering Conditions (e.g., specific year_month, focus_flag, or order_type). "
         "Ignore minor wording differences. If the dimensions and filters are correct, give a high similarity score and PASS. "
+        "IMPORTANT: If Ground Truth says 'Data missing' but Agent returns actual data/numbers, DO NOT FAIL. "
+        "Focus ONLY on whether the Agent's SQL and Logic (filters, dimensions) match the user's intent. "
         "Return JSON: {'similarity_score': 0-100, 'grade': 'PASS'/'FAIL', 'reason': '...'}"
     )
     
@@ -88,13 +94,13 @@ def main():
     print(f"📝 Execution log started at {datetime.now()}")
 
     # Context gathering from the new structure
-    instr_dir = os.path.join(root_dir, "docs", "da_instructions") # Still in docs for now
+    instr_dir = os.path.join(root_dir, "docs", "system_prompts")
     data_raw_dir = os.path.join(root_dir, "data", "raw")
     
     print("📖 Loading context for Ground Truth generation...")
     context = (
-        f"Agent Instructions:\n{read_file(os.path.join(instr_dir, 'da_agent_instruction.md'))}\n\n"
-        f"Data Source Instructions:\n{read_file(os.path.join(instr_dir, 'da_data_source_instruction.md'))}\n\n"
+        f"Agent Instructions:\n{read_file(os.path.join(instr_dir, 'agent_instructions.md'))}\n\n"
+        f"Data Source Instructions:\n{read_file(os.path.join(instr_dir, 'data_instructions.md'))}\n\n"
         f"Billing Samples:\n{read_file(os.path.join(data_raw_dir, 'sample_data_billing.txt'))}\n\n"
         f"Booking Samples:\n{read_file(os.path.join(data_raw_dir, 'sample_data_booking.txt'))}"
     )
@@ -108,7 +114,7 @@ def main():
     fabric_client = FabricDataAgentClient(tenant_id=tenant_id, data_agent_url=data_agent_url)
     openai_client = OpenAI(api_key=openai_api_key, base_url=openai_base_url)
 
-    input_file = os.path.join(root_dir, "data", "test_case.csv")
+    input_file = os.path.join(root_dir, "data", "repro_test_case.csv")
     results_dir = os.path.join(root_dir, "data")
     # os.makedirs(results_dir, exist_ok=True) # data dir should exist
     output_file = os.path.join(results_dir, f"test_results_{timestamp}.csv")

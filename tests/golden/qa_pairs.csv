@@ -1,0 +1,97 @@
+difficulty,question,expected_sql,metric,dimension
+L1,What's the total billing for the current month?,"SELECT
+  year_month,
+  SUM(total_sales) AS total_sales,
+  SUM(total_qty) AS total_qty,
+  MAX(updated_date) AS updated_date
+FROM ods.fact_monthly_sales_poa_billing
+WHERE year_month = TO_CHAR(CURRENT_DATE, 'YYYY-MM')
+GROUP BY year_month;",Total Billing,N/A
+L1,What are the total bookings for the current month?,"SELECT SUM(total_sales) AS total_sales, SUM(total_qty) AS total_qty, MAX(updated_date) AS updated_date FROM ods.fact_monthly_sales_poa_booking WHERE year_month = '2026-01';",Total Bookings,N/A
+L1,What is the gross profit (GP) for the current month?,"SELECT
+  year_month,
+  (SUM(total_sales) - SUM(total_cost)) AS gross_profit,
+  SUM(total_sales) AS total_sales,
+  SUM(total_cost) AS total_cost,
+  MAX(updated_date) AS updated_date
+FROM ods.fact_monthly_sales_poa_billing
+WHERE year_month = '2026-01'
+GROUP BY year_month;",Gross Profit (GP),N/A
+L2,How much was billed in the AMERICAS region (ru = AMERICAS) for each month?,"SELECT year_month, SUM(total_sales) AS total_sales, SUM(total_qty) AS total_qty, MAX(updated_date) AS updated_date FROM ods.fact_monthly_sales_poa_billing WHERE ru = 'AMERICAS' GROUP BY year_month ORDER BY year_month;",Total Billing,ru
+L2,Please show me the total billing for the Great China region (sub_unit = GREAT CHINA) for 2025-08.,"SELECT SUM(total_sales) AS total_sales, SUM(total_qty) AS total_qty, MAX(updated_date) AS updated_date FROM ods.fact_monthly_sales_poa_billing WHERE year_month = '2025-08' AND sub_unit = 'GREAT CHINA';",Total Billing,ru
+L2,"Can you show me the total billing for the brand YAGEO, by month?","SELECT
+  year_month,
+  SUM(total_sales) AS total_sales,
+  SUM(total_qty) AS total_qty,
+  MAX(updated_date) AS updated_date
+FROM ods.fact_monthly_sales_poa_billing
+WHERE brand = 'YAGEO'
+GROUP BY year_month
+ORDER BY year_month;",Total Billing,brand
+L2,"Could you pull the total billing (sales) for the brand PULSE, grouped by month?","SELECT
+  year_month,
+  SUM(total_sales) AS total_sales,
+  SUM(total_qty) AS total_qty,
+  MAX(updated_date) AS updated_date
+FROM ods.fact_monthly_sales_poa_billing
+WHERE brand = 'PULSE'
+GROUP BY year_month
+ORDER BY year_month;",Total Billing,brand
+L2,Can you show the total billing by month filtered to only shipments (order_type = SHIPMENT)?,"SELECT
+  year_month,
+  SUM(total_sales) AS total_sales,
+  SUM(total_qty) AS total_qty,
+  SUM(total_cost) AS total_cost,
+  MAX(updated_date) AS updated_date
+FROM ods.fact_monthly_sales_poa_billing
+WHERE order_type = 'SHIPMENT'
+GROUP BY year_month
+ORDER BY year_month;",Total Billing,order_type
+L2,"For 2025-08, what is the total billing amount where the order_type equals BOOKING?","SELECT COALESCE(SUM(total_sales), 0) AS total_sales, COALESCE(SUM(total_qty), 0) AS total_qty, MAX(updated_date) AS updated_date
+FROM ods.fact_monthly_sales_poa_billing
+WHERE year_month = '2025-08' AND order_type = 'BOOKING';",Total Billing,order_type
+L2,"Can you show me the total billing amount for HON HAI in 2025-08, including the total quantity and the last updated date?","SELECT year_month,
+           SUM(total_sales) AS total_sales,
+           SUM(total_qty) AS total_qty,
+           MAX(updated_date) AS updated_date
+     FROM ods.fact_monthly_sales_poa_billing
+     WHERE customer_parent = 'HON HAI'
+       AND year_month = '2025-08'
+     GROUP BY year_month;",Total Billing,customer_parent
+L2,"Can you show me the total billing for Google as the customer_parent, by month?","SELECT
+  year_month,
+  customer_parent,
+  SUM(total_sales) AS total_sales,
+  SUM(total_qty) AS total_qty,
+  MAX(updated_date) AS updated_date
+FROM ods.fact_monthly_sales_poa_billing
+WHERE customer_parent = 'Google'
+GROUP BY year_month, customer_parent
+ORDER BY year_month;",Total Billing,customer_parent
+L2,"Show me the monthly total billing for the Capacitor pbg, by year_month.","SELECT
+  year_month,
+  SUM(total_sales) AS total_sales,
+  SUM(total_qty) AS total_qty,
+  MAX(updated_date) AS updated_date
+FROM
+  ods.fact_monthly_sales_poa_billing
+WHERE
+  pbg = 'Capacitor'
+GROUP BY
+  year_month
+ORDER BY
+  year_month;",Total Billing,pbg
+L2,Show me the monthly total billing for the Resistors product group (pbg = 'Resistors').,"SELECT year_month, SUM(total_sales) AS total_sales, SUM(total_qty) AS total_qty, MAX(updated_date) AS updated_date
+FROM ods.fact_monthly_sales_poa_billing
+WHERE pbg = 'Resistors'
+GROUP BY year_month
+ORDER BY year_month;",Total Billing,pbg
+L2,What is the total billing (revenue and quantity) by month for products where focus_flag is Yes?,"SELECT
+  b.year_month,
+  SUM(b.total_sales) AS total_sales,
+  SUM(b.total_qty) AS total_qty,
+  MAX(b.updated_date) AS updated_date
+FROM ods.fact_monthly_sales_poa_billing AS b
+WHERE b.focus_flag = 'Yes'
+GROUP BY b.year_month
+ORDER BY b.year_month;",Total Billing,focus_flag

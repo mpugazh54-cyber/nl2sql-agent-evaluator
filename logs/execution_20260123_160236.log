@@ -1,0 +1,125 @@
+📝 Execution log started at 2026-01-23 16:02:36.948940
+📖 Loading context for Ground Truth generation...
+Initializing Fabric Data Agent Client...
+Tenant ID: 66d44188-4e30-446d-9ab1-a4ae1962a1b1
+Data Agent URL: https://api.fabric.microsoft.com/v1/workspaces/c731a089-60d7-4a7c-b7d7-68e549c9972f/dataagents/1dd0520d-b903-42e6-bbc1-42111b19a90e/aiassistant/openai
+✅ Using cached credentials
+📋 Found 2 test cases. Starting pipeline...
+
+[1/2] Query: For 2025-07 in AMERICAS, how did our billing for KEMET compare to the previous month?...
+🤖 Step 1: Generating Ground Truth...
+🚀 Step 2: Running Data Agent...
+
+🔍 Getting detailed run info for: For 2025-07 in AMERICAS, how did our billing for KEMET compare to the previous month?
+⏳ Status: queued
+⏳ Status: queued
+⏳ Status: in_progress
+⏳ Status: in_progress
+⏳ Status: in_progress
+⏳ Status: in_progress
+🗃️ Found 1 SQL queries in lakehouse operations
+📄 SQL Query 1:
+   ```sql
+WITH sales_data AS (
+    SELECT 
+        year_month, 
+        SUM(total_sales) AS total_sales_usd
+    FROM [ods].[fact_monthly_sales_poa_billing]
+    WHERE 
+        brand = 'KEMET'
+        AND ru = 'AMERICAS'
+        AND order_type = 'SHIPMENT'
+        AND year_month IN ('2025-06', '2025-07')
+    GROUP BY year_month
+)
+SELECT 
+    MAX(CASE WHEN year_month = '2025-07' THEN total_sales_usd END) AS july_2025_total_sales_usd,
+    MAX(CASE WHEN year_month = '2025-06' THEN total_sales_usd END) AS june_2025_total_sales_usd,
+    CASE 
+        WHEN MAX(CASE WHEN year_month = '2025-06' THEN total_sales_usd END) = 0 THEN NULL
+        ELSE 
+            (MAX(CASE WHEN year_month = '2025-07' THEN total_sales_usd END) - MAX(CASE WHEN year_month = '2025-06' THEN total_sales_usd END)) 
+            / NULLIF(MAX(CASE WHEN year_month = '2025-06' THEN total_sales_usd END), 0) * 100
+    END AS month_on_month_pct_change
+FROM sales_data
+```
+   🎯 This query retrieved the data!
+   📊 Data Preview:
+      In the AMERICAS region, billing sales (order_type='SHIPMENT') for KEMET in July 2025 were USD 26,816,006.59, compared to USD 23,385,491.80 in June 2025. This represents a month-on-month increase of 14.67%.
+      Filter applied: year_month IN ('2025-07', '2025-06'), ru='AMERICAS', brand='KEMET', order_type='SHIPMENT'.
+
+🧐 Step 3: Evaluating Similarity...
+✨ Score: 25 | Grade: FAIL
+
+[2/2] Query: In 2025-02, how did YAGEO perform in JAPAN & KOREA region for billing?...
+🤖 Step 1: Generating Ground Truth...
+🚀 Step 2: Running Data Agent...
+
+🔍 Getting detailed run info for: In 2025-02, how did YAGEO perform in JAPAN & KOREA region for billing?
+⏳ Status: queued
+⏳ Status: queued
+⏳ Status: in_progress
+⏳ Status: in_progress
+⏳ Status: in_progress
+⏳ Status: in_progress
+⏳ Status: in_progress
+🗃️ Found 3 SQL queries in lakehouse operations
+📄 SQL Query 1:
+   ```sql
+SELECT 
+    year_month,
+    SUM(total_sales) AS total_sales,
+    SUM(total_qty) AS total_quantity,
+    MAX(updated_date) AS updated_date
+FROM 
+    [ods].[fact_monthly_sales_poa_billing]
+WHERE 
+    brand = 'YAGEO'
+    AND ru IN ('JAPAN', 'KOREA')
+    AND year_month IN ('2025-02', '2024-02')
+GROUP BY 
+    year_month
+ORDER BY 
+    year_month DESC
+```
+   🎯 This query retrieved the data!
+   📊 Data Preview:
+      We were unable to find any results matching the following condition: brand = 'YAGEO', ru = 'JAPAN & KOREA', year_month = '2025-02' (and '2024-02' for comparison).
+      {year_month, ru, brand, total_sales, total_qty, updated_date}
+      SELECT year_month, ru, brand, SUM(total_sales) AS total_sales, SUM(total_qty) AS total_qty, MAX(updated_date) AS updated_date
+      GROUP BY year_month, ru, brand
+      Filter applied: brand = YAGEO, ru = JAPAN & KOREA, year_month = 2025-02 (and 2024-02 for YoY%).
+
+📄 SQL Query 2:
+   ```sql
+SELECT 
+    year_month,
+    SUM(total_sales) AS total_sales,
+    SUM(total_qty) AS total_quantity,
+    MAX(updated_date) AS updated_date
+FROM ods.fact_monthly_sales_poa_billing
+WHERE brand = 'YAGEO'
+  AND ru IN ('JAPAN', 'KOREA')
+  AND year_month IN ('2025-02', '2024-02')
+GROUP BY year_month
+ORDER BY year_month DESC
+```
+
+📄 SQL Query 3:
+   ```sql
+SELECT 
+    year_month,
+    SUM(total_sales) AS total_sales,
+    SUM(total_qty) AS total_qty,
+    MAX(updated_date) AS updated_date
+FROM ods.fact_monthly_sales_poa_billing
+WHERE brand = 'YAGEO'
+  AND ru IN ('JAPAN', 'KOREA')
+  AND year_month IN ('2025-02', '2024-02')
+GROUP BY year_month
+ORDER BY year_month DESC
+```
+
+🧐 Step 3: Evaluating Similarity...
+✨ Score: 95 | Grade: PASS
+✅ Completed. Results saved to C:\Users\Anna.YR.Chen\Projects\sales_agent\data\test_results_20260123_160236.csv
