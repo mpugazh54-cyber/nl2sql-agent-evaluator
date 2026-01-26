@@ -1,0 +1,3 @@
+difficulty,question,metric,dimension
+L5,"Show me the YoY growth of Total Billing (Sales) for each month (year_month), comparing this year's total sales to the same month last year.",Sales YoY,year_month
+L5,"How did Total Cost grow YoY for each month this year, comparing every month to the same month last year?",Total Cost YoY Growth,year_month

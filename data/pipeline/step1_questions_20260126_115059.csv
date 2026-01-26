@@ -1,0 +1,11 @@
+difficulty,question,metric,dimension
+L2,What is the total billing for Great China in 2023-01?,total_sales,ru
+L2,What is the total cost for the brand YAGEO in 2023-01?,total_cost,"brand, year_month"
+L2,Analyze gross profit (GP) for ru='Great China' in 2023-08 (GP = total_sales - total_cost).,gross_profit,ru
+L2,Analyze GM% for ru='Great China' in 2023-01.,total_sales,ru
+L2,Analyze the ASP (average selling price) for the brand YAGEO in 2023-01 (ASP = total_sales / total_qty).,total_sales,brand
+L3,Who are the top 5 Product Business Groups (PBG) by total billing (sales) this month?,total_sales,pbg
+L3,Which Product Business Group (PBG) had the highest total cost this month?,total_cost,pbg
+L3,Who are the top 5 Product Business Groups (PBG) by gross profit this month?,gross_profit,pbg
+L3,Who are the top 5 Product Business Groups (PBG) by Gross Margin Percentage (GM%) this month?,GM%,pbg
+L3,Who are the top 5 Product Business Groups (PBG) by Average Selling Price (ASP) for the current month?,ASP,pbg

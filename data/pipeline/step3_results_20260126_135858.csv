@@ -1,0 +1,323 @@
+difficulty,question,metric,dimension,expected_answer,agent_answer,generated_sql
+L2,What is the total billing for Great China in 2023-01?,total_sales,ru,"Data not available in the current samples.
+
+If the data was available, the record would look like: {year_month, ru, brand, total_sales, total_qty, updated_date}.
+
+Calculation methodology:
+- Filter by year_month = '2023-01' and ru = 'GREAT CHINA' in ods.fact_monthly_sales_poa_billing.
+- Sum total_sales across all brands to get total billing for the period.
+- Sum total_qty for completeness; updated_date would be the latest update timestamp for that period.
+- If multiple brands exist for the region, aggregate across all brands.
+
+SQL query that would fetch this data:
+SELECT year_month,
+       ru,
+       SUM(total_sales) AS total_sales,
+       SUM(total_qty) AS total_qty,
+       MAX(updated_date) AS updated_date
+FROM ods.fact_monthly_sales_poa_billing
+WHERE year_month = '2023-01'
+  AND ru = 'GREAT CHINA'
+GROUP BY year_month, ru
+ORDER BY total_sales DESC;
+
+Filter applied: year_month = '2023-01'; ru = 'GREAT CHINA'; table = ods.fact_monthly_sales_poa_billing; metric = total_sales; grouping = year_month, ru.","The total billing sales for Great China in January 2023 was USD 120,053,610.89. No data was found for January 2022, so a YoY% comparison cannot be provided.
+
+Filter applied: year_month = '2023-01', ru = 'GREAT CHINA', order_type = 'SHIPMENT'.","[""SELECT year_month, ru, SUM(total_sales) AS total_sales, MAX(updated_date) AS updated_date\nFROM [ods].[fact_monthly_sales_poa_billing]\nWHERE year_month = '2022-01'\n  AND ru = 'GREAT CHINA'\n  AND order_type = 'SHIPMENT'\nGROUP BY year_month, ru"", ""SELECT year_month, SUM(total_sales) AS total_sales\\r\\nFROM [ods].[fact_monthly_sales_poa_billing]\\r\\nWHERE year_month = \\u00272024-12\\u0027\\r\\n  AND (customer_parent = \\u0027HUAWEI\\u0027 OR local_assembler = \\u0027HUAWEI\\u0027 OR final_customer = \\u0027HUAWEI\\u0027)\\r\\n  AND order_type = \\u0027SHIPMENT\\u0027\\r\\nGROUP BY year_month\"",\""queryLanguage\"":\""sql\""},{\""question\"":\""Show the new billing customer parent acquired in December 2024 and their order value.\"",\""query\"":\""WITH first_purchase AS (\\r\\n  SELECT\\r\\n    customer_parent,\\r\\n    MIN(year_month) AS first_purchase_month\\r\\n  FROM ods.fact_monthly_sales_poa_billing\\r\\n  GROUP BY customer_parent\\r\\n)\\r\\n\\r\\nSELECT\\r\\n  t.customer_parent, \\r\\n  SUM(t.total_sales) AS new_customer_total_price,\\r\\n  SUM(t.total_qty) AS new_customer_total_quantity\\r\\nFROM ods.fact_monthly_sales_poa_billing t\\r\\nJOIN first_purchase f\\r\\n  ON t.customer_parent = f.customer_parent\\r\\nWHERE f.first_purchase_month = \\u00272024-12\\u0027\\r\\n  AND t.year_month = \\u00272024-12\\u0027\\r\\nGROUP BY t.customer_parent"", ""SELECT year_month, ru, SUM(total_sales) AS total_sales, MAX(updated_date) AS updated_date\nFROM [ods].[fact_monthly_sales_poa_billing]\nWHERE year_month = '2022-01'\n  AND ru = 'GREAT CHINA'\n  AND order_type = 'SHIPMENT'\nGROUP BY year_month, ru\r\n```\r\n\r\nThe error was: No data found after query execution."", ""SELECT year_month, ru, SUM(total_sales) AS total_sales, MAX(updated_date) AS updated_date\nFROM [ods].[fact_monthly_sales_poa_billing]\nWHERE year_month = '2022-01'\n  AND ru = 'GREAT CHINA'\n  AND order_type = 'SHIPMENT'\nGROUP BY year_month, ru"", ""SELECT year_month, SUM(total_sales) AS total_sales\\r\\nFROM [ods].[fact_monthly_sales_poa_billing]\\r\\nWHERE year_month = \\u00272024-12\\u0027\\r\\n  AND (customer_parent = \\u0027HUAWEI\\u0027 OR local_assembler = \\u0027HUAWEI\\u0027 OR final_customer = \\u0027HUAWEI\\u0027)\\r\\n  AND order_type = \\u0027SHIPMENT\\u0027\\r\\nGROUP BY year_month\"",\""queryLanguage\"":\""sql\""},{\""question\"":\""Show the new billing customer parent acquired in December 2024 and their order value.\"",\""query\"":\""WITH first_purchase AS (\\r\\n  SELECT\\r\\n    customer_parent,\\r\\n    MIN(year_month) AS first_purchase_month\\r\\n  FROM ods.fact_monthly_sales_poa_billing\\r\\n  GROUP BY customer_parent\\r\\n)\\r\\n\\r\\nSELECT\\r\\n  t.customer_parent, \\r\\n  SUM(t.total_sales) AS new_customer_total_price,\\r\\n  SUM(t.total_qty) AS new_customer_total_quantity\\r\\nFROM ods.fact_monthly_sales_poa_billing t\\r\\nJOIN first_purchase f\\r\\n  ON t.customer_parent = f.customer_parent\\r\\nWHERE f.first_purchase_month = \\u00272024-12\\u0027\\r\\n  AND t.year_month = \\u00272024-12\\u0027\\r\\nGROUP BY t.customer_parent"", ""SELECT year_month, ru, SUM(total_sales) AS total_sales, MAX(updated_date) AS updated_date\nFROM [ods].[fact_monthly_sales_poa_billing]\nWHERE year_month = '2023-01'\n  AND ru = 'GREAT CHINA'\n  AND order_type = 'SHIPMENT'\nGROUP BY year_month, ru"", ""SELECT year_month, SUM(total_sales) AS total_sales\\r\\nFROM [ods].[fact_monthly_sales_poa_billing]\\r\\nWHERE year_month = \\u00272024-12\\u0027\\r\\n  AND (customer_parent = \\u0027HUAWEI\\u0027 OR local_assembler = \\u0027HUAWEI\\u0027 OR final_customer = \\u0027HUAWEI\\u0027)\\r\\n  AND order_type = \\u0027SHIPMENT\\u0027\\r\\nGROUP BY year_month\"",\""queryLanguage\"":\""sql\""},{\""question\"":\""Show the new billing customer parent acquired in December 2024 and their order value.\"",\""query\"":\""WITH first_purchase AS (\\r\\n  SELECT\\r\\n    customer_parent,\\r\\n    MIN(year_month) AS first_purchase_month\\r\\n  FROM ods.fact_monthly_sales_poa_billing\\r\\n  GROUP BY customer_parent\\r\\n)\\r\\n\\r\\nSELECT\\r\\n  t.customer_parent, \\r\\n  SUM(t.total_sales) AS new_customer_total_price,\\r\\n  SUM(t.total_qty) AS new_customer_total_quantity\\r\\nFROM ods.fact_monthly_sales_poa_billing t\\r\\nJOIN first_purchase f\\r\\n  ON t.customer_parent = f.customer_parent\\r\\nWHERE f.first_purchase_month = \\u00272024-12\\u0027\\r\\n  AND t.year_month = \\u00272024-12\\u0027\\r\\nGROUP BY t.customer_parent""]"
+L2,What is the total cost for the brand YAGEO in 2023-01?,total_cost,"brand, year_month","Data not available in the current samples for 2023-01 cost for brand YAGEO.
+
+If the data was available, the record would look like: {year_month, ru, brand, total_sales, total_qty, updated_date}.
+
+Calculation methodology: I would filter by brand YAGEO and year_month '2023-01', then sum total_cost.
+
+SQL to fetch data:
+SELECT year_month, brand, SUM(total_cost) AS total_cost, MAX(updated_date) AS updated_date
+FROM ods.fact_monthly_sales_poa_billing
+WHERE year_month = '2023-01' AND brand = 'YAGEO'
+GROUP BY year_month, brand;
+
+Filter applied: year_month=2023-01; brand=YAGEO; table=ods.fact_monthly_sales_poa_billing","The total cost for the brand YAGEO in January 2023 (year_month = 2023-01) for billing sales (order type 'SHIPMENT') is USD 58,615,822.21.
+
+Filter applied: brand = YAGEO, year_month = 2023-01, order_type = SHIPMENT.","[""SELECT year_month, SUM(total_cost) AS total_cost, MAX(updated_date) AS updated_date\nFROM [ods].[fact_monthly_sales_poa_billing]\nWHERE year_month = '2023-01'\n  AND brand = 'YAGEO'\n  AND order_type = 'SHIPMENT'\nGROUP BY year_month"", ""SELECT year_month, SUM(total_sales) as total_sales\\r\\nFROM [ods].[fact_monthly_sales_poa_billing]\\r\\nWHERE year_month = FORMAT(GETDATE(), \\u0027yyyy-MM\\u0027) \\r\\nAND brand = \\u0027YAGEO\\u0027\\r\\nGROUP BY year_month\"",\""queryLanguage\"":\""sql\""},{\""question\"":\""What are YAGEO top-selling PBU by revenue in 2024?\"",\""query\"":\""SELECT \\r\\n    pbu,\\r\\n    SUM(total_sales) AS total_revenue\\r\\nFROM \\r\\n    [ods].[fact_monthly_sales_poa_billing]\\r\\nWHERE \\r\\n    brand = \\u0027YAGEO\\u0027 AND LEFT(year_month, 4) = \\u00272024\\u0027\\r\\nGROUP BY \\r\\n    pbu\\r\\nORDER BY \\r\\n    total_revenue DESC\"",\""queryLanguage\"":\""sql\""},{\""question\"":\""Show the new billing customer parent acquired in December 2024 and their order value.\"",\""query\"":\""WITH first_purchase AS (\\r\\n  SELECT\\r\\n    customer_parent,\\r\\n    MIN(year_month) AS first_purchase_month\\r\\n  FROM ods.fact_monthly_sales_poa_billing\\r\\n  GROUP BY customer_parent\\r\\n)\\r\\n\\r\\nSELECT\\r\\n  t.customer_parent, \\r\\n  SUM(t.total_sales) AS new_customer_total_price,\\r\\n  SUM(t.total_qty) AS new_customer_total_quantity\\r\\nFROM ods.fact_monthly_sales_poa_billing t\\r\\nJOIN first_purchase f\\r\\n  ON t.customer_parent = f.customer_parent\\r\\nWHERE f.first_purchase_month = \\u00272024-12\\u0027\\r\\n  AND t.year_month = \\u00272024-12\\u0027\\r\\nGROUP BY t.customer_parent""]"
+L2,Analyze gross profit (GP) for ru='Great China' in 2023-08 (GP = total_sales - total_cost).,gross_profit,ru,"We were unable to retrieve GP for ru='GREAT CHINA' in 2023-08 from the current samples.
+
+Ghost Record (structure if data were available):
+{year_month, ru, brand, total_sales, total_qty, updated_date}
+Example:
+{2023-08, GREAT CHINA, NULL, NULL, NULL, NULL}
+
+Methodology to compute GP (when data exist):
+- GP = total_sales - total_cost for the selected period and region.
+- Data source: billing table (ods.fact_monthly_sales_poa_billing).
+- Filter: year_month = '2023-08' and ru = 'GREAT CHINA'.
+- If multiple brands exist within the ru, sum across all brands for the ru.
+
+SQL you could run to fetch the data:
+SELECT
+  year_month,
+  ru,
+  SUM(total_sales) AS total_sales,
+  SUM(total_cost) AS total_cost,
+  (SUM(total_sales) - SUM(total_cost)) AS gp,
+  MAX(updated_date) AS updated_date
+FROM
+  ods.fact_monthly_sales_poa_billing
+WHERE
+  year_month = '2023-08'
+  AND ru = 'GREAT CHINA'
+GROUP BY
+  year_month, ru;
+
+Filter applied:
+year_month=2023-08, ru=GREAT CHINA, data_source=ods.fact_monthly_sales_poa_billing","The gross profit (GP) for the reporting unit GREAT CHINA in August 2023 (based on billing sales, shipment orders) was USD 37,483,761.31. This was calculated as total sales of USD 132,620,976.77 minus total cost of USD 95,137,215.46.
+
+Filter applied:
+year_month = 2023-08, ru = 'GREAT CHINA', order_type = 'SHIPMENT'","[""SELECT \n  SUM(total_sales) AS total_sales,\n  SUM(total_cost) AS total_cost,\n  SUM(total_sales) - SUM(total_cost) AS gross_profit,\n  MAX(updated_date) AS updated_date\nFROM ods.fact_monthly_sales_poa_billing\nWHERE year_month = '2023-08'\n  AND ru = 'GREAT CHINA'\n  AND order_type = 'SHIPMENT'"", ""SELECT year_month, SUM(total_sales) as total_sales\\r\\nFROM [ods].[fact_monthly_sales_poa_billing]\\r\\nWHERE year_month = FORMAT(GETDATE(), \\u0027yyyy-MM\\u0027) \\r\\nAND brand = \\u0027YAGEO\\u0027\\r\\nGROUP BY year_month\"",\""queryLanguage\"":\""sql\""},{\""question\"":\""Show the total sales to HUAWEI in 2024 December.\"",\""query\"":\""SELECT year_month, SUM(total_sales) AS total_sales\\r\\nFROM [ods].[fact_monthly_sales_poa_billing]\\r\\nWHERE year_month = \\u00272024-12\\u0027\\r\\n  AND (customer_parent = \\u0027HUAWEI\\u0027 OR local_assembler = \\u0027HUAWEI\\u0027 OR final_customer = \\u0027HUAWEI\\u0027)\\r\\n  AND order_type = \\u0027SHIPMENT\\u0027\\r\\nGROUP BY year_month\"",\""queryLanguage\"":\""sql\""},{\""question\"":\""Show the new billing customer parent acquired in December 2024 and their order value.\"",\""query\"":\""WITH first_purchase AS (\\r\\n  SELECT\\r\\n    customer_parent,\\r\\n    MIN(year_month) AS first_purchase_month\\r\\n  FROM ods.fact_monthly_sales_poa_billing\\r\\n  GROUP BY customer_parent\\r\\n)\\r\\n\\r\\nSELECT\\r\\n  t.customer_parent, \\r\\n  SUM(t.total_sales) AS new_customer_total_price,\\r\\n  SUM(t.total_qty) AS new_customer_total_quantity\\r\\nFROM ods.fact_monthly_sales_poa_billing t\\r\\nJOIN first_purchase f\\r\\n  ON t.customer_parent = f.customer_parent\\r\\nWHERE f.first_purchase_month = \\u00272024-12\\u0027\\r\\n  AND t.year_month = \\u00272024-12\\u0027\\r\\nGROUP BY t.customer_parent""]"
+L2,Analyze GM% for ru='Great China' in 2023-01.,total_sales,ru,"Data not available in the current samples for GM% by ru='Great China' in 2023-01.
+
+Ghost Record (if the data were available):
+{year_month, ru, brand, total_sales, total_qty, updated_date}
+= {'2023-01', 'GREAT CHINA', NULL, NULL, NULL, NULL}
+
+Calculation methodology:
+- I would filter by year_month = '2023-01', ru = 'GREAT CHINA', and order_type = 'SHIPMENT' on the billing table (ods.fact_monthly_sales_poa_billing).
+- I would sum total_sales and total_cost (and total_qty if needed) and compute GM% as:
+  GM% = (SUM(total_sales) - SUM(total_cost)) / SUM(total_sales)
+
+SQL query that would fetch this data:
+SELECT
+  year_month,
+  ru,
+  brand,
+  SUM(total_sales) AS total_sales,
+  SUM(total_cost) AS total_cost,
+  SUM(total_qty) AS total_qty,
+  MAX(updated_date) AS updated_date
+FROM ods.fact_monthly_sales_poa_billing
+WHERE year_month = '2023-01'
+  AND ru = 'GREAT CHINA'
+  AND order_type = 'SHIPMENT'
+GROUP BY year_month, ru, brand;
+
+Filter applied:
+year_month = 2023-01; ru = GREAT CHINA; order_type = SHIPMENT; table = ods.fact_monthly_sales_poa_billing
+
+Note: YoY comparison cannot be generated without prior-year data in the current sample. If you’d like, I can attempt to fetch 2022-01 data for the same filters and provide a YoY GM% if available.","For January 2023, the GM% (Gross Margin Percentage) for Great China (ru='GREAT CHINA') is 24.49%. This is calculated as (total_sales - total_cost) / total_sales, where total_sales is 120,053,610.89 USD and total_cost is 90,650,778.76 USD.
+
+Filter applied:
+year_month = '2023-01', ru = 'GREAT CHINA', order_type = 'SHIPMENT'","[""SELECT \n    year_month,\n    ru,\n    order_type,\n    SUM(total_sales) AS total_sales,\n    SUM(total_cost) AS total_cost,\n    CASE \n        WHEN SUM(total_sales) = 0 THEN NULL\n        ELSE (SUM(total_sales) - SUM(total_cost)) / SUM(total_sales)\n    END AS gm_percent,\n    MAX(updated_date) AS updated_date\nFROM ods.fact_monthly_sales_poa_billing\nWHERE year_month = '2023-01'\n  AND ru = 'GREAT CHINA'\n  AND order_type = 'SHIPMENT'\nGROUP BY year_month, ru, order_type"", ""SELECT \n    year_month,\n    ru,\n    SUM(total_sales) AS total_sales,\n    SUM(total_cost) AS total_cost,\n    CASE \n        WHEN SUM(total_sales) = 0 THEN NULL\n        ELSE (SUM(total_sales) - SUM(total_cost)) / SUM(total_sales)\n    END AS gm_percent,\n    MAX(updated_date) AS updated_date\nFROM ods.fact_monthly_sales_poa_billing\nWHERE year_month = '2023-01'\n  AND ru = 'GREAT CHINA'\n  AND order_type = 'SHIPMENT'\nGROUP BY year_month, ru"", ""SELECT \n    year_month,\n    ru,\n    SUM(total_sales) AS total_sales,\n    SUM(total_cost) AS total_cost,\n    CASE \n        WHEN SUM(total_sales) = 0 THEN NULL\n        ELSE (SUM(total_sales) - SUM(total_cost)) / SUM(total_sales)\n    END AS gm_percent,\n    MAX(updated_date) AS updated_date\nFROM ods.fact_monthly_sales_poa_billing\nWHERE year_month = '2023-01'\n  AND order_type = 'SHIPMENT'\n  AND ru = 'GREAT CHINA'\nGROUP BY year_month, ru"", ""SELECT year_month, SUM(total_sales) as total_sales\\r\\nFROM [ods].[fact_monthly_sales_poa_billing]\\r\\nWHERE year_month = FORMAT(GETDATE(), \\u0027yyyy-MM\\u0027) \\r\\nAND brand = \\u0027YAGEO\\u0027\\r\\nGROUP BY year_month\"",\""queryLanguage\"":\""sql\""},{\""question\"":\""Show the total sales to HUAWEI in 2024 December.\"",\""query\"":\""SELECT year_month, SUM(total_sales) AS total_sales\\r\\nFROM [ods].[fact_monthly_sales_poa_billing]\\r\\nWHERE year_month = \\u00272024-12\\u0027\\r\\n  AND (customer_parent = \\u0027HUAWEI\\u0027 OR local_assembler = \\u0027HUAWEI\\u0027 OR final_customer = \\u0027HUAWEI\\u0027)\\r\\n  AND order_type = \\u0027SHIPMENT\\u0027\\r\\nGROUP BY year_month\"",\""queryLanguage\"":\""sql\""},{\""question\"":\""Which RU or Sub Unit had the most sales in December 2024?\"",\""query\"":\""-- Calculate total sales grouped by ru\\r\\nWITH ru_sales AS (\\r\\n    SELECT \\r\\n        \\u0027ru\\u0027 AS type,\\r\\n        ru AS label,\\r\\n        SUM(total_sales) AS total_sales\\r\\n    FROM ods.fact_monthly_sales_poa_billing\\r\\n    WHERE year_month = \\u00272024-12\\u0027\\r\\n    GROUP BY ru\\r\\n),\\r\\n\\r\\n-- Take the ru with highest sales\\r\\ntop_ru AS (\\r\\n    SELECT TOP 1 *\\r\\n    FROM ru_sales\\r\\n    ORDER BY total_sales DESC\\r\\n),\\r\\n\\r\\n-- Calculate total sales grouped by sub_unit\\r\\nsub_unit_sales AS (\\r\\n    SELECT \\r\\n        \\u0027sub_unit\\u0027 AS type,\\r\\n        sub_unit AS label,\\r\\n        SUM(total_sales) AS total_sales\\r\\n    FROM ods.fact_monthly_sales_poa_billing\\r\\n    WHERE year_month = \\u00272024-12\\u0027\\r\\n    GROUP BY sub_unit\\r\\n),\\r\\n\\r\\n-- Take the sub_unit with highest sales\\r\\ntop_sub_unit AS (\\r\\n    SELECT TOP 1 *\\r\\n    FROM sub_unit_sales\\r\\n    ORDER BY total_sales DESC\\r\\n)\\r\\n\\r\\n-- Final output for OR queries: two rows (top ru \\u002B top sub_unit)\\r\\nSELECT * FROM top_ru\\r\\nUNION ALL\\r\\nSELECT * FROM top_sub_unit""]"
+L2,Analyze the ASP (average selling price) for the brand YAGEO in 2023-01 (ASP = total_sales / total_qty).,total_sales,brand,"Data not available in the current samples.
+
+If the data was available, the record would look like: {year_month, ru, brand, total_sales, total_qty, updated_date}
+
+Methodology:
+- Target table: ods.fact_monthly_sales_poa_billing
+- Filter: year_month = '2023-01' and brand = 'YAGEO'
+- Aggregation: sum(total_sales) as total_sales, sum(total_qty) as total_qty (grouped by year_month and brand)
+- ASP calculation: ASP = total_sales / total_qty (for the given month and brand)
+
+SQL you would use to fetch this data:
+SELECT
+  year_month,
+  brand,
+  SUM(total_sales) AS total_sales,
+  SUM(total_qty) AS total_qty,
+  MAX(updated_date) AS updated_date
+FROM ods.fact_monthly_sales_poa_billing
+WHERE year_month = '2023-01'
+  AND brand = 'YAGEO'
+GROUP BY year_month, brand;
+
+Filter applied: year_month=2023-01, brand=YAGEO, table=ods.fact_monthly_sales_poa_billing","The average selling price (ASP) for the brand YAGEO in January 2023 was 0.000954 USD per piece. This was calculated using total sales divided by total quantity, considering only billing sales with order_type='SHIPMENT'.
+
+Filter applied: brand='YAGEO', year_month='2023-01', order_type='SHIPMENT'.","[""SELECT \n    SUM(total_sales) / NULLIF(SUM(total_qty), 0) AS average_selling_price\nFROM \n    [ods].[fact_monthly_sales_poa_billing]\nWHERE \n    brand = 'YAGEO'\n    AND year_month = '2023-01'\n    AND order_type = 'SHIPMENT'"", ""SELECT \n    '2023-01' AS year_month,\n    SUM(total_sales) / NULLIF(SUM(total_qty), 0) AS avg_selling_price,\n    MAX(updated_date) AS updated_date\nFROM ods.fact_monthly_sales_poa_billing\nWHERE brand = 'YAGEO'\n  AND year_month = '2023-01'\n  AND order_type = 'SHIPMENT'"", ""SELECT \n    SUM(total_sales) / NULLIF(SUM(total_qty), 0) AS avg_selling_price\nFROM \n    [ods].[fact_monthly_sales_poa_billing]\nWHERE \n    brand = 'YAGEO'\n    AND year_month = '2023-01'\n    AND order_type = 'SHIPMENT'"", ""SELECT year_month, SUM(total_sales) as total_sales\\r\\nFROM [ods].[fact_monthly_sales_poa_billing]\\r\\nWHERE year_month = FORMAT(GETDATE(), \\u0027yyyy-MM\\u0027) \\r\\nAND brand = \\u0027YAGEO\\u0027\\r\\nGROUP BY year_month\"",\""queryLanguage\"":\""sql\""},{\""question\"":\""What are YAGEO top-selling PBU by revenue in 2024?\"",\""query\"":\""SELECT \\r\\n    pbu,\\r\\n    SUM(total_sales) AS total_revenue\\r\\nFROM \\r\\n    [ods].[fact_monthly_sales_poa_billing]\\r\\nWHERE \\r\\n    brand = \\u0027YAGEO\\u0027 AND LEFT(year_month, 4) = \\u00272024\\u0027\\r\\nGROUP BY \\r\\n    pbu\\r\\nORDER BY \\r\\n    total_revenue DESC\"",\""queryLanguage\"":\""sql\""},{\""question\"":\""Find quantity sold to Infenion Tech for 2025.\"",\""query\"":\""SELECT SUM(total_qty) AS total_quantity_sold\\r\\nFROM ods.fact_monthly_sales_poa_billing\\r\\nWHERE (customer_parent = \\u0027Infineon Technologies\\u0027 OR local_assembler = \\u0027Infineon Technologies\\u0027 OR final_customer = \\u0027Infineon Technologies\\u0027)\\r\\n  AND order_type = \\u0027SHIPMENT\\u0027\\r\\n  AND year_month LIKE \\u00272025-%\\u0027\"",\""queryLanguage\"":\""sql\""},{\""question\"":\""Show the new billing customer parent acquired in December 2024 and their order value.\"",\""query\"":\""WITH first_purchase AS (\\r\\n  SELECT\\r\\n    customer_parent,\\r\\n    MIN(year_month) AS first_purchase_month\\r\\n  FROM ods.fact_monthly_sales_poa_billing\\r\\n  GROUP BY customer_parent\\r\\n)\\r\\n\\r\\nSELECT\\r\\n  t.customer_parent, \\r\\n  SUM(t.total_sales) AS new_customer_total_price,\\r\\n  SUM(t.total_qty) AS new_customer_total_quantity\\r\\nFROM ods.fact_monthly_sales_poa_billing t\\r\\nJOIN first_purchase f\\r\\n  ON t.customer_parent = f.customer_parent\\r\\nWHERE f.first_purchase_month = \\u00272024-12\\u0027\\r\\n  AND t.year_month = \\u00272024-12\\u0027\\r\\nGROUP BY t.customer_parent""]"
+L3,Who are the top 5 Product Business Groups (PBG) by total billing (sales) this month?,total_sales,pbg,"The data is not available in the current samples for the requested period: 2026-01.
+
+If the data were available, the record would look like: {year_month, ru, brand, total_sales, total_qty, updated_date}.
+
+Methodology:
+- I would filter by year_month = '2026-01' and group by pbg, summing total_sales to identify the top 5 Product Business Groups (PBG) by billing (sales).
+
+SQL query that would fetch this data:
+SELECT
+  year_month,
+  pbg,
+  SUM(total_sales) AS total_sales,
+  SUM(total_qty) AS total_qty,
+  MAX(updated_date) AS updated_date
+FROM
+  ods.fact_monthly_sales_poa_billing
+WHERE
+  year_month = '2026-01'
+GROUP BY
+  year_month, pbg
+ORDER BY
+  total_sales DESC
+LIMIT 5;
+
+Date range covered: 2026-01 (this month).
+
+Filter applied: year_month = '2026-01'; group by pbg; metric total_sales; table ods.fact_monthly_sales_poa_billing; order_type across all billing types (SHIPMENT, BACKLOG, etc.).",We were unable to find any results matching the following condition: year_month = current month AND order_type = 'SHIPMENT'. Could you please verify that it has been spelled correctly or clarify if you would like to see data from a different month or for a different order type?,"[""SELECT TOP 5\n    pbg,\n    SUM(total_sales) AS total_sales\nFROM ods.fact_monthly_sales_poa_billing\nWHERE year_month = FORMAT(GETDATE(), 'yyyy-MM')\n  AND order_type = 'SHIPMENT'\nGROUP BY pbg\nORDER BY total_sales DESC"", ""SELECT TOP 5\n    pbg,\n    SUM(total_sales) AS total_sales\nFROM [ods].[fact_monthly_sales_poa_billing]\nWHERE year_month = FORMAT(GETDATE(), 'yyyy-MM')\n  AND order_type = 'SHIPMENT'\nGROUP BY pbg\nORDER BY total_sales DESC"", ""SELECT TOP 5\\r\\n        erp_sales_rep,\\r\\n        SUM(total_sales) AS total_sales\\r\\n    FROM ods.fact_monthly_sales_poa_billing\\r\\n    WHERE\\r\\n        year_month = \\u00272025-01\\u0027\\r\\n        AND erp_sales_rep IS NOT NULL\\r\\n        AND erp_sales_rep \\u003C\\u003E \\u0027\\u0027\\r\\n    GROUP BY erp_sales_rep\\r\\n    ORDER BY SUM(total_sales) DESC\\r\\n),\\r\\nDistinctBrand AS (\\r\\n    SELECT DISTINCT \\r\\n        erp_sales_rep,\\r\\n        brand\\r\\n    FROM ods.fact_monthly_sales_poa_billing\\r\\n    WHERE year_month = \\u00272025-01\\u0027\\r\\n),\\r\\nBrandAgg AS (\\r\\n    SELECT\\r\\n        db.erp_sales_rep,\\r\\n        STRING_AGG(db.brand, \\u0027, \\u0027) AS brands\\r\\n    FROM DistinctBrand db\\r\\n    INNER JOIN Top5 t ON db.erp_sales_rep = t.erp_sales_rep\\r\\n    GROUP BY db.erp_sales_rep\\r\\n)\\r\\nSELECT\\r\\n    t.erp_sales_rep,\\r\\n    t.total_sales,\\r\\n    b.brands\\r\\nFROM Top5 t\\r\\nJOIN BrandAgg b ON t.erp_sales_rep = b.erp_sales_rep\\r\\nORDER BY t.total_sales DESC"", ""SELECT TOP 5\n    pbg,\n    SUM(total_sales) AS total_sales\nFROM [ods].[fact_monthly_sales_poa_billing]\nWHERE year_month = FORMAT(GETDATE(), 'yyyy-MM')\n  AND order_type = 'SHIPMENT'\nGROUP BY pbg\nORDER BY total_sales DESC\r\n```\r\n\r\nTotal variations tried: 2\r\n\r\nThe error was: No data found after query execution."", ""SELECT TOP 5\n    pbg,\n    SUM(total_sales) AS total_sales\nFROM [ods].[fact_monthly_sales_poa_billing]\nWHERE year_month = FORMAT(GETDATE(), 'yyyy-MM')\n  AND order_type = 'SHIPMENT'\nGROUP BY pbg\nORDER BY total_sales DESC"", ""SELECT TOP 5\n    pbg,\n    SUM(total_sales) AS total_sales\nFROM ods.fact_monthly_sales_poa_billing\nWHERE year_month = FORMAT(GETDATE(), 'yyyy-MM')\n  AND order_type = 'SHIPMENT'\nGROUP BY pbg\nORDER BY total_sales DESC"", ""SELECT TOP 5\\r\\n        erp_sales_rep,\\r\\n        SUM(total_sales) AS total_sales\\r\\n    FROM ods.fact_monthly_sales_poa_billing\\r\\n    WHERE\\r\\n        year_month = \\u00272025-01\\u0027\\r\\n        AND erp_sales_rep IS NOT NULL\\r\\n        AND erp_sales_rep \\u003C\\u003E \\u0027\\u0027\\r\\n    GROUP BY erp_sales_rep\\r\\n    ORDER BY SUM(total_sales) DESC\\r\\n),\\r\\nDistinctBrand AS (\\r\\n    SELECT DISTINCT \\r\\n        erp_sales_rep,\\r\\n        brand\\r\\n    FROM ods.fact_monthly_sales_poa_billing\\r\\n    WHERE year_month = \\u00272025-01\\u0027\\r\\n),\\r\\nBrandAgg AS (\\r\\n    SELECT\\r\\n        db.erp_sales_rep,\\r\\n        STRING_AGG(db.brand, \\u0027, \\u0027) AS brands\\r\\n    FROM DistinctBrand db\\r\\n    INNER JOIN Top5 t ON db.erp_sales_rep = t.erp_sales_rep\\r\\n    GROUP BY db.erp_sales_rep\\r\\n)\\r\\nSELECT\\r\\n    t.erp_sales_rep,\\r\\n    t.total_sales,\\r\\n    b.brands\\r\\nFROM Top5 t\\r\\nJOIN BrandAgg b ON t.erp_sales_rep = b.erp_sales_rep\\r\\nORDER BY t.total_sales DESC""]"
+L3,Which Product Business Group (PBG) had the highest total cost this month?,total_cost,pbg,"Data not available in the current samples to determine which PBG had the highest total cost for this month.
+
+If the data was available, the record would look like: {year_month, ru, brand, total_sales, total_qty, updated_date}
+
+How I would determine the answer (methodology):
+- Use billing data (ods.fact_monthly_sales_poa_billing).
+- Filter for the current month: year_month = '2026-01' (this month).
+- Group by Product Business Group (pbg) and sum total_cost.
+- Return the PBG with the highest total_cost.
+
+SQL query I would run to fetch this data:
+SELECT year_month, pbg, SUM(total_cost) AS total_cost
+FROM ods.fact_monthly_sales_poa_billing
+WHERE year_month = '2026-01'
+GROUP BY year_month, pbg
+ORDER BY total_cost DESC
+LIMIT 1;
+
+Filter applied: year_month = '2026-01'
+Date range covered: January 2026
+
+Note: If you want, I can also run similar queries broken out by ru or sub_unit, or include additional filters (e.g., specific brands or regions) if you specify.","We were unable to find any results matching the following condition: year_month = current month AND order_type = 'SHIPMENT'. Could you please verify that the data for the current month exists or that the month is spelled correctly? If you want to check a different period, please specify the month or date range.","[""SELECT TOP 1\n    pbg,\n    SUM(total_cost) AS total_cost\nFROM ods.fact_monthly_sales_poa_billing\nWHERE year_month = FORMAT(GETDATE(), 'yyyy-MM')\n  AND order_type = 'SHIPMENT'\nGROUP BY pbg\nORDER BY SUM(total_cost) DESC;"", ""SELECT year_month, SUM(total_sales) as total_sales\\r\\nFROM [ods].[fact_monthly_sales_poa_billing]\\r\\nWHERE year_month = FORMAT(GETDATE(), \\u0027yyyy-MM\\u0027) \\r\\nAND brand = \\u0027YAGEO\\u0027\\r\\nGROUP BY year_month\"",\""queryLanguage\"":\""sql\""},{\""question\"":\""Which RU and Sub Unit had the most sales in December 2024?\"",\""query\"":\""SELECT TOP 1\\r\\n    ru,             \\r\\n    sub_unit,           \\r\\n    SUM(total_sales) AS total_sales\\r\\nFROM ods.fact_monthly_sales_poa_billing\\r\\nWHERE year_month = \\u00272024-12\\u0027\\r\\nGROUP BY ru, sub_unit         -- combine both dimensions\\r\\nORDER BY SUM(total_sales) DESC"", ""SELECT TOP 1\n    pbg,\n    SUM(total_cost) AS total_cost\nFROM ods.fact_monthly_sales_poa_billing\nWHERE year_month = FORMAT(GETDATE(), 'yyyy-MM')\n  AND order_type = 'SHIPMENT'\nGROUP BY pbg\nORDER BY SUM(total_cost) DESC"", ""SELECT TOP 1\n    pbg,\n    SUM(total_cost) AS total_cost\nFROM ods.fact_monthly_sales_poa_billing\nWHERE year_month = FORMAT(GETDATE(), 'yyyy-MM')\n  AND order_type = 'SHIPMENT'\nGROUP BY pbg\nORDER BY SUM(total_cost) DESC;"", ""SELECT year_month, SUM(total_sales) as total_sales\\r\\nFROM [ods].[fact_monthly_sales_poa_billing]\\r\\nWHERE year_month = FORMAT(GETDATE(), \\u0027yyyy-MM\\u0027) \\r\\nAND brand = \\u0027YAGEO\\u0027\\r\\nGROUP BY year_month\"",\""queryLanguage\"":\""sql\""},{\""question\"":\""Which RU and Sub Unit had the most sales in December 2024?\"",\""query\"":\""SELECT TOP 1\\r\\n    ru,             \\r\\n    sub_unit,           \\r\\n    SUM(total_sales) AS total_sales\\r\\nFROM ods.fact_monthly_sales_poa_billing\\r\\nWHERE year_month = \\u00272024-12\\u0027\\r\\nGROUP BY ru, sub_unit         -- combine both dimensions\\r\\nORDER BY SUM(total_sales) DESC""]"
+L3,Who are the top 5 Product Business Groups (PBG) by gross profit this month?,gross_profit,pbg,"The data is not available in the current samples to compute top 5 PBG by gross profit for this month.
+
+Ghost Record template: If the data was available, the record would look like: {year_month, ru, brand, total_sales, total_qty, updated_date}
+
+Calculation methodology:
+- Time filter: year_month = '2026-01' (this month)
+- Scope: billing data, order_type = SHIPMENT
+- Dimension: group by pbg
+- Metrics: gross_profit = SUM(total_sales) - SUM(total_cost); rank by gross_profit descending; take top 5
+
+SQL query that would fetch the data:
+SELECT
+  year_month,
+  pbg,
+  SUM(total_sales) AS total_sales,
+  SUM(total_cost) AS total_cost,
+  (SUM(total_sales) - SUM(total_cost)) AS gross_profit
+FROM
+  ods.fact_monthly_sales_poa_billing
+WHERE
+  year_month = '2026-01'
+  AND order_type = 'SHIPMENT'
+GROUP BY
+  year_month, pbg
+ORDER BY
+  gross_profit DESC
+LIMIT 5;
+
+Filter applied: year_month = '2026-01'; order_type = 'SHIPMENT'; dimension = pbg (Product Business Group)","The top 5 Product Business Groups (PBG) by gross profit for this month are:
+
+1. Capacitor: $158,635,558.52 USD
+2. Magnetics: $62,352,663.46 USD
+3. SENSOR: $42,037,395.73 USD
+4. Resistors: $40,158,333.95 USD
+5. OTHER: $674,708.88 USD
+
+Gross profit is calculated as total sales minus total cost.  
+Filter applied: Current month, grouped by pbg (Product Business Group).","[""SELECT \n    pbg,\n    SUM(total_sales - total_cost) AS gross_profit,\n    MAX(updated_date) AS updated_date\nFROM \n    [ods].[fact_monthly_sales_poa_billing]\nWHERE \n    year_month = FORMAT(GETDATE(), 'yyyy-MM')\nGROUP BY \n    pbg\nORDER BY \n    gross_profit DESC\nOFFSET 0 ROWS FETCH NEXT 5 ROWS ONLY"", ""SELECT TOP 5\\r\\n        erp_sales_rep,\\r\\n        SUM(total_sales) AS total_sales\\r\\n    FROM ods.fact_monthly_sales_poa_billing\\r\\n    WHERE\\r\\n        year_month = \\u00272025-01\\u0027\\r\\n        AND erp_sales_rep IS NOT NULL\\r\\n        AND erp_sales_rep \\u003C\\u003E \\u0027\\u0027\\r\\n    GROUP BY erp_sales_rep\\r\\n    ORDER BY SUM(total_sales) DESC\\r\\n),\\r\\nDistinctBrand AS (\\r\\n    SELECT DISTINCT \\r\\n        erp_sales_rep,\\r\\n        brand\\r\\n    FROM ods.fact_monthly_sales_poa_billing\\r\\n    WHERE year_month = \\u00272025-01\\u0027\\r\\n),\\r\\nBrandAgg AS (\\r\\n    SELECT\\r\\n        db.erp_sales_rep,\\r\\n        STRING_AGG(db.brand, \\u0027, \\u0027) AS brands\\r\\n    FROM DistinctBrand db\\r\\n    INNER JOIN Top5 t ON db.erp_sales_rep = t.erp_sales_rep\\r\\n    GROUP BY db.erp_sales_rep\\r\\n)\\r\\nSELECT\\r\\n    t.erp_sales_rep,\\r\\n    t.total_sales,\\r\\n    b.brands\\r\\nFROM Top5 t\\r\\nJOIN BrandAgg b ON t.erp_sales_rep = b.erp_sales_rep\\r\\nORDER BY t.total_sales DESC""]"
+L3,Who are the top 5 Product Business Groups (PBG) by Gross Margin Percentage (GM%) this month?,GM%,pbg,"We were unable to provide the actual top 5 PBG by GM% for this month from the current samples. GM% is not a stored metric per PBG in the dataset and must be computed from total_sales and total_cost.
+
+If the data was available, the output record would look like: {year_month, pbg, total_sales, total_cost, gm_percent, updated_date}
+
+How GM% would be calculated:
+- gm_percent = (SUM(total_sales) - SUM(total_cost)) / NULLIF(SUM(total_sales), 0)
+- For this month, sum total_sales and total_cost by pbg, compute gm_percent, then order by gm_percent descending and take the top 5.
+
+SQL you can run to fetch this data:
+SELECT
+  year_month,
+  pbg,
+  SUM(total_sales) AS total_sales,
+  SUM(total_cost) AS total_cost,
+  (SUM(total_sales) - SUM(total_cost)) / NULLIF(SUM(total_sales), 0) AS gm_percent,
+  MAX(updated_date) AS updated_date
+FROM
+  ods.fact_monthly_sales_poa_billing
+WHERE
+  year_month = '2026-01'
+GROUP BY
+  year_month,
+  pbg
+ORDER BY
+  gm_percent DESC
+LIMIT 5;
+
+Notes:
+- This uses the billing table (actual sales / margin) and aggregates by year_month and pbg for the current month (2026-01).
+- If you want this by a specific RU or other filters, I can add them.
+
+Filter applied: year_month='2026-01'; data source=ods.fact_monthly_sales_poa_billing; grouping by pbg; metric GM% (calculated as margin). 
+","We were unable to find any results matching the following condition: year_month = current month AND order_type = 'SHIPMENT', grouped by pbg. Could you please verify that the data for this month exists or that the period was spelled correctly? 
+
+If the data was available, the record would look like: {year_month, pbg, total_sales, total_cost, gm_percent, updated_date}.
+I would filter by the current month and order_type = 'SHIPMENT', then group by PBG and calculate GM% = (total_sales - total_cost) / total_sales * 100, finally sorting to find the top 5.
+
+SQL that would be used:
+WITH pbg_gm AS (
+  SELECT
+    pbg,
+    SUM(total_sales) AS total_sales,
+    SUM(total_cost) AS total_cost,
+    CASE 
+      WHEN SUM(total_sales) = 0 THEN NULL
+      ELSE (SUM(total_sales) - SUM(total_cost)) * 100.0 / SUM(total_sales)
+    END AS gm_percent,
+    MAX(updated_date) AS updated_date
+  FROM ods.fact_monthly_sales_poa_billing
+  WHERE year_month = CURRENT_MONTH AND order_type = 'SHIPMENT'
+  GROUP BY pbg
+)
+SELECT TOP 5
+  pbg,
+  total_sales,
+  total_cost,
+  gm_percent,
+  updated_date
+FROM pbg_gm
+ORDER BY gm_percent DESC","[""WITH pbg_gm AS (\n  SELECT\n    pbg,\n    SUM(total_sales) AS total_sales,\n    SUM(total_cost) AS total_cost,\n    CASE \n      WHEN SUM(total_sales) = 0 THEN NULL\n      ELSE (SUM(total_sales) - SUM(total_cost)) * 100.0 / SUM(total_sales)\n    END AS gm_percent,\n    MAX(updated_date) AS updated_date\n  FROM ods.fact_monthly_sales_poa_billing\n  WHERE year_month = FORMAT(GETDATE(), 'yyyy-MM')\n    AND order_type = 'SHIPMENT'\n  GROUP BY pbg\n)\nSELECT TOP 5\n  pbg,\n  total_sales,\n  total_cost,\n  gm_percent,\n  updated_date\nFROM pbg_gm\nORDER BY gm_percent DESC"", ""WITH PBG_GM AS (\n  SELECT\n    pbg,\n    SUM(total_sales) AS total_sales,\n    SUM(total_cost) AS total_cost,\n    CASE \n      WHEN SUM(total_sales) = 0 THEN NULL\n      ELSE (SUM(total_sales) - SUM(total_cost)) * 100.0 / SUM(total_sales)\n    END AS gm_percent,\n    MAX(updated_date) AS updated_date\n  FROM ods.fact_monthly_sales_poa_billing\n  WHERE year_month = FORMAT(GETDATE(), 'yyyy-MM')\n    AND order_type = 'SHIPMENT'\n  GROUP BY pbg\n)\nSELECT TOP 5\n  pbg,\n  total_sales,\n  total_cost,\n  gm_percent,\n  updated_date\nFROM PBG_GM\nORDER BY gm_percent DESC"", ""SELECT year_month, SUM(total_sales) as total_sales\\r\\nFROM [ods].[fact_monthly_sales_poa_billing]\\r\\nWHERE year_month = FORMAT(GETDATE(), \\u0027yyyy-MM\\u0027) \\r\\nAND brand = \\u0027YAGEO\\u0027\\r\\nGROUP BY year_month\"",\""queryLanguage\"":\""sql\""},{\""question\"":\""Show me the total backlog sales in 2025 Feb.\"",\""query\"":\""SELECT year_month, SUM(total_sales) AS total_backlog\\r\\nFROM ods.fact_monthly_sales_poa_billing\\r\\nWHERE order_type \\u003C\\u003E \\u0027Shipment\\u0027 AND year_month = \\u00272025-02\\u0027\\r\\nGROUP BY year_month\"",\""queryLanguage\"":\""sql\""},{\""question\"":\""Show the new billing customer parent acquired in December 2024 and their order value.\"",\""query\"":\""WITH first_purchase AS (\\r\\n  SELECT\\r\\n    customer_parent,\\r\\n    MIN(year_month) AS first_purchase_month\\r\\n  FROM ods.fact_monthly_sales_poa_billing\\r\\n  GROUP BY customer_parent\\r\\n)\\r\\n\\r\\nSELECT\\r\\n  t.customer_parent, \\r\\n  SUM(t.total_sales) AS new_customer_total_price,\\r\\n  SUM(t.total_qty) AS new_customer_total_quantity\\r\\nFROM ods.fact_monthly_sales_poa_billing t\\r\\nJOIN first_purchase f\\r\\n  ON t.customer_parent = f.customer_parent\\r\\nWHERE f.first_purchase_month = \\u00272024-12\\u0027\\r\\n  AND t.year_month = \\u00272024-12\\u0027\\r\\nGROUP BY t.customer_parent"", ""SELECT TOP 5\n  pbg,\n  total_sales,\n  total_cost,\n  gm_percent,\n  updated_date\nFROM pbg_gm\nORDER BY gm_percent DESC\r\n```\r\n\r\nTotal variations tried: 2\r\n\r\nThe error was: No data found after query execution."", ""WITH pbg_gm AS (\n  SELECT\n    pbg,\n    SUM(total_sales) AS total_sales,\n    SUM(total_cost) AS total_cost,\n    CASE \n      WHEN SUM(total_sales) = 0 THEN NULL\n      ELSE (SUM(total_sales) - SUM(total_cost)) * 100.0 / SUM(total_sales)\n    END AS gm_percent,\n    MAX(updated_date) AS updated_date\n  FROM ods.fact_monthly_sales_poa_billing\n  WHERE year_month = FORMAT(GETDATE(), 'yyyy-MM')\n    AND order_type = 'SHIPMENT'\n  GROUP BY pbg\n)\nSELECT TOP 5\n  pbg,\n  total_sales,\n  total_cost,\n  gm_percent,\n  updated_date\nFROM pbg_gm\nORDER BY gm_percent DESC"", ""WITH PBG_GM AS (\n  SELECT\n    pbg,\n    SUM(total_sales) AS total_sales,\n    SUM(total_cost) AS total_cost,\n    CASE \n      WHEN SUM(total_sales) = 0 THEN NULL\n      ELSE (SUM(total_sales) - SUM(total_cost)) * 100.0 / SUM(total_sales)\n    END AS gm_percent,\n    MAX(updated_date) AS updated_date\n  FROM ods.fact_monthly_sales_poa_billing\n  WHERE year_month = FORMAT(GETDATE(), 'yyyy-MM')\n    AND order_type = 'SHIPMENT'\n  GROUP BY pbg\n)\nSELECT TOP 5\n  pbg,\n  total_sales,\n  total_cost,\n  gm_percent,\n  updated_date\nFROM PBG_GM\nORDER BY gm_percent DESC"", ""SELECT year_month, SUM(total_sales) as total_sales\\r\\nFROM [ods].[fact_monthly_sales_poa_billing]\\r\\nWHERE year_month = FORMAT(GETDATE(), \\u0027yyyy-MM\\u0027) \\r\\nAND brand = \\u0027YAGEO\\u0027\\r\\nGROUP BY year_month\"",\""queryLanguage\"":\""sql\""},{\""question\"":\""Show me the total backlog sales in 2025 Feb.\"",\""query\"":\""SELECT year_month, SUM(total_sales) AS total_backlog\\r\\nFROM ods.fact_monthly_sales_poa_billing\\r\\nWHERE order_type \\u003C\\u003E \\u0027Shipment\\u0027 AND year_month = \\u00272025-02\\u0027\\r\\nGROUP BY year_month\"",\""queryLanguage\"":\""sql\""},{\""question\"":\""Show the new billing customer parent acquired in December 2024 and their order value.\"",\""query\"":\""WITH first_purchase AS (\\r\\n  SELECT\\r\\n    customer_parent,\\r\\n    MIN(year_month) AS first_purchase_month\\r\\n  FROM ods.fact_monthly_sales_poa_billing\\r\\n  GROUP BY customer_parent\\r\\n)\\r\\n\\r\\nSELECT\\r\\n  t.customer_parent, \\r\\n  SUM(t.total_sales) AS new_customer_total_price,\\r\\n  SUM(t.total_qty) AS new_customer_total_quantity\\r\\nFROM ods.fact_monthly_sales_poa_billing t\\r\\nJOIN first_purchase f\\r\\n  ON t.customer_parent = f.customer_parent\\r\\nWHERE f.first_purchase_month = \\u00272024-12\\u0027\\r\\n  AND t.year_month = \\u00272024-12\\u0027\\r\\nGROUP BY t.customer_parent""]"
+L3,Who are the top 5 Product Business Groups (PBG) by Average Selling Price (ASP) for the current month?,ASP,pbg,"The data is not available in the current samples.
+
+Ghost record template (if the data were available):
+If the data was available, the record would look like: {year_month, ru, brand (PBG), total_sales, total_qty, updated_date}
+
+Methodology I would use:
+- Time filter: year_month = '2026-01' (current calendar month)
+- Data source: ods.fact_monthly_sales_poa_billing (Billing)
+- Compute ASP per PBG: ASP = SUM(total_sales) / NULLIF(SUM(total_qty), 0)
+- Group by: year_month, ru, pbg
+- Order: ASP descending
+- Limit: 5 top PBGs
+
+SQL query that would fetch this data:
+SELECT
+  year_month,
+  ru,
+  pbg AS brand,  -- represents the PBG label
+  SUM(total_sales) AS total_sales,
+  SUM(total_qty) AS total_qty,
+  SUM(total_sales) / NULLIF(SUM(total_qty), 0) AS ASP,
+  MAX(updated_date) AS updated_date
+FROM
+  ods.fact_monthly_sales_poa_billing
+WHERE
+  year_month = '2026-01'
+GROUP BY
+  year_month, ru, pbg
+ORDER BY
+  ASP DESC
+LIMIT 5;
+
+Time range included:
+- Current month: 2026-01
+
+Filter applied:
+- Source: ods.fact_monthly_sales_poa_billing
+- year_month = 2026-01
+- Grouping: by ru and pbg (PBG)
+- ASP calculation: total_sales / total_qty (units USD per piece)
+- Include all order types (no order_type filter)","We were unable to find any results matching the following condition: current month, billing sales, order_type='SHIPMENT', grouped by Product Business Group (pbg). Could you please verify that the selected filters or date period are correct?
+
+It's possible that there is no sales data recorded yet for the current month. If you'd like, I can rerun this analysis for a previous month or a specific date range. Please let me know how you wish to proceed.","[""WITH PBG_ASP AS (\n    SELECT\n        pbg,\n        SUM(total_sales) AS total_sales,\n        SUM(total_qty) AS total_qty,\n        CASE \n            WHEN SUM(total_qty) = 0 THEN NULL\n            ELSE SUM(total_sales) / SUM(total_qty)\n        END AS asp,\n        MAX(updated_date) AS updated_date\n    FROM ods.fact_monthly_sales_poa_billing\n    WHERE \n        year_month = FORMAT(GETDATE(), 'yyyy-MM')\n        AND order_type = 'SHIPMENT'\n    GROUP BY pbg\n)\nSELECT TOP 5\n    pbg,\n    total_sales,\n    total_qty,\n    asp,\n    updated_date\nFROM PBG_ASP\nORDER BY asp DESC"", ""WITH PBG_ASP AS (\n    SELECT\n        pbg,\n        SUM(total_sales) AS total_sales,\n        SUM(total_qty) AS total_qty,\n        CASE \n            WHEN SUM(total_qty) = 0 THEN NULL\n            ELSE SUM(total_sales) / SUM(total_qty)\n        END AS asp,\n        MAX(updated_date) AS updated_date\n    FROM ods.fact_monthly_sales_poa_billing\n    WHERE \n        year_month = FORMAT(GETDATE(), 'yyyy-MM')\n        AND order_type = 'SHIPMENT'\n        AND pbg IS NOT NULL\n        AND pbg <> ''\n    GROUP BY pbg\n)\nSELECT TOP 5\n    pbg,\n    total_sales,\n    total_qty,\n    asp,\n    updated_date\nFROM PBG_ASP\nORDER BY asp DESC;"", ""WITH CurrentMonthPBG AS (\n    SELECT\n        pbg,\n        SUM(total_sales) AS total_sales,\n        SUM(total_qty) AS total_qty,\n        MAX(updated_date) AS updated_date\n    FROM ods.fact_monthly_sales_poa_billing\n    WHERE \n        year_month = FORMAT(GETDATE(), 'yyyy-MM')\n        AND order_type = 'SHIPMENT'\n        AND pbg IS NOT NULL\n        AND pbg <> ''\n    GROUP BY pbg\n)\nSELECT TOP 5\n    pbg,\n    total_sales,\n    total_qty,\n    CASE WHEN total_qty = 0 THEN NULL ELSE total_sales / total_qty END AS ASP,\n    updated_date\nFROM CurrentMonthPBG\nORDER BY ASP DESC"", ""SELECT TOP 5\\r\\n        erp_sales_rep,\\r\\n        SUM(total_sales) AS total_sales\\r\\n    FROM ods.fact_monthly_sales_poa_billing\\r\\n    WHERE\\r\\n        year_month = \\u00272025-01\\u0027\\r\\n        AND erp_sales_rep IS NOT NULL\\r\\n        AND erp_sales_rep \\u003C\\u003E \\u0027\\u0027\\r\\n    GROUP BY erp_sales_rep\\r\\n    ORDER BY SUM(total_sales) DESC\\r\\n),\\r\\nDistinctBrand AS (\\r\\n    SELECT DISTINCT \\r\\n        erp_sales_rep,\\r\\n        brand\\r\\n    FROM ods.fact_monthly_sales_poa_billing\\r\\n    WHERE year_month = \\u00272025-01\\u0027\\r\\n),\\r\\nBrandAgg AS (\\r\\n    SELECT\\r\\n        db.erp_sales_rep,\\r\\n        STRING_AGG(db.brand, \\u0027, \\u0027) AS brands\\r\\n    FROM DistinctBrand db\\r\\n    INNER JOIN Top5 t ON db.erp_sales_rep = t.erp_sales_rep\\r\\n    GROUP BY db.erp_sales_rep\\r\\n)\\r\\nSELECT\\r\\n    t.erp_sales_rep,\\r\\n    t.total_sales,\\r\\n    b.brands\\r\\nFROM Top5 t\\r\\nJOIN BrandAgg b ON t.erp_sales_rep = b.erp_sales_rep\\r\\nORDER BY t.total_sales DESC"", ""WITH PBG_ASP AS (\n    SELECT\n        pbg,\n        SUM(total_sales) AS total_sales,\n        SUM(total_qty) AS total_qty,\n        CASE \n            WHEN SUM(total_qty) = 0 THEN NULL\n            ELSE SUM(total_sales) / SUM(total_qty)\n        END AS asp,\n        MAX(updated_date) AS updated_date\n    FROM ods.fact_monthly_sales_poa_billing\n    WHERE \n        year_month = FORMAT(GETDATE(), 'yyyy-MM')\n        AND order_type = 'SHIPMENT'\n    GROUP BY pbg\n)\nSELECT TOP 5\n    pbg,\n    total_sales,\n    total_qty,\n    asp,\n    updated_date\nFROM PBG_ASP\nORDER BY asp DESC"", ""WITH asp_by_pbg AS (\n    SELECT\n        pbg,\n        SUM(total_sales) AS total_sales,\n        SUM(total_qty) AS total_qty,\n        CASE WHEN SUM(total_qty) = 0 THEN NULL ELSE SUM(total_sales) / SUM(total_qty) END AS asp,\n        MAX(updated_date) AS updated_date\n    FROM ods.fact_monthly_sales_poa_billing\n    WHERE \n        year_month = FORMAT(GETDATE(), 'yyyy-MM')\n        AND order_type = 'SHIPMENT'\n    GROUP BY pbg\n)\nSELECT TOP 5\n    pbg,\n    total_sales,\n    total_qty,\n    asp,\n    updated_date\nFROM asp_by_pbg\nORDER BY asp DESC"", ""SELECT TOP 5\\r\\n        erp_sales_rep,\\r\\n        SUM(total_sales) AS total_sales\\r\\n    FROM ods.fact_monthly_sales_poa_billing\\r\\n    WHERE\\r\\n        year_month = \\u00272025-01\\u0027\\r\\n        AND erp_sales_rep IS NOT NULL\\r\\n        AND erp_sales_rep \\u003C\\u003E \\u0027\\u0027\\r\\n    GROUP BY erp_sales_rep\\r\\n    ORDER BY SUM(total_sales) DESC\\r\\n),\\r\\nDistinctBrand AS (\\r\\n    SELECT DISTINCT \\r\\n        erp_sales_rep,\\r\\n        brand\\r\\n    FROM ods.fact_monthly_sales_poa_billing\\r\\n    WHERE year_month = \\u00272025-01\\u0027\\r\\n),\\r\\nBrandAgg AS (\\r\\n    SELECT\\r\\n        db.erp_sales_rep,\\r\\n        STRING_AGG(db.brand, \\u0027, \\u0027) AS brands\\r\\n    FROM DistinctBrand db\\r\\n    INNER JOIN Top5 t ON db.erp_sales_rep = t.erp_sales_rep\\r\\n    GROUP BY db.erp_sales_rep\\r\\n)\\r\\nSELECT\\r\\n    t.erp_sales_rep,\\r\\n    t.total_sales,\\r\\n    b.brands\\r\\nFROM Top5 t\\r\\nJOIN BrandAgg b ON t.erp_sales_rep = b.erp_sales_rep\\r\\nORDER BY t.total_sales DESC"", ""SELECT TOP 5\n    pbg,\n    total_sales,\n    total_qty,\n    asp,\n    updated_date\nFROM PBG_ASP\nORDER BY asp DESC\r\n```\r\n\r\nTotal variations tried: 4\r\n\r\nThe error was: No data found after query execution."", ""WITH PBG_ASP AS (\n    SELECT\n        pbg,\n        SUM(total_sales) AS total_sales,\n        SUM(total_qty) AS total_qty,\n        CASE \n            WHEN SUM(total_qty) = 0 THEN NULL\n            ELSE SUM(total_sales) / SUM(total_qty)\n        END AS asp,\n        MAX(updated_date) AS updated_date\n    FROM ods.fact_monthly_sales_poa_billing\n    WHERE \n        year_month = FORMAT(GETDATE(), 'yyyy-MM')\n        AND order_type = 'SHIPMENT'\n    GROUP BY pbg\n)\nSELECT TOP 5\n    pbg,\n    total_sales,\n    total_qty,\n    asp,\n    updated_date\nFROM PBG_ASP\nORDER BY asp DESC"", ""WITH PBG_ASP AS (\n    SELECT\n        pbg,\n        SUM(total_sales) AS total_sales,\n        SUM(total_qty) AS total_qty,\n        CASE \n            WHEN SUM(total_qty) = 0 THEN NULL\n            ELSE SUM(total_sales) / SUM(total_qty)\n        END AS asp,\n        MAX(updated_date) AS updated_date\n    FROM ods.fact_monthly_sales_poa_billing\n    WHERE \n        year_month = FORMAT(GETDATE(), 'yyyy-MM')\n        AND order_type = 'SHIPMENT'\n        AND pbg IS NOT NULL\n        AND pbg <> ''\n    GROUP BY pbg\n)\nSELECT TOP 5\n    pbg,\n    total_sales,\n    total_qty,\n    asp,\n    updated_date\nFROM PBG_ASP\nORDER BY asp DESC;"", ""SELECT TOP 5\\r\\n        erp_sales_rep,\\r\\n        SUM(total_sales) AS total_sales\\r\\n    FROM ods.fact_monthly_sales_poa_billing\\r\\n    WHERE\\r\\n        year_month = \\u00272025-01\\u0027\\r\\n        AND erp_sales_rep IS NOT NULL\\r\\n        AND erp_sales_rep \\u003C\\u003E \\u0027\\u0027\\r\\n    GROUP BY erp_sales_rep\\r\\n    ORDER BY SUM(total_sales) DESC\\r\\n),\\r\\nDistinctBrand AS (\\r\\n    SELECT DISTINCT \\r\\n        erp_sales_rep,\\r\\n        brand\\r\\n    FROM ods.fact_monthly_sales_poa_billing\\r\\n    WHERE year_month = \\u00272025-01\\u0027\\r\\n),\\r\\nBrandAgg AS (\\r\\n    SELECT\\r\\n        db.erp_sales_rep,\\r\\n        STRING_AGG(db.brand, \\u0027, \\u0027) AS brands\\r\\n    FROM DistinctBrand db\\r\\n    INNER JOIN Top5 t ON db.erp_sales_rep = t.erp_sales_rep\\r\\n    GROUP BY db.erp_sales_rep\\r\\n)\\r\\nSELECT\\r\\n    t.erp_sales_rep,\\r\\n    t.total_sales,\\r\\n    b.brands\\r\\nFROM Top5 t\\r\\nJOIN BrandAgg b ON t.erp_sales_rep = b.erp_sales_rep\\r\\nORDER BY t.total_sales DESC""]"

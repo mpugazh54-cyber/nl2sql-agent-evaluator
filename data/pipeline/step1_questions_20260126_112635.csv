@@ -1,0 +1,11 @@
+difficulty,question,metric,dimension
+L1,What is the total billing for this month?,total_sales,Current Month
+L1,What is the total bookings for the current month?,Total Bookings,Current Month
+L2,What is the total billing for Brand YAGEO in 2023-01?,total_sales,brand
+L2,What is the total bookings (booking value) for RU='GREAT CHINA' in 2024-08?,total_sales,ru
+L3,"What is the total billing (total_sales) by month for the last 12 months, sorted from highest to lowest total billing?",total_sales,year_month
+L3,Which are the top 5 months by total bookings value?,total_sales,year_month
+L4,What is the Total Billing (SUM(total_sales)) for Japan in 2025-08?,Total Billing (SUM(total_sales)),time: 2025-08; region: Japan
+L4,What is the total bookings value for Japan in 2025-08?,Total Booking Value (SUM of Booking total_sales),time: 2025-08; region: Japan
+L5,What is the YoY growth of Total Billing for each month this year compared to the same month last year?,Sales YoY,year_month
+L5,"Show me the YoY growth of Total Bookings (Booking Value) for each month (year_month), comparing each month to the same month in the prior year.",Total Bookings YoY Growth,year_month

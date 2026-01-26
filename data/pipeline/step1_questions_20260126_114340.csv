@@ -1,0 +1,3 @@
+difficulty,question,metric,dimension
+L3,What are the top 5 months by total billing (sales)?,total_sales,year_month
+L3,Who are the top 5 Product Business Groups (PBG) by total cost this month?,total_cost,PBG
