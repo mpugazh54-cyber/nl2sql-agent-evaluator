@@ -58,11 +58,11 @@ def main():
         dimensions = gen_config.get("dimensions", {})
         
         schema = ""
-        with open("docs/agent_prompts/data_instructions.md", "r", encoding="utf-8") as f:
+        with open("prompts/agent/data_instructions.md", "r", encoding="utf-8") as f:
             schema = f.read()
         
         questions = question_gen.generate_questions(
-            openai_client, model, schema, "docs/qa_prompts", metrics, dimensions, target_level=args.level, count=args.count
+            openai_client, model, schema, "prompts/qa", metrics, dimensions, target_level=args.level, count=args.count
         )
         output = f"data/qa/step1_questions_{timestamp}.csv"
         with open(output, 'w', newline='', encoding='utf-8') as f:
@@ -93,9 +93,9 @@ def main():
         # Load instructions as context
         agent_instr = ""
         data_instr = ""
-        with open("docs/agent_prompts/agent_instructions.md", "r", encoding="utf-8") as f:
+        with open("prompts/agent/agent_instructions.md", "r", encoding="utf-8") as f:
             agent_instr = f.read()
-        with open("docs/agent_prompts/data_instructions.md", "r", encoding="utf-8") as f:
+        with open("prompts/agent/data_instructions.md", "r", encoding="utf-8") as f:
             data_instr = f.read()
             
         context = f"AGENT_INSTRUCTIONS:\n{agent_instr}\n\nDATA_SCHEMA:\n{data_instr}"

@@ -39,9 +39,9 @@ SCRIPT_DIR = Path(__file__).parent
 PROJECT_ROOT = SCRIPT_DIR.parent.parent
 
 # Input Files
-AGENT_INSTRUCTIONS = PROJECT_ROOT / "docs" / "agent_prompts" / "agent_instructions.md"
-DATA_INSTRUCTIONS = PROJECT_ROOT / "docs" / "agent_prompts" / "data_instructions.md"
-FEW_SHOTS_FILE = PROJECT_ROOT / "docs" / "agent_prompts" / "example_queries.json"
+AGENT_INSTRUCTIONS = PROJECT_ROOT / "prompts" / "agent" / "agent_instructions.md"
+DATA_INSTRUCTIONS = PROJECT_ROOT / "prompts" / "agent" / "data_instructions.md"
+FEW_SHOTS_FILE = PROJECT_ROOT / "prompts" / "agent" / "example_queries.json"
 
 # Output/Artifact Files
 LOCAL_CONFIG = PROJECT_ROOT / "data" / "agent" / "agent_config.json"
