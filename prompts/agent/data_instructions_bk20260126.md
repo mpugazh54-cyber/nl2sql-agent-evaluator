@@ -81,11 +81,9 @@ Use these when user asks about OEM/EMS/G7 performance.
 - **Monthly Aggregated Data**: All metrics are aggregated by month.
 - **Unsupported Metrics**: The data does **NOT** contain individual order numbers. Therefore, **Order Count**, **Number of Orders**, and **Average Sale per Order** cannot be calculated.
 - If a user asks for "average sale per order", explain that we only have monthly totals and cannot see individual orders due to lack of `order_count`.
-#### Common Formula Definitions
-- **Gross Profit (GP)**: `SUM(total_sales) - SUM(total_cost)`
-- **Gross Margin % (GM%)**: `(SUM(total_sales) - SUM(total_cost)) / NULLIF(SUM(total_sales), 0) * 100`
-- **Average Selling Price (ASP)**: `SUM(total_sales) / NULLIF(SUM(total_qty), 0)`
-- **Aggregation Note**: Always apply `SUM()` to base metrics before performing division or subtraction to ensure correct weighted averages across multiple dimensions.
-
+- For “sales amount”, use total_sales.
+- For “quantity”, use total_qty.
+- For sums: SUM(total_sales), SUM(total_qty).
+- For top customers, brands, or regions: sort by metric DESC.
 - Use same dimensions for both tables.
 - **Missing Data**: If data is not in the sample, provide a template record with NULL placeholders and explain the methodology.

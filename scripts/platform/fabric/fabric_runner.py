@@ -226,15 +226,13 @@ def main():
     results = []
     
     for i, query_obj in enumerate(test_queries, 1):
-        query_id = query_obj.get("id", f"Q{i:03d}")
         question = query_obj["question"]
-        complexity = query_obj.get("complexity", "SIMPLE")
+        complexity = query_obj.get("complexity", "L1") # Default to L1 if missing
         
-        print(f"\n[{i}/{len(test_queries)}] {query_id}: {question}")
+        print(f"\n[{i}/{len(test_queries)}] {question}")
         print(f"   Complexity: {complexity}")
         
         test_result = {
-            "id": query_id,
             "question": question,
             "complexity": complexity,
             "timestamp": datetime.now().isoformat(),

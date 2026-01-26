@@ -15,6 +15,7 @@ Outputs:
     - Fabric OneLake Files/agent/agent_config.json (cloud)
 """
 
+import csv
 import json
 import time
 from pathlib import Path
@@ -35,8 +36,8 @@ except ImportError:
 
 # Paths
 SCRIPT_DIR = Path(__file__).parent
-# Go up two levels: scripts/system_prompts_deploy -> scripts -> project_root
-PROJECT_ROOT = SCRIPT_DIR.parent.parent
+# Go up one level: scripts -> project_root
+PROJECT_ROOT = SCRIPT_DIR.parent
 
 # Input Files
 AGENT_INSTRUCTIONS = PROJECT_ROOT / "prompts" / "agent" / "agent_instructions.md"
@@ -46,7 +47,10 @@ FEW_SHOTS_FILE = PROJECT_ROOT / "prompts" / "agent" / "example_queries.json"
 # Output/Artifact Files
 LOCAL_CONFIG = PROJECT_ROOT / "data" / "agent" / "agent_config.json"
 LOCAL_QUERIES = PROJECT_ROOT / "data" / "agent" / "test_queries.json"
-LOCAL_RUNNER = PROJECT_ROOT / "scripts" / "fabric" / "fabric_runner.py"
+LOCAL_RUNNER = PROJECT_ROOT / "scripts" / "platform" / "fabric" / "fabric_runner.py"
+
+# QA Data
+QA_DIR = PROJECT_ROOT / "data" / "qa"
 
 FILES_TO_UPLOAD = [LOCAL_CONFIG, LOCAL_QUERIES, LOCAL_RUNNER]
 
@@ -75,10 +79,55 @@ def truncate_with_warning(text: str, max_length: int, name: str) -> str:
     """Truncate text if exceeds max length and print warning."""
     if len(text) <= max_length:
         return text
-    print(f"⚠️  WARNING: {name} exceeds {max_length:,} char limit ({len(text):,} chars)")
+    print(f"WARNING: {name} exceeds {max_length:,} char limit ({len(text):,} chars)")
     print(f"   Truncating to {max_length:,} characters...")
     truncated = text[:max_length - 100] + "\n\n[...TRUNCATED DUE TO CHARACTER LIMIT...]"
     return truncated
+
+def sync_qa_failures():
+    print("=" * 60)
+    print("STEP 0: SYNCING QA FAILURES")
+    print("=" * 60)
+    
+    if not QA_DIR.exists():
+        print(f"QA Directory not found: {QA_DIR}")
+        return
+
+    # Find the latest step4_final_*.csv
+    qa_files = list(QA_DIR.glob("step4_final_*.csv"))
+    if not qa_files:
+        print("No step4_final_*.csv files found in QA directory. Skipping sync.")
+        return
+    
+    latest_qa = max(qa_files, key=lambda p: p.stat().st_mtime)
+    print(f"Analyzing latest QA report: {latest_qa.name}")
+    
+    failed_queries = []
+    try:
+        with open(latest_qa, "r", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                if row.get("evaluation_grade") == "FAIL":
+                    question = row.get("question", "").strip()
+                    difficulty = row.get("difficulty", "L1").strip()
+                    if question:
+                        failed_queries.append({
+                            "question": question,
+                            "complexity": difficulty
+                        })
+        
+        if failed_queries:
+            print(f"Found {len(failed_queries)} failed cases.")
+            with open(LOCAL_QUERIES, "w", encoding="utf-8", newline='\n') as f:
+                json.dump(failed_queries, f, indent=2, ensure_ascii=False)
+            print(f"Updated: {LOCAL_QUERIES.name}")
+        else:
+            print("No failed cases found in the latest report.")
+            
+    except Exception as e:
+        print(f"Error processing QA report: {e}")
+    
+    print("-" * 60)
 
 def compile_configuration():
     print("=" * 60)
@@ -86,15 +135,15 @@ def compile_configuration():
     print("=" * 60)
     
     # Read Instructions
-    print(f"\n📖 Reading {AGENT_INSTRUCTIONS.name}...")
+    print(f"\nReading {AGENT_INSTRUCTIONS.name}...")
     agent_instructions = read_file(AGENT_INSTRUCTIONS)
     agent_instructions = truncate_with_warning(agent_instructions, MAX_AGENT_INSTRUCTIONS, "Agent Instructions")
     
-    print(f"📖 Reading {DATA_INSTRUCTIONS.name}...")
+    print(f"Reading {DATA_INSTRUCTIONS.name}...")
     datasource_instructions = read_file(DATA_INSTRUCTIONS)
     datasource_instructions = truncate_with_warning(datasource_instructions, MAX_DATASOURCE_INSTRUCTIONS, "Datasource Instructions")
     
-    print(f"📖 Reading {FEW_SHOTS_FILE.name}...")
+    print(f"Reading {FEW_SHOTS_FILE.name}...")
     with open(FEW_SHOTS_FILE, "r", encoding="utf-8") as f:
         few_shots = json.load(f)
 
@@ -116,12 +165,12 @@ def compile_configuration():
     }
     
     # Write Config
-    print(f"\n💾 Writing {LOCAL_CONFIG.name}...")
+    print(f"\nWriting {LOCAL_CONFIG.name}...")
     LOCAL_CONFIG.parent.mkdir(parents=True, exist_ok=True)
-    with open(LOCAL_CONFIG, "w", encoding="utf-8") as f:
+    with open(LOCAL_CONFIG, "w", encoding="utf-8", newline='\n') as f:
         json.dump(config, f, indent=2, ensure_ascii=False)
     
-    print(f"   ✅ Saved: {LOCAL_CONFIG}")
+    print(f"Saved: {LOCAL_CONFIG}")
     print(f"   Compiled At: {compiled_at}")
     print("-" * 60)
 
@@ -135,7 +184,7 @@ def upload_to_onelake():
     print("=" * 60)
     
     # Authenticate
-    print("\n🔐 Authenticating (will open browser window)...")
+    print("\nAuthenticating (will open browser window)...")
     credential = InteractiveBrowserCredential()
     
     # Create DataLake client
@@ -151,14 +200,14 @@ def upload_to_onelake():
     directory_path = f"{LAKEHOUSE_NAME}.Lakehouse/{TARGET_FOLDER}"
     directory_client = file_system_client.get_directory_client(directory_path)
     
-    print(f"\n📂 Target: {WORKSPACE_NAME}/{directory_path}")
+    print(f"\nTarget: {WORKSPACE_NAME}/{directory_path}")
     
     # Upload each file
-    print(f"\n📤 Uploading {len(FILES_TO_UPLOAD)} files...")
+    print(f"\nUploading {len(FILES_TO_UPLOAD)} files...")
     
     for local_file in FILES_TO_UPLOAD:
         if not local_file.exists():
-            print(f"   ⚠️  Missing: {local_file.name}")
+            print(f"Missing: {local_file.name}")
             continue
         
         try:
@@ -171,12 +220,12 @@ def upload_to_onelake():
             # Upload (overwrite)
             file_client.upload_data(content, overwrite=True)
             
-            print(f"   ✅ {local_file.name} ({len(content):,} bytes)")
+            print(f"{local_file.name} ({len(content):,} bytes)")
             
         except Exception as e:
-            print(f"   ❌ {local_file.name}: {e}")
+            print(f"{local_file.name}: {e}")
     
-    print(f"\n✅ Deployment complete!")
+    print(f"\nDeployment complete!")
     print(f"   Time: {datetime.now().isoformat()}")
     print("=" * 60)
 
@@ -186,10 +235,11 @@ def upload_to_onelake():
 
 def main():
     try:
+        sync_qa_failures()
         compile_configuration()
         upload_to_onelake()
     except Exception as e:
-        print(f"\n❌ FATAL ERROR: {e}")
+        print(f"\nFATAL ERROR: {e}")
         exit(1)
 
 if __name__ == "__main__":

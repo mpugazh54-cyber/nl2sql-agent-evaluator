@@ -15,10 +15,10 @@ This directory contains the instruction sets and configuration for the Fabric Da
 
 ## 📂 File Mapping
 
-- **Agent Instructions**: See `[agent_instructions.md](file:///c:/Users/Anna.YR.Chen/Projects/sales_agent/docs/da_instructions/agent_instructions.md)`
-- **Data Source Description**: See `[source_description.md](file:///c:/Users/Anna.YR.Chen/Projects/sales_agent/docs/da_instructions/source_description.md)`
-- **Data Source Instructions**: See `[source_instructions.md](file:///c:/Users/Anna.YR.Chen/Projects/sales_agent/docs/da_instructions/source_instructions.md)`
-- **Example Queries**: See `[example_queries.json](file:///c:/Users/Anna.YR.Chen/Projects/sales_agent/docs/da_instructions/example_queries.json)`
+- **Agent Instructions**: See [agent_instructions.md](file:///c:/Users/Anna.YR.Chen/Projects/sales_agent/prompts/agent/agent_instructions.md)
+- **Data Source Description**: See [data_description.md](file:///c:/Users/Anna.YR.Chen/Projects/sales_agent/prompts/agent/data_description.md)
+- **Data Source Instructions**: See [data_instructions.md](file:///c:/Users/Anna.YR.Chen/Projects/sales_agent/prompts/agent/data_instructions.md)
+- **Example Queries**: See [example_queries.json](file:///c:/Users/Anna.YR.Chen/Projects/sales_agent/prompts/agent/example_queries.json)
 
 ## 🎯 Objective
 The goal of these instructions is to ensure the Data Agent provides accurate, business-aligned SQL queries and summaries for sales performance analysis across Billing and Booking datasets.
