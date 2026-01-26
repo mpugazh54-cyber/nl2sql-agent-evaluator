@@ -4,8 +4,8 @@ Utility to fetch distinct sample values from Fabric SQL Endpoint tables.
 Inputs:
     - .env (FABRIC_SQL_ENDPOINT)
 Outputs:
-    - scripts/sample_data_billing.txt
-    - scripts/sample_data_booking.txt
+    - data/sample/sample_data_billing.txt
+    - data/sample/sample_data_booking.txt
 """
 
 import os
@@ -75,11 +75,15 @@ def get_sample_data(table_name, columns, output_file):
 
 def main():
     script_dir = os.path.dirname(__file__)
+    project_root = os.path.dirname(script_dir)
+    sample_data_dir = os.path.join(project_root, "data", "sample")
+    os.makedirs(sample_data_dir, exist_ok=True)
+
     billing_columns = ["year_month","order_type","brand","ru","sub_unit","pbg","pbu","pbu_1","pbu_2","focus_flag","customer_parent","local_assembler","final_customer","g7","fu_us_oem_flag","fu_global_ems_flag","fu_g7_flag","fu_emea_oem_flag","erp_sales_rep","total_sales","total_cost","total_qty","updated_date"]
     booking_columns = ["year_month","order_type","brand","ru","sub_unit","pbg","pbu","pbu_1","pbu_2","focus_flag","customer_parent","local_assembler","final_customer","g7","fu_us_oem_flag","fu_global_ems_flag","fu_g7_flag","fu_emea_oem_flag","erp_sales_rep","total_sales","total_qty","updated_date"]
 
-    get_sample_data("ods.fact_monthly_sales_poa_billing", billing_columns, os.path.join(script_dir, "sample_data_billing.txt"))
-    get_sample_data("ods.fact_monthly_sales_poa_booking", booking_columns, os.path.join(script_dir, "sample_data_booking.txt"))
+    get_sample_data("ods.fact_monthly_sales_poa_billing", billing_columns, os.path.join(sample_data_dir, "sample_data_billing.txt"))
+    get_sample_data("ods.fact_monthly_sales_poa_booking", booking_columns, os.path.join(sample_data_dir, "sample_data_booking.txt"))
 
 if __name__ == "__main__":
     main()

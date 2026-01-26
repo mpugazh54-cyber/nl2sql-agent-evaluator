@@ -27,9 +27,8 @@ from azure.storage.filedatalake import DataLakeServiceClient
 
 # Local paths
 SCRIPT_DIR = Path(__file__).parent
-# Go up two levels: scripts/system_prompts_deploy -> scripts -> project_root
-PROJECT_ROOT = SCRIPT_DIR.parent.parent
-LOCAL_LOGS = PROJECT_ROOT / "docs" / "process" / "fabric_run_logs.json"
+PROJECT_ROOT = SCRIPT_DIR.parent
+LOCAL_LOGS = PROJECT_ROOT / "logs" / "remote" / "fabric_run_logs.json"
 
 # OneLake configuration
 ONELAKE_ACCOUNT = "onelake"

@@ -1,3 +1,5 @@
+"""Step 2: Ground Truth Generation logic."""
+
 def generate_ground_truth(client_openai, model, question, context):
     system_prompt = (
         "You are a Sales Data Agent Simulator. Your role is to generate the PERFECT 'Golden' response "

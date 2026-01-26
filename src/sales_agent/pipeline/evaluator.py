@@ -1,3 +1,4 @@
+"""Step 4: Result Evaluation logic."""
 import json
 
 def evaluate(client_openai, model, question, expected, actual):

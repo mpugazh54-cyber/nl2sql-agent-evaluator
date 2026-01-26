@@ -39,13 +39,13 @@ SCRIPT_DIR = Path(__file__).parent
 PROJECT_ROOT = SCRIPT_DIR.parent.parent
 
 # Input Files
-AGENT_INSTRUCTIONS = PROJECT_ROOT / "docs" / "system_prompts" / "agent_instructions.md"
-DATA_INSTRUCTIONS = PROJECT_ROOT / "docs" / "system_prompts" / "data_instructions.md"
-FEW_SHOTS_FILE = PROJECT_ROOT / "docs" / "system_prompts" / "example_queries.json"
+AGENT_INSTRUCTIONS = PROJECT_ROOT / "docs" / "agent_prompts" / "agent_instructions.md"
+DATA_INSTRUCTIONS = PROJECT_ROOT / "docs" / "agent_prompts" / "data_instructions.md"
+FEW_SHOTS_FILE = PROJECT_ROOT / "docs" / "agent_prompts" / "example_queries.json"
 
 # Output/Artifact Files
-LOCAL_CONFIG = PROJECT_ROOT / "docs" / "config" / "agent_config.json"
-LOCAL_QUERIES = PROJECT_ROOT / "docs" / "config" / "test_queries.json"
+LOCAL_CONFIG = PROJECT_ROOT / "data" / "agent" / "agent_config.json"
+LOCAL_QUERIES = PROJECT_ROOT / "data" / "agent" / "test_queries.json"
 LOCAL_RUNNER = PROJECT_ROOT / "scripts" / "fabric" / "fabric_runner.py"
 
 FILES_TO_UPLOAD = [LOCAL_CONFIG, LOCAL_QUERIES, LOCAL_RUNNER]

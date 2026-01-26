@@ -1,3 +1,4 @@
+"""Step 1: Question Generation logic."""
 import os
 import json
 import csv
@@ -35,8 +36,6 @@ def generate_questions(client_openai, model, schema_context, prompt_dir, metrics
         prompt = load_prompt(os.path.join(prompt_dir, filename))
         if not prompt: continue
         
-        # Expand intents to reach the desired count
-        # In a real scenario, we might want more complex intent generation logic
         intents = [f"Analyze {m}" for m in metrics[:count]]
         
         for intent in intents:
