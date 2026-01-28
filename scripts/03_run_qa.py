@@ -11,7 +11,6 @@ from openai import OpenAI
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from sales_agent.core.client import FabricDataAgentClient
-from sales_agent.utils.logger import TerminalLogger
 from sales_agent.pipeline import (
     question_gen,
     ground_truth_gen,
@@ -31,9 +30,6 @@ def main():
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     os.makedirs("data/qa", exist_ok=True)
-    os.makedirs("logs", exist_ok=True)
-    
-    sys.stdout = TerminalLogger(f"logs/pipeline_{timestamp}.log")
     
     openai_client = OpenAI(
         api_key=os.getenv("OPENAI_API_KEY"),

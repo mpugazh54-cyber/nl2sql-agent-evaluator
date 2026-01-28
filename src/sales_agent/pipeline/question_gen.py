@@ -49,6 +49,23 @@ def generate_questions(client_openai, model, schema_context, prompt_dir, metrics
                     ]
                 )
                 data = json.loads(resp.choices[0].message.content)
+                
+                # --- LOGIC SELF-CORRECTION PASS ---
+                verify_resp = client_openai.chat.completions.create(
+                    model=model,
+                    response_format={"type": "json_object"},
+                    messages=[
+                        {"role": "system", "content": "You are a Logic Quality Controller for Sales Data QA.\n"
+                            "CRITICAL RULES:\n"
+                            "1. QoQ (Quarter-over-Quarter) MUST use a Quarter time grain (e.g., 'Q3 2024'). It is ILLOGICAL to ask for QoQ using a single month (e.g., '2024-04').\n"
+                            "2. MoM (Month-over-Month) MUST use a specific month (YYYY-MM).\n"
+                            "3. If a question is logically flawed, REWRITE it while keeping the original intent. Return the final corrected JSON structure."},
+                        {"role": "user", "content": f"Review and fix if necessary: {json.dumps(data)}"}
+                    ]
+                )
+                data = json.loads(verify_resp.choices[0].message.content)
+                # ----------------------------------
+
                 results.append({
                     "difficulty": data.get("difficulty", level),
                     "question": data.get("question", ""),

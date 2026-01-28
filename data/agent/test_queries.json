@@ -1,18 +1,18 @@
 [
   {
-    "question": "Show me the total bookings for 2024-03.",
+    "question": "What is the total billing for 2024-06?",
     "complexity": "L1"
   },
   {
-    "question": "What is the book-to-bill ratio for 2024-04?",
+    "question": "What is the total cost for 2024-07?",
     "complexity": "L1"
   },
   {
-    "question": "What is the month-over-month change in total billing for 2023-05?",
+    "question": "What is the GM% for 2024-08?",
     "complexity": "L1"
   },
   {
-    "question": "What is the QoQ change in total billing for 2024-04?",
+    "question": "What is the ASP for 2024-08?",
     "complexity": "L1"
   }
 ]
