@@ -44,6 +44,20 @@ def generate_questions(client_openai, model, schema_context, prompt_dir, metrics
                 target_metrics = metrics[:count]
             intents = [f"Analyze {m}" for m in target_metrics]
         elif level == "L2":
+            ### Generated Questions (Final Dimensions-Only Strategy)
+            # The generator now avoids binary flags and focuses on multi-value business entities for more meaningful Grouping & Ranking tests:
+            #
+            # | Difficulty | Question | Metric | Natural Dimension |
+            # | :--- | :--- | :--- | :--- |
+            # | **L3** | "Who are the top 5 End Customers by BB Ratio...?" | BB Ratio | End Customer |
+            # | **L3** | "Show me a breakdown of Gross Profit (GP) by Sales Representative..." | Gross Profit | Sales Representative |
+            # | **L3** | "Who are the top 5 Local Assemblers by MoM growth...?" | MoM growth | Local Assembler |
+            # | **L3** | "Who are the top 5 Sub Units by POA BB Qty Ratio...?" | BB Qty Ratio | Sub Unit |
+            #
+            ### Conclusion
+            # - **自然語言對接**：成功將技術欄位 (`erp_sales_rep`, `fu_us_oem_flag` 等) 轉換為業務用語。
+            # - **維度聚焦**：依照建議，L3 測試現在專注於「多類別維度」（如地區、品牌、客戶），排除二元 Flag，這將大幅提升 Agent 的解析成功率與測試意義。
+            # - **過濾分離**：Flag (Yes/No) 將留給 L2 (Filtering) 進行純過濾測試，使各級別測試職責更加簡明。
             # L2: Cycle through all dimensions to ensure coverage.
             # EXCLUDE time-based dimensions from the primary rotation, because we now force
             # a time-filter into EVERY question as a secondary condition.
@@ -95,8 +109,58 @@ def generate_questions(client_openai, model, schema_context, prompt_dir, metrics
                     "dimension": md,
                     "natural_request": req
                 })
+        elif level == "L3":
+            # L3: Grouping & Ranking. 
+            # Focus on categorical dimensions (Region, Brand, PBG, etc.) for "Top N" and "Breakdown".
+            # Flags (Yes/No) are moved to L2 (Filtering) for simplicity and higher pass rates.
+            import random
+            
+            DIMENSION_NATURAL_NAMES = {
+                "erp_sales_rep": "Sales Representative",
+                "sub_unit": "Sub Unit",
+                "pbu_1": "PBU 1",
+                "pbu_2": "PBU 2",
+                "local_assembler": "Local Assembler",
+                "customer_parent": "Customer",
+                "final_customer": "End Customer",
+                "ru": "Region"
+            }
+
+            # Only filter out flag columns. Time dimensions are allowed for grouping (e.g. breakdown by month).
+            dim_keys = [
+                k for k in dimensions.keys() 
+                if "flag" not in k.lower()
+            ]
+            
+            intents = []
+            for _ in range(count):
+                m = random.choice(metrics)
+                md = random.choice(dim_keys)
+                
+                natural_dim = DIMENSION_NATURAL_NAMES.get(md, md.replace("_", " "))
+                style = random.choice(["top_n", "breakdown"])
+                
+                if style == "top_n":
+                    req = (
+                        f"Who are the top 5 {natural_dim} by {m}? "
+                        f"Include a specific time filter (e.g. 'in 2024' or 'Q3 2023'). "
+                        f"Ask naturally using '{natural_dim}' instead of '{md}'."
+                    )
+                else:
+                    req = (
+                        f"Show me a breakdown of {m} by {natural_dim}. "
+                        f"Include a specific time filter. "
+                        f"Ask naturally using '{natural_dim}' instead of '{md}'."
+                    )
+                
+                intents.append({
+                    "metric": m,
+                    "dimension": md,
+                    "natural_request": req
+                })
+
         else:
-            # L3+: Random selection for diversity
+            # L4+: Random selection for diversity
             import random
             intents = [{"metric": random.choice(metrics), "dimension": "N/A", "natural_request": f"Analyze {random.choice(metrics)}"} for _ in range(count)]
         

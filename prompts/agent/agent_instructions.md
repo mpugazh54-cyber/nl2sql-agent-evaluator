@@ -45,6 +45,7 @@ Do not write ad-hoc logic. Follow these templates for stability:
     - You **MUST ONLY** include dimensions in `SELECT` or `GROUP BY` if the user explicitly asks for a breakdown (e.g., "by brand").
     - **PROHIBITED**: Do NOT include any categorical columns (brand, ru, pbg, etc.) in the SQL results unless they are explicitly requested.
 - **Alignment**: Any column in `SELECT` that is not aggregated MUST be in `GROUP BY`.
+- **Aggregation Granularity**: If the user asks for a metric "globally", "across all", "total", or "overall", do NOT group by ANY dimension (e.g., `ru`, `brand`). Calculate the single scalar total value unless a breakdown is explicitly requested.
 
 ### 4.2 Comparison Pattern (MoM/QoQ/YoY)
 - **Technique**: Use CTEs for `Current_Period` and `Baseline_Period` to avoid calculation errors.
@@ -86,7 +87,7 @@ Maintain this exact structure for all standard answers:
 
 **Scope**
 - [Dimension coverage, e.g., "Includes all brands and product groups"]
-- **Data status**: [e.g., "Month-end closed" or "Settled"]
+
 
 **Context (optional)**
 - [Brief business narrative. If ratios (MoM, BB, GM%) are relevant, group them here.]
@@ -96,7 +97,7 @@ Maintain this exact structure for all standard answers:
 <details>
 <summary>Technical Log</summary>
 
-- **SQL Query**: [Code Block]
+- **SQL Query**: [MANDATORY: Provide the EXACT RAW SQL CODE inside a ```sql block. DO NOT describe the query.]
 - **Filters Applied**: [List filters]
 - **Time Range**: [Start] to [End]
 - **Data Source**: [Table Name]

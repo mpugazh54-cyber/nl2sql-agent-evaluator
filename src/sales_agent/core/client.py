@@ -112,33 +112,58 @@ class FabricDataAgentClient:
         # Enhanced SQL extraction for Fabric Data Agent
         sql_queries = []
         import re
+        
+        # Helper to clean and add SQL
+        def add_sql(query_text):
+            if not query_text: return
+            cleaned = query_text.strip().strip('`')
+            if cleaned.upper().startswith("SELECT") and cleaned not in sql_queries:
+                sql_queries.append(cleaned)
+
+        # 1. Extract from Tool Calls (Structured)
         for step in steps.data:
             if hasattr(step.step_details, 'tool_calls'):
                 for tc in step.step_details.tool_calls:
                     if hasattr(tc, 'function'):
-                        # 1. Check arguments (for some versions)
+                        # Check arguments
                         try:
                             args = json.loads(tc.function.arguments)
-                            if 'sql' in args: 
-                                sql_queries.append(args['sql'])
-                                continue
+                            if 'sql' in args and isinstance(args['sql'], str):
+                                add_sql(args['sql'])
                         except: pass
                         
-                        # 2. Check output (Fabric Data Agent specific)
+                        # Check output (Tool Output)
                         output = getattr(tc.function, 'output', '')
-                        if output and "SELECT" in output.upper():
-                            # Extract SQL from markdown code blocks
-                            matches = re.findall(r"```sql\n(.*?)\n```", output, re.DOTALL | re.IGNORECASE)
-                            if matches:
-                                sql_queries.extend([m.strip() for m in matches])
-                            else:
-                                # Fallback: if no markdown, take the whole output if it starts with SELECT
-                                if output.strip().upper().startswith("SELECT"):
-                                    sql_queries.append(output.strip())
-                                elif "SELECT " in output.upper():
-                                    # Very loose fallback
-                                    sql_part = re.search(r"(SELECT .*?)(;|$)", output, re.DOTALL | re.IGNORECASE)
-                                    if sql_part: sql_queries.append(sql_part.group(1).strip())
+                        if output:
+                            # Markdown blocks
+                            code_blocks = re.findall(r"```sql\n(.*?)\n```", output, re.DOTALL | re.IGNORECASE)
+                            for block in code_blocks: add_sql(block)
+                            
+        # 2. Extract from Assistant Message (Text Answer)
+        # This is critical if the agent puts SQL in the text response but not as a tool output
+        answer_text = ""
+        for msg in messages.data:
+            if msg.role == "assistant":
+                content = msg.content[0].text.value if hasattr(msg.content[0], 'text') else str(msg.content[0])
+                answer_text = content # Keep last answer
+                
+                # Look for SQL in code blocks
+                code_blocks = re.findall(r"```sql\n(.*?)\n```", content, re.DOTALL | re.IGNORECASE)
+                for block in code_blocks: add_sql(block)
+                
+                # Fallback: Look for SQL inside <details>...</details> or generic unformatted blocks
+                # We specifically look for lines starting with SELECT inside the content
+                # This regex captures SELECT ... until a likely end (double newline or </details>)
+                if "SELECT " in content.upper() and not code_blocks:
+                    # Try to find a block that looks like SQL
+                    # Capture SELECT followed by anything until valid end
+                    # Minimal extraction: SELECT ... FROM ... WHERE ...
+                    candidates = re.findall(r"(SELECT\s[\s\S]+?(?:;|\n\n|<\/details>|```))", content, re.IGNORECASE)
+                    for cand in candidates:
+                        # cleanup the end marker
+                        cand = re.sub(r"(?:;|\n\n|<\/details>|```)$", "", cand)
+                        add_sql(cand)
+
         
         answer = ""
         for msg in messages.data:

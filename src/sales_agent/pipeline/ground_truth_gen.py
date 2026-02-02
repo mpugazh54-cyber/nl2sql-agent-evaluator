@@ -23,6 +23,7 @@ def generate_ground_truth(client_openai, model, question, context):
         "   - GM% (Gross Margin): (SUM(total_sales) - SUM(total_cost)) / NULLIF(SUM(total_sales), 0).\n"
         "   - ASP (Average Selling Price): SUM(total_sales) / NULLIF(SUM(total_qty), 0).\n"
         "6. SQL SIMPLICITY & DIMENSIONAL STRICTNESS:\n"
+        "   - SQL DIALECT: ALWAYS use T-SQL (SQL Server) syntax. For example, use 'OFFSET 0 ROWS FETCH NEXT 5 ROWS ONLY' instead of 'LIMIT 5'.\n"
         "   - KISS Principle: Always aim for the most intuitive and direct SQL. Avoid complex CTEs if a simple SELECT works.\n"
         "   - DIMENSIONS: ONLY include dimensions in 'SELECT' or 'GROUP BY' if the user explicitly asks for a breakdown (e.g., 'by brand'). Otherwise, produce single-row totals.\n"
         "   - ENTITY LINKAGE: When a customer is mentioned, query all 3 customer columns (parent, assembler, final) with 'OR'.\n"

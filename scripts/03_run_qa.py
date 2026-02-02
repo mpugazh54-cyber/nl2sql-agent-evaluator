@@ -161,7 +161,7 @@ def main():
         total = len(rows)
         for i, r in enumerate(rows, 1):
             print(f"[{i}/{total}] Evaluating: {r['question'][:60]}...")
-            res = evaluator.evaluate(openai_client, model, r["question"], r["expected_answer"], r["agent_answer"])
+            res = evaluator.evaluate(openai_client, model, r["difficulty"], r["question"], r["expected_answer"], r["agent_answer"])
             r.update({
                 "similarity_score": res.get("similarity_score"),
                 "evaluation_grade": res.get("grade"),
