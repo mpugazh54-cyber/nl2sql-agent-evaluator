@@ -29,7 +29,7 @@ The system utilizes two primary fact tables with **monthly aggregated data**. Al
 ### 3.1 Dimensions
 | Column Name | Category | Description / Constraints | Sample Values (Non-Exhaustive) |
 | :--- | :--- | :--- | :--- |
-| `year_month` | Time | Primary temporal filter (Format: `YYYYMM`). | `202412`, `202501` |
+| `year_month` | Time | Primary temporal filter (Format: `YYYY-MM`). | `2024-12`, `2025-01` |
 | `order_type` | Business | Filter Billing/Booking status. | `SHIPMENT`, `PAST DUE`, `BACKLOG`, `BOOKING` |
 | `brand` | Product | Product brand names. | `YAGEO`, `PULSE`, `KEMET`, `CHILISIN`, `TOKIN` |
 | `ru` | Region | Reporting Unit (Main region). | `AMERICAS`, `EMEA`, `GREAT CHINA`, `SOUTHEAST ASIA` |
@@ -43,6 +43,58 @@ The system utilizes two primary fact tables with **monthly aggregated data**. Al
 
 > [!NOTE]
 > **Generalization Rule**: The sample values above are representative but not exhaustive. If a user asks for a value NOT in this list (e.g., a specific customer name or a different brand), the Agent **MUST** still attempt to query it using the correct column. Do NOT assume a value is "invalid" just because it's missing from the sample list.
+
+### 3.3 Authoritative Entity Resolution & Correct Lists
+Use these lists to validate and map user inputs BEFORE generating SQL.
+
+#### A. Global Synonyms & Mappings
+| User Input / Synonym | Correct SQL Logic (Target Values) |
+| :--- | :--- |
+| **"GREATER CHINA"**, "G. China", "GC" | `ru IN ('GREAT CHINA', 'GREATER CHINA')` |
+| **"SE ASIA"**, "ASEAN" | `ru = 'SOUTHEAST ASIA'` |
+| **"N. AMERICA"**, "North America" | `ru = 'AMERICAS'` (unless sub-region specified) |
+| **"APAC"**, "Asia Pacific" | `ru IN ('SOUTHEAST ASIA', 'GREAT CHINA', 'JAPAN & KOREA')`|
+| **"TMSS"** | `brand = 'Telemecanique'` |
+| **"GEMS"** | `fu_global_ems_flag = 'Y'` (Global EMS) |
+
+#### B. Valid Value Lists (For Fuzzy Matching)
+If input is not an exact match, check against these valid values:
+
+**1. Brands**
+`BOTHHAND`, `CHILISIN`, `FERROXCUBE`, `KEMET`, `Nexensos`, `PULSE`, `TOKIN`, `Telemecanique`, `YAGEO`
+
+**2. Reporting Units (ru)**
+`AMERICAS`, `EMEA`, `GREAT CHINA`, `JAPAN & KOREA`, `OTHERS`, `SOUTHEAST ASIA`
+
+**3. Product Hierarchy (PBG)**
+`Capacitor`, `Magnetics`, `Resistors`, `SENSOR`, `OTHER`
+
+**4. Regional Sub-Units (sub_unit)**
+`AMERICAS`, `CENTRAL EUROPE`, `CHINA`, `DIRECT FACTORY`, `EMEA`, `EMEA GLOBAL OEMS`, `INDIA`, `JAPAN`, `JAPANESE OEMS`, `KOE`, `KOREA`, `MALAYSIA`, `NORTH EUROPE`, `OTHERS`, `Out of SE Asia`, `PHIL/INDO`, `RU HEAD OFFICE`, `SE ASIA-G7`, `SINGAPORE/OEMS`, `SOUTH EUROPE`, `SOUTHEAST ASIA`, `TAIWAN`, `THAILAND`, `VIETNAM`, `WEST EUROPE & HIGH RELIABILITY`
+
+**5. Order Types**
+`SHIPMENT`, `BACKLOG`, `PAST DUE`, `CONSIGNMENT`, `BOOKING`
+
+**6. Channels (g7)**
+`AVNET`, `ARROW`, `FUTURE`, `MOUSER`, `RUTRONIK`, `TTI`, `DIGIKEY`, `Non-G7`
+
+**7. Common Customers (Excerpts)**
+`ABB`, `APPLE`, `BOSCH`, `BYD`, `CISCO`, `DELL`, `DELTA`, `DENSO`, `DIGIKEY`, `FOXCONN`, `GE`, `GOOGLE`, `HUAWEI`, `INFINEON`, `INTEL`, `JABIL`, `LG`, `MICROSOFT`, `NVIDIA`, `PANASONIC`, `SAMSUNG`, `SIEMENS`, `SONY`, `TESLA`, `XIAOMI`, `ZTE`
+
+**8. Product Detail (pbu) (Excerpts)**
+`CPT`, `Ceramic`, `MLCC`, `R-Chip`, `TANTALUM`, `Teapo`, `Telemecanique`, `Wireless`, `XSEMI`
+
+**9. Product Detail (pbu_1) (Excerpts)**
+`AUTOMOTIVE`, `COMMODITY`, `HIGH CAP`, `LYTICS`, `POWER`, `SMD`, `SPECIALTY`, `Wireless`
+
+**10. Product Detail (pbu_2) (Excerpts)**
+`AC`, `AF`, `AT`, `Ceramic`, `Ferrite`, `METAL`, `Power`, `RT`, `YC`
+
+> [!IMPORTANT]
+> **Resolution Protocol**:
+> 1. **Check Synonyms**: If input matches "User Input" in Table A, apply "Correct SQL Logic".
+> 2. **Check Valid Lists**: If input resembles a value in List B, map to that valid value.
+> 3. **Search**: If it's a specific Customer or Product Sub-unit (pbu) not listed here, use `ILIKE` across relevant columns (`customer_parent`, `pbu`, etc.).
 
 ---
 

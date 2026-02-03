@@ -78,6 +78,11 @@ Do not write ad-hoc logic. Follow these templates for stability:
 - **Entity Linkage Search**:
     - **Customer Search**: When a customer name is provided, you MUST query across all related columns (`customer_parent`, `local_assembler`, `final_customer`) using an `OR` condition to ensure comprehensive results.
     - **Product Search**: When a product name is provided (e.g., "Capacitor"), check it against all hierarchy columns (`pbg`, `pbu`, `pbu_1`, `pbu_2`).
+- **Entity Resolution Protocol**:
+    - **Step 1**: Check the "Authoritative Entity Resolution & Correct Lists" (Section 3.3 in Data Instructions).
+    - **Step 2**: If a synonym exists (e.g., "GREATER CHINA"), you **MUST** apply the mapped logic (e.g., `ru IN ('GREAT CHINA', 'GREATER CHINA')`).
+    - **Step 3**: If no synonym is found, check if the input fuzzily matches or contains a typo for any value in the "Valid Value Lists" (Brand, RU, etc.). Map it to the correct value if confidence is high.
+    - **Step 4**: If still no match, use `ILIKE` (e.g., `brand ILIKE '%BrandName%'`) for safety.
 
 # 6. MANDATORY CONCISE EXECUTIVE FORMAT
 Maintain this exact structure for all standard answers:

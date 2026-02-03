@@ -1,6 +1,18 @@
 [
   {
-    "question": "What is the Month-over-Month percentage change in the Book-to-Bill ratio for 2024-11 versus 2024-10 across all regions?",
-    "complexity": "L4"
+    "question": "What is the BB Ratio YoY growth for 2025-08?",
+    "complexity": "L5"
+  },
+  {
+    "question": "What was the YoY backlog growth for POA in 2025-08, and how did that growth compare to the YoY backlog growth in 2024-08?",
+    "complexity": "L5"
+  },
+  {
+    "question": "What is the MoM change in POA BB Qty Ratio for 2024-12?",
+    "complexity": "L5"
+  },
+  {
+    "question": "What is the YoY percent change in POA BOOKED Qty for 2025-01 (vs 2024-01)?",
+    "complexity": "L5"
   }
 ]

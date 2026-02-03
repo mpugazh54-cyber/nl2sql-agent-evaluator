@@ -1,4 +1,4 @@
-    """
+"""
 Utility to fetch distinct sample values from Fabric SQL Endpoint tables.
 
 Inputs:
@@ -41,29 +41,37 @@ def get_sample_data(table_name, columns, output_file):
         # or just pull a reasonable amount of data and process in pandas.
         # Since we want to be sure about the 10 distinct values, pulling a subset is better.
         
-        query = f"SELECT TOP 1000 * FROM {table_name} WHERE year_month = '2025-01'"
-        print(f"🔍 Executing query: {query}")
-        df = pd.read_sql(query, conn)
-        conn.close()
-
         output_lines = []
+        metric_cols = ["year_month", "total_sales", "total_qty", "total_cost", "updated_date", "focus_flag"]
+        
         for col in columns:
-            if col not in df.columns:
-                output_lines.append(f"{col}: [Column not found]")
-                continue
-            
-            distinct_values = df[col].dropna().unique()
-            # Convert to Series to use sample method safely
-            val_series = pd.Series(distinct_values)
-            num_to_sample = min(10, len(val_series))
-            
-            if num_to_sample > 0:
-                sample_values = val_series.sample(
-                    n=num_to_sample, random_state=42
-                ).astype(str).tolist()
-                output_lines.append(f"{col}: {', '.join(sample_values)}")
-            else:
-                output_lines.append(f"{col}: [No data]")
+            try:
+                # Decide strategy based on column type
+                if col in metric_cols:
+                    # For metrics/dates, just take distinct values from a sample
+                    query = f"SELECT TOP 1000 [{col}] FROM {table_name}"
+                    df = pd.read_sql(query, conn)
+                    values = df[col].dropna().unique().astype(str).tolist()
+                    # Take random sample of 30
+                    sample_values = pd.Series(values).sample(n=min(30, len(values)), random_state=42).tolist() if values else []
+                    
+                else:
+                    # For dimensions, get Top 50 by frequency
+                    query = f"SELECT TOP 50 [{col}], COUNT(*) as cnt FROM {table_name} WHERE [{col}] IS NOT NULL GROUP BY [{col}] ORDER BY cnt DESC"
+                    print(f"   🔍 Fetching Top 50 for: {col}")
+                    df = pd.read_sql(query, conn)
+                    sample_values = df[col].astype(str).tolist()
+
+                if sample_values:
+                    output_lines.append(f"{col}: {', '.join(sample_values)}")
+                else:
+                    output_lines.append(f"{col}: [No data]")
+                    
+            except Exception as col_error:
+                print(f"   ⚠️ Error fetching {col}: {col_error}")
+                output_lines.append(f"{col}: [Error]")
+        
+        conn.close()
 
         with open(output_file, "w", encoding="utf-8") as f:
             f.write("\n".join(output_lines))

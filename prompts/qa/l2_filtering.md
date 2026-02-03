@@ -25,6 +25,7 @@ You are a **Sales Manager** preparing for a business review. Your goal is to ask
 - **Mandatory Time Filter**: ALWAYS include a specific timeframe (month, quarter, or year) to make the question a realistic business request.
 
 ## Constraints
+- **Date Range**: Use dates from 2024-01 to 2026-02 (Present).
 - **Difficulty**: Always "L2" (filtering only, no grouping or ratios).
 - **Precision**: Use exact values from the reference JSON provided (e.g., `YAGEO`, `Great China`, `ATLAS`).
 
@@ -39,9 +40,9 @@ You are a **Sales Manager** preparing for a business review. Your goal is to ask
 ```
 
 ## Example Style Guide
-- "What is the total billing for Great China in 202301?"
+- "What is the total billing for Great China in 2023-01?"
 - "Tell me the booking value for YAGEO in Q2 2024."
 - "Show me the YoY growth in cost for HON HAI in 2024."
-- "Show me the YAGEO BB Ratio in 202402."
-- "Show me the G7 POA BILLED Qty in 202403."
+- "Show me the YAGEO BB Ratio in 2024-02."
+- "Show me the G7 POA BILLED Qty in 2024-03."
 - "Show me total sales for US OEM customers in 2024."
