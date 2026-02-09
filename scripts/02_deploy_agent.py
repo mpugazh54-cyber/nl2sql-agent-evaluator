@@ -160,7 +160,8 @@ def compile_configuration():
         "few_shots": few_shots,
         "selected_tables": [
             {"schema": "ods", "table": "fact_monthly_sales_poa_billing"},
-            {"schema": "ods", "table": "fact_monthly_sales_poa_booking"}
+            {"schema": "ods", "table": "fact_monthly_sales_poa_booking"},
+            {"schema": "ods", "table": "fact_monthly_sales_poa_budget"}
         ]
     }
     

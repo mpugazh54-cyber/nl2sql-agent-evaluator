@@ -1,18 +1,14 @@
 [
   {
-    "question": "What is the BB Ratio YoY growth for 2025-08?",
-    "complexity": "L5"
+    "question": "Show me the YTD sales performance for Tesla.",
+    "complexity": "L2-Brand"
   },
   {
-    "question": "What was the YoY backlog growth for POA in 2025-08, and how did that growth compare to the YoY backlog growth in 2024-08?",
-    "complexity": "L5"
+    "question": "What is the Hit Rate for Wistron (纬创)?",
+    "complexity": "L2-ODM"
   },
   {
-    "question": "What is the MoM change in POA BB Qty Ratio for 2024-12?",
-    "complexity": "L5"
-  },
-  {
-    "question": "What is the YoY percent change in POA BOOKED Qty for 2025-01 (vs 2024-01)?",
-    "complexity": "L5"
+    "question": "Break down the sales for Hon Hai by end customer.",
+    "complexity": "L3-Breakdown"
   }
 ]
