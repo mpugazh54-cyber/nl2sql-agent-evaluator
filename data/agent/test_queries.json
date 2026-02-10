@@ -1,14 +1,10 @@
 [
   {
-    "question": "Show me the YTD sales performance for Tesla.",
-    "complexity": "L2-Brand"
+    "question": "What is the Hit Rate % for MLCC in 2025-04?",
+    "complexity": "L2"
   },
   {
-    "question": "What is the Hit Rate for Wistron (纬创)?",
-    "complexity": "L2-ODM"
-  },
-  {
-    "question": "Break down the sales for Hon Hai by end customer.",
-    "complexity": "L3-Breakdown"
+    "question": "What is the POA Hit Rate % for HIGH CAP in Q2 2025?",
+    "complexity": "L2"
   }
 ]

@@ -51,7 +51,23 @@ Do not write ad-hoc logic. Follow these templates for stability:
     - **QoQ**: T and the full preceding quarter (3 months).
     - **YoY**: T and the corresponding T-12 (month).
 
-### 4.3 BB Ratio Patterns
+### 4.3 Temporal Logic & Proxy Protocol
+- **Granularity**: The data is **MONTHLY**. "Today", "Current", or "Latest" queries must align to the **Latest Closed Month**.
+- **Rule**: You **MUST** use the system date (`GETDATE()`) to determine the Latest Closed Month.
+    - **Logic**: `FORMAT(DATEADD(month, -1, GETDATE()), 'yyyy-MM')`.
+    - **PROHIBITED**: Do NOT use `MAX(year_month)` (this risks picking up future budget data).
+- **MTD (Month-to-Date)**:
+    - **Logic**: `WHERE year_month = FORMAT(DATEADD(month, -1, GETDATE()), 'yyyy-MM')`.
+- **QTD (Quarter-to-Date)**:
+    - **Logic**: `WHERE year_month >= FORMAT(DATEADD(quarter, DATEDIFF(quarter, 0, DATEADD(month, -1, GETDATE())), 0), 'yyyy-MM') AND year_month <= FORMAT(DATEADD(month, -1, GETDATE()), 'yyyy-MM')`.
+- **YTD (Year-to-Date)**:
+    - **Logic**: `WHERE year_month >= FORMAT(DATEFROMPARTS(YEAR(DATEADD(month, -1, GETDATE())), 1, 1), 'yyyy-MM') AND year_month <= FORMAT(DATEADD(month, -1, GETDATE()), 'yyyy-MM')`.
+- **Future / Incomplete Dates**:
+    - **Rule**: If a query asks for a future OR incomplete month (e.g., "MTD this month"), use the **Latest Closed Month** proxy.
+    - **CRITICAL NARRATIVE RULE**: You **MUST** explicitly state in your final answer: *"Data for [Target Month] is not yet available (Incomplete/Future). Using [Proxy Month] as the latest closed month proxy."*
+    - **DO NOT** present the proxy numbers as the actual future numbers without this clear disclaimer.
+
+### 4.4 BB Ratio Patterns
 - **Independent Aggregation**: Do NOT use a standard key-based `INNER JOIN`. Instead:
     1. Create a CTE for the **Booking** total.
     2. Create a separate CTE for the **Billing** total (with `order_type = 'SHIPMENT'`).
@@ -164,14 +180,13 @@ For high-level themes, act as a **Strategic Consultant**. NEVER ask for clarific
 |-------|-----------|
 | "Sensor Synergy" | `pbg = 'SENSOR'` |
 | "Automotive Grade" | `pbu_1 = 'AUTOMOTIVE'` |
-| "AI Proxy" / "AI Premium" | `pbu = 'TANTALUM' OR pbu_1 IN ('HIGH CAP', 'POWER')` | `LIKE '%AI%'`, `LIKE '%proxy%'` |
+| "AI Proxy" / "AI Premium" | `pbu = 'TANTALUM' OR pbu_1 IN ('HIGH CAP', 'POWER')` |
 | "Channel Control" / "Socket Ownership" | Compare `g7_flag = 'Yes'` vs `g7_flag = 'No'` |
 | "Zombie Backlog" | `order_type <> 'SHIPMENT' AND year_month < FORMAT(DATEADD(MONTH, -3, GETDATE()), 'yyyy-MM')` |
 | "Past Due Risk" | `order_type = 'PAST DUE'` |
 | "Pricing Power Audit" | ASP trends by top Product Groups |
 | "Distributor vs Direct Battle" | G7 vs Non-G7 channel comparison |
-
-**Data Type Rules**: `g7_flag` and `focus_flag` use STRING `'Yes'`/`'No'` (not integers or 'Y'/'N').
+| "Target Miss Risk" | Calculate `(Billing - Budget)` by **Region (ru)**. Sort by largest negative variance. |
 
 ### 8.2 Execution
 1. Recognize theme → Apply semantic translation from table

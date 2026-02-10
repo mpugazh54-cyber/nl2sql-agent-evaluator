@@ -9,7 +9,7 @@ The system utilizes two primary fact tables with **monthly aggregated data**. Al
 | :--- | :--- | :--- |
 | `fact_monthly_sales_poa_billing` | `ods.` | **Billing (Actuals)**: Revenue, shipments, billed sales, and costs. **(NO BUDGET COLUMNS)** |
 | `fact_monthly_sales_poa_booking` | `ods.` | **Booking (Pipeline)**: Sales orders received, forward-looking demand. |
-| `fact_monthly_sales_poa_budget` | `ods.` | **Budget (Target)**: Financial targets. **GRAIN: Customer/Region/Product.** |
+| `fact_monthly_sales_poa_budget` | `ods.` | **Budget (Target)**: Financial targets. |
 
 ---
 
@@ -25,16 +25,19 @@ The system utilizes two primary fact tables with **monthly aggregated data**. Al
 - **Budget Join Rule**: NEVER join on `order_type` when querying `ods.fact_monthly_sales_poa_budget`. The budget table does not contain valid `order_type` mapping for Billing types. Join only on `year_month`, `ru`, `customer_parent`, etc.
 
 ### 2.3 Budget Alignment Protocol (CRITICAL)
-### 2.3 Budget Alignment Protocol
+
 -   **Granularity**: Budget is defined down to `customer_parent`, `pbg`, `pbu`, `local_assembler`, and `final_customer`.
 -   **Mapping**: Budget uses `sub_unit_cbr` instead of `sub_unit`. Join on `budget.sub_unit_cbr = billing.sub_unit`.
 -   **Aggregate-First**: For queries at Region/PBG level, aggregate Billing first. For Customer level, direct join is allowed.
+-   **Symmetric Customer Filter**: When filtering by "Customer" for Hit Rate, you **MUST** check `customer_parent`, `local_assembler`, AND `final_customer` in **BOTH** the Billing CTE and the Budget CTE.
+-   **Symmetric Product Filter**: When filtering by "Product" (e.g. "Capacitor"), you **MUST** check `pbg`, `pbu`, `pbu_1`, AND `pbu_2` in **BOTH** the Billing CTE and the Budget CTE.
 -   **Data Constraint**: Budget data is only available from **2025 onwards**. Queries for 2024 budget or earlier will return 0 or NULL for budget metrics. Inform the user if they ask for pre-2025 budget.
 
 ### 2.4 Anti-Hallucination Protocol (STRICT)
 - **Billing Table Limitations**: The table `ods.fact_monthly_sales_poa_billing` **DOES NOT CONTAIN** `total_budget`.
 - **Budget Rule**: You **MUST** join `ods.fact_monthly_sales_poa_budget` to get any budget data.
 - **FAILURE CONDITION**: Any query that attempts to select `total_budget` from `ods.fact_monthly_sales_poa_billing` is a **CRITICAL HALLUCINATION** and will fail.
+
 
 
 ---
@@ -85,6 +88,11 @@ The system utilizes two primary fact tables with **monthly aggregated data**. Al
     -   **Pattern**: `WHERE (col LIKE '%Input%' OR SOUNDEX(col) = SOUNDEX('Input'))`
     -   *Why?* `SOUNDEX` is faster than `DIFFERENCE` and catches phonetic typos (e.g. "Simens" matches "Siemens").
 
+4.  **Net 4: Quad-Net Product Search (Broadest Coverage)**
+    -   **Rule**: When searching for ANY product name (e.g., "MLCC", "Resistor", "High Cap"), you **MUST** search across ALL product hierarchy columns (`pbg`, `pbu`, `pbu_1`, `pbu_2`).
+    -   **CRITICAL OVERRIDE**: Even if a value is listed in "Section 3.1" under a specific column (e.g., `pbu`), you **MUST** still search ALL 4 columns. Do NOT assume the column.
+    -   **Pattern (Billing & Budget)**: `WHERE (pbg = 'Input' OR pbu = 'Input' OR pbu_1 = 'Input' OR pbu_2 = 'Input')`
+
 #### A. Global Synonyms & Mappings
 | User Input / Synonym | Correct SQL Logic (Target Values) |
 | :--- | :--- |
@@ -97,35 +105,38 @@ The system utilizes two primary fact tables with **monthly aggregated data**. Al
 | **"GEMS"** | `fu_global_ems_flag = 'Yes'` (Global EMS) |
 
 #### B. Top Reference Lists (Pareto - Not Exhaustive)
-> **Note**: These lists contain only the Top ~20% most frequent entities. If a user asks for something not here, trigger **Net 3 (SQL Fallback)**.
+> **Note**: These lists contain updated values from sample data. Use Quad-Net search for products.
 
 **1. Reporting Units (ru)**
-`AMERICAS`, `EMEA`, `GREAT CHINA`, `JAPAN & KOREA`, `OTHERS`, `SOUTHEAST ASIA`
+`GREAT CHINA`, `EMEA`, `AMERICAS`, `SOUTHEAST ASIA`, `OTHERS`, `JAPAN & KOREA`
 
 **2. Product Hierarchy (PBG)**
-`Capacitor`, `Magnetics`, `Resistors`, `SENSOR`, `OTHER`
+`Capacitor`, `Resistors`, `Magnetics`, `SENSOR`, `OTHER`
 
 **3. Regional Sub-Units (sub_unit)**
-`AMERICAS`, `CENTRAL EUROPE`, `CHINA`, `DIRECT FACTORY`, `EMEA`, `EMEA GLOBAL OEMS`, `INDIA`, `JAPAN`, `JAPANESE OEMS`, `KOE`, `KOREA`, `MALAYSIA`, `NORTH EUROPE`, `OTHERS`, `Out of SE Asia`, `PHIL/INDO`, `RU HEAD OFFICE`, `SE ASIA-G7`, `SINGAPORE/OEMS`, `SOUTH EUROPE`, `SOUTHEAST ASIA`, `TAIWAN`, `THAILAND`, `VIETNAM`, `WEST EUROPE & HIGH RELIABILITY`
+`CHINA`, `AMERICAS G7`, `EMEA`, `OTHERS`, `TAIWAN`, `MALAYSIA`, `JAPAN`, `SOUTH EUROPE`, `AMERICAS SOUTH`, `KOREA`, `EMEA GLOBAL OEMS`, `WEST EUROPE & HIGH RELIABILITY`, `SE ASIA-G7`, `SINGAPORE/OEMS`, `SOUTHEAST ASIA`, `CENTRAL EUROPE`, `AMERICAS`, `INDIA`, `THAILAND`, `JAPANESE OEMS`, `NORTH EUROPE`, `PHIL/INDO`, `AMERICAS NORTH`, `AMERICAS WEST`, `VIETNAM`, `AMERICAS EAST`, `RU HEAD OFFICE`, `DIRECT FACTORY`, `AMERICAS OEM`, `SE ASIA`, `OUT OF SE ASIA`, `P_EMEA`
 
 **4. Order Types**
-`SHIPMENT`, `BACKLOG`, `PAST DUE`, `CONSIGNMENT`, `BOOKING`
+`SHIPMENT`, `BACKLOG`, `FATO`, `PAST DUE`, `BACKLOG - GIT`, `CROSSDOCK`, `PAST DUE - GIT`, `CONSIGNMENT`, `BOOKING`
+
+**5. Focus Flags**
+`Yes`, `No`
 
 **6. Channels & Distributors**
-- **`g7` (Distributor Name)**: `AVNET`, `ARROW`, `FUTURE`, `MOUSER`, `RUTRONIK`, `TTI`, `DIGIKEY`. *Note: This column contains the NAME, not a flag.*
-- **`g7_flag` (Is Distributor)**: `Yes` (Distributor), `No` (Direct). *Values are 'Yes'/'No'. NEVER use 'Y'/'N'.*
+- **`g7` (Distributor Name)**: `Non-G7`, `TTI`, `ARROW`, `AVNET`, `DIGIKEY`, `MOUSER`, `FUTURE`, `RUTRONIK`
+- **`g7_flag` (Is Distributor)**: `Yes`, `No`
 
 **7. Common Customers (Excerpts)**
-`ABB`, `APPLE`, `BOSCH`, `BYD`, `CISCO`, `DELL`, `DELTA`, `DENSO`, `DIGIKEY`, `FOXCONN`, `GE`, `GOOGLE`, `HUAWEI`, `INFINEON`, `INTEL`, `JABIL`, `LG`, `MICROSOFT`, `NVIDIA`, `PANASONIC`, `SAMSUNG`, `SIEMENS`, `SONY`, `TESLA`, `XIAOMI`, `ZTE`
+`JABIL`, `TTI`, `ARROW`, `FLEX`, `HON HAI`, `AVNET`, `CONTINENTAL`, `HOLDER`, `DELTA`, `SANMINA`, `DIGIKEY`, `MOUSER`, `CELESTICA`, `SUNLORD`, `NT SALES`, `CLWELL`, `QUANTA`, `FUTURE`, `JILITONG`, `WISTRON`, `RUTRONIK`, `SIEMENS`, `USI`, `PEGATRON`, `LUXSHARE`, `LITE-ON`, `FARNELL`, `MIKASA`, `ZF`, `APTIV`, `VISTEON`, `COMPAL`, `INVENTEC`, `WACHING`, `CORNDI`, `KING POWER`, `TSMT`, `SANSHIN`, `ANSON`, `LG`, `HUAWEI`, `BOSCH`, `HELLA`, `MARELLI`, `GENNEX`, `BENCHMARK`, `RYOSAN`, `REOTEC`, `AIAC`, `KAIFA`, `SAMSUNG`, `WINNER`, `SS-PARTS`, `VALEO`, `ELITEK`, `SATORI`, `ARTESYN`, `ARFA`, `NEW KINPO`, `VITESCO`, `RUIYI`, `ACBEL`, `GEMTEK`, `MITAC`, `GSK`, `RS GROUP`, `E.I.L.`, `ERICSSON`, `MELECS`, `ASKEY`, `BORGWARNER`, `SUNTRON`, `KIMBALL`, `WNC`, `GLORISON`, `ACCTON`, `LEAR`, `ALPHA-NET`, `MICRO-STAR`, `QISDA`, `ASCA`, `SAMPLES - EXPORT`, `BYD`, `SHINKO`, `PROTECH`, `PRIMAX`, `PHIHONG`, `SE SPEZIAL`, `WITTIG ELECTRONIC`, `WELLDONE`, `TRANSFER MULTISORT`, `YUCHENG`, `HARMAN`, `PROSPECT`, `KOSTAL`, `LETDO`, `WKK`, `ZTE`, `CHUANGSI`, `VITAL`
 
 **8. Product Detail (pbu) (Excerpts)**
-`CPT`, `Ceramic`, `MLCC`, `R-Chip`, `TANTALUM`, `Teapo`, `Telemecanique`, `Wireless`, `XSEMI`
+`R-Chip`, `Ceramic`, `MLCC`, `POWER`, `TANTALUM`, `F&E`, `AMT`, `CPT`, `Telemecanique`, `Wired Comm`, `Wireless`, `Nexensos`, `MLCC PBU OEM (PLP)`, `Teapo`, `MLCC(KOE TYPE_2)`, `Wired Comm PBU OEM (PLP)`, `XSEMI`, `OTHERS`, `uPI`, `Wireless PBU OEM (PLP)`, `APEC`, `E-Cap`
 
 **9. Product Detail (pbu_1) (Excerpts)**
-`AUTOMOTIVE`, `COMMODITY`, `HIGH CAP`, `LYTICS`, `POWER`, `SMD`, `SPECIALTY`, `Wireless`
+`COMMODITY`, `SPECIALTY`, `AUTOMOTIVE`, `Inductor - Std`, `HIGH CAP`, `FILM`, `MAGNETICS`, `POLYMER`, `MNO2`, `Network_Pulse`, `Power - Smart Power`, `CPC`, `LYTICS`, `Leaded-R`, `LIMIT SWITCHESES`, `Automotive - EGSTON`, `MCP`, `FERRITE`, `SUPERCAPS`, `Network_Bothhand`, `SENSORS & ACTUATORS`, `INDUCTIVE SENSORS`, `Wireless Infrastructure`, `SAFETY SWITCHES`, `PHOTOELECTRIC`, `Rebate`, `Wireless Consumer`, `LTCC Chilisin`, `Inductor - Power`, `T WIRED`, `OTHERS`, `PRESSURE SWITCHES`, `VTM`, `E-CAP`, `ACCESSORIES`, `SAFETY SENSORS`, `T ASSEMBLY`, `Automotive - High Power`, `Adjustment`, `Inductor - PLP_ Std`, `Antenna Chilisin`, `OTHERS_Std`, `T LEADLESS`, `ULTRASONIC`, `TBG - NOT ASSIGNED`, `PRESSURE SENSORS`, `Felco`, `CAPACITIVE SENSORS`, `WPC Chilisin`, `Wireless LTCC`, `Rebate_Std`, `Network -  Local Area Networking`, `RFID`, `MTPI`, `RPS`, `Adjustment_Std`, `RESISTOR`, `TOKIN_Adjustment`, `Telemecanique`, `Power Device`, `CHAMBERS`, `ADVANCED`, `POWER`, `uPI`, `Others/RM`, `FXC_Adjustment`, `Cross Product Family`, `Power Management`, `RF`, `Network Bothhand`
 
 **10. Product Detail (pbu_2) (Excerpts)**
-`AC`, `AF`, `AT`, `Ceramic`, `Ferrite`, `METAL`, `Power`, `RT`, `YC`
+`Automotive Commodity`, `RC0402`, `RC0603`, `CC0402`, `CC0603`, `RC0805`, `METAL`, `RC0201`, `RC1206`, `WW_Std`, `HCV X7R`, `RT`, `SMD_Std`, `AC`, `AS (Soft-Term)`, `Mold_L_Std`, `CC0805`, `CC0201`, `RLPT`, `Power`, `CM-MNO2 SMD`, `AC HC >=105`, `CM-KO SMD`, `HV >=500V`, `RFI FILM RADIAL`, `Ceramic`, `HC X5R`, `AC LINE FILTER`, `OPEN/FLOAT`, `YC`, `Comm 0603`, `CC >=1206`, `Mold_M_Std`, `Surge`, `Comm 0805`, `FERRITE`, `AC Commodity`, `PULSE`, `Comm 0402`, `ESD`, `SP-NT SUPER CAPACIT`, `Network_Bothhand`, `AF`, `Comm 1206`, `AC HV >=500V`, `HV >=500V DC( Excluding Flex)`, `Comms. Magnetics - LAN - Pulse`, `Power - Energy Storage`, `Power - Transformer (XFMR)`, `AT`, `RC01005`, `CM-MNO2 AUTO`, `Soft Termination all Voltages`, `HC 1210-2225`, `Comms. Magnetics - ICM - Pulse`, `RE`, `Hi-Voltage`, `EMI CORE`, `LDD`, `HC 0805`, `OTHERS`, `HC 1206`, `Rebate`, `Power - Common Mode Choke (CMC)`, `WIREWOUND`, `HC Y5V`, `TVS`, `POWER BOX`, `Cable Systems`, `FILM RADIAL`, `SP-KO AUTO`, `HC 0603`, `Comm 1210-2225`, `Beads`, `CS (Soft-Term)`, `CM-AO CAP`, `TC`, `Network`, `CQ (CBR)`, `AC HT >=150C`, `SP-MNO2 HIGH VOLTAG`, `THERMAL SENSOR`, `MOV`, `P5 STACKED`, `CARBON`, `ALUM ELEC SMD V-CHIP`, `TH POWER INDUCTOR`, `Array`, `Comms. Magnetics - WAN`, `SMD POWER INDUCTOR`, `Power - Gate Drive Transformer (GDT)`, `Nexensos - NOT ASSIGNED`, `METAL OXIDE`, `RFI PAPER RADIAL`, `IEC COMPACT DISTRI`, `Power - Current Sense (CS)`, `M - MEDIUM`, `SP-MNO2 THRU HOLE`, `ALUM ELEC RADIAL SING END`, `SP-MNO2 MIL/MIL EQ`
 
 > [!IMPORTANT]
 > **Resolution Protocol**:
@@ -165,6 +176,7 @@ Use simple CTEs to isolate periods before joining. Use `NULLIF` for all division
 - **Budget Achievement % (Hit Rate %)**: `BillingTotalSales / NULLIF(BudgetTotal, 0)`
     - *NOTE*: Use `order_type='SHIPMENT'` for Billing unless "OTR" Hit Rate is asked.
     - *NOTE*: Do NOT join on `order_type` for the Budget CTE.
+    - *NOTE*: If filtering by Customer, apply `(customer_parent LIKE '%X%' OR local_assembler LIKE '%X%' OR final_customer LIKE '%X%')` to **BOTH** CTEs.
 
 **Example: Hit Rate Logic**
 ```sql
@@ -238,8 +250,6 @@ SELECT ...
 | "Latest closed month" | `year_month = FORMAT(DATEADD(MONTH, -1, GETDATE()), 'yyyy-MM')` |
 | "Health Check MoM" | Compare `DATEADD(MONTH, -1, GETDATE())` vs `DATEADD(MONTH, -2, GETDATE())` |
 
-> [!WARNING]
-> **NEVER include the current month** (Feb 2026 = partial) in trend analysis unless user explicitly says "MTD" or "Current Month".
 
 ### 6.3 Risk Definitions
 - **"Zombie Backlog"**: `order_type <> 'SHIPMENT' AND DATEDIFF(day, CAST(year_month + '-01' AS DATE), GETDATE()) > 90`

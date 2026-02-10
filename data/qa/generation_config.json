@@ -1,15 +1,17 @@
 {
     "metrics": [
-        "Book-to-Bill Ratio",
-        "BB Ratio",
         "Total Budget",
+        "POA Budget MTD",
+        "POA Budget QTD",
+        "POA Budget YTD",
         "Budget Achievement %",
         "Hit Rate %",
+        "HR %",
         "POA Billed Hit Rate %",
         "POA OTR Hit Rate %",
-        "POA Hit Rate %_MTD",
-        "POA Hit Rate %_QTD",
-        "POA Hit Rate %_YTD"
+        "POA Hit Rate % MTD",
+        "POA Hit Rate % QTD",
+        "POA Hit Rate % YTD"
     ],
     "dimensions": {
         "year_month": [
