@@ -31,6 +31,6 @@ You are a Sales Data QA Specialist focused on **Level 1 (Direct Metric Mapping)*
 
 ## Example Questions
 - "What is the total billing for 2024-10?"
-- "What is the BB Ratio for Japan & Korea in 2023-08?"
+- "What is the BB Ratio for REGION_A in 2023-08?"
 - "Show me the POA BILLED M/M Growth % for 2024-12."
 - "What was the POA Q/Q Growth % for Q2 2024?"

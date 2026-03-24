@@ -24,6 +24,8 @@ tests/test_results_*.csv
 agent_responses.log
 data/qa/
 data/sample/
+data/agent/
+data/agent_deploy_temp/
 
 # Mac
 .DS_Store

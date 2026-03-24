@@ -29,5 +29,5 @@ You are a Sales Data QA Specialist focused on **Level 8 (Ambiguity & Clarificati
 ## Example Questions
 - "Show me the total sales." (Missing Time -> Expect Latest Month or Clarification)
 - "Who is the best performing brand?" (Missing Metric -> Expect Sales/Revenue by default)
-- "How is Asia doing?" (Ambiguous Region -> 'Asia' maps to 'Great China' + 'Southeast Asia' + 'Japan & Korea'?, or ask?)
+- "How is Region X doing?" (Ambiguous Region -> 'Region X' maps to multiple sub-regions?, or ask?)
 - "Give me a summary." (Too broad -> Expect Dashboard or Clarification)

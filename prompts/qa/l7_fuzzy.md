@@ -12,8 +12,8 @@ You are a Sales Data QA Specialist focused on **Level 7 (Fuzzy Matching & Termin
 - **Date Range**: Use dates from 2024-01 to 2026-02 (Present).
 - **Difficulty**: Always "L7"
 - **Entities to fuzz**:
-    - **Brands**: YAGEO (Yageoo), KEMET (Kemit), DIGIKEY (Diggikey).
-    - **Customers**: AUDIX (Au Dix), ARROW (Arow).
+    - **Brands**: BRAND_X (BrandXxx), BRAND_Y (BrandYyy), DISTRIBUTOR_A (DistriAaa).
+    - **Customers**: CUSTOMER_X (Cust X), CUSTOMER_Y (CustY).
     - **Terms**: Quantity (Quan, QTY), Sales (Revenue, amt).
 - **Time**: Strict ISO or standard formats (focus fuzziness on *Dimensions/Metrics*).
 
@@ -29,7 +29,7 @@ You are a Sales Data QA Specialist focused on **Level 7 (Fuzzy Matching & Termin
 ```
 
 ## Example Questions
-- "Show me **AU DIX** total sales in 2025-01." (Intended: AUDIX in local_assembler)
-- "What is **DIGGIKEY** total **quan** in 2025 01?" (Intended: DIGIKEY in g7, quan = total_qty)
-- "How is **Yageoo** doing in Q4?" (Intended: YAGEO)
-- "Get me the **billin** amount for **Grat China**." (Intended: Billing, Great China)
+- "Show me **CUST X** total sales in 2025-01." (Intended: CUSTOMER_X)
+- "What is **DistriAaa** total **quan** in 2025 01?" (Intended: DISTRIBUTOR_A, quan = total_qty)
+- "How is **BrandXxx** doing in Q4?" (Intended: BRAND_X)
+- "Get me the **billin** amount for **Region A**." (Intended: Billing, REGION_A)

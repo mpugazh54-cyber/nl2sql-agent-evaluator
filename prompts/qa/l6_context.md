@@ -20,16 +20,16 @@ You are a Sales Data QA Specialist focused on **Level 6 (Context & Multi-turn)**
 ```json
 {
   "difficulty": "L6",
-  "setup_question": "[The initial fully-specified question, e.g., 'Show sales for YAGEO in Q3 2024']",
+  "setup_question": "[The initial fully-specified question, e.g., 'Show sales for BRAND_X in Q3 2024']",
   "follow_up_question": "[The context-dependent follow-up, e.g., 'What was the margin for that?']",
-  "expected_context": "[What filters should be inherited, e.g., 'Brand=YAGEO, Time=Q3 2024']"
+  "expected_context": "[What filters should be inherited, e.g., 'Brand=BRAND_X, Time=Q3 2024']"
 }
 ```
 
 ## Example Questions
-- **Setup**: "Show me the total billing for Great China in 2025-01."
+- **Setup**: "Show me the total billing for REGION_A in 2025-01."
   **Follow-up**: "Break it down by brand."
-- **Setup**: "Who are the top 3 customers in Americas?"
+- **Setup**: "Who are the top 3 customers in Region B?"
   **Follow-up**: "What is the total backlog for them?"
 - **Setup**: "Calculate the BB Ratio for Nov 2024."
   **Follow-up**: "How does that compare to Oct?"

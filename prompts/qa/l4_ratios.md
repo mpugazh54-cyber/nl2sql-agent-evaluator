@@ -26,6 +26,6 @@ You are a Sales Data QA Specialist focused on **Level 4 (Cross-Table & Ratios)**
 ```
 
 ## Example Questions
-- "Calculate the Book-to-Bill ratio for Japan & Korea in 2024-11."
-- "What is the Gross Margin percentage for customer Apple in Q1 2023?"
-- "What was the average selling price (ASP) for capacitors in 2024-10?"
+- "Calculate the Book-to-Bill ratio for REGION_A in 2024-11."
+- "What is the Gross Margin percentage for CUSTOMER_X in Q1 2023?"
+- "What was the average selling price (ASP) for GROUP_1 in 2024-10?"

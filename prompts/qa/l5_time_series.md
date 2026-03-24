@@ -29,6 +29,6 @@ You are a Sales Data QA Specialist focused on **Level 5 (Time Intelligence)** te
 ```
 
 ## Example Questions
-- "How much did our sales grow compared to last year (YoY) for Great China in 2025-08?"
-- "Show me the Sales MoM trend for the brand TOKIN in 2024-12."
+- "How much did our sales grow compared to last year (YoY) for REGION_A in 2025-08?"
+- "Show me the Sales MoM trend for BRAND_X in 2024-12."
 - "What is the QoQ change in total billing for Q2 2024 across all regions?"

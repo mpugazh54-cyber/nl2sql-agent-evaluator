@@ -27,4 +27,4 @@ You are a Sales Data QA Specialist focused on **Level 3 (Grouping & Ranking)** t
 ## Example Questions
 - "Who are the top 5 customers by billing amount in 2024-11?"
 - "Show me a breakdown of bookings sales by Region for Q3 2023."
-- "Which Product Business Group (PBG) had the highest QoQ growth in Q1 2025?"
+- "Which Product Group had the highest QoQ growth in Q1 2025?"
